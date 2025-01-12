@@ -448,7 +448,7 @@ exports.paymentVerification = async (req, res) => {
         let findUser = await ListingUser.findOne({ OrderId: razorpay_order_id });
 
         const expectedSignature = crypto
-            .createHmac("sha256", process.env.RAZORPAY_APT_SECRET || "seWgj8epMRq7Oeb7bvC3IZCe")
+            .createHmac("sha256", "n5qG5D3NwCspamdBVLe2mZh6")
             .update(body.toString())
             .digest("hex");
 
