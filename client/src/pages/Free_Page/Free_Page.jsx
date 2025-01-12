@@ -12,6 +12,8 @@ const Hero = ({ title, description, mainImage }) => (
             backgroundPosition: 'center',
         }}
     >
+        {title && description  && (
+
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-black/30">
             <div className="container mx-auto px-4 h-full flex flex-col justify-center">
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
@@ -22,6 +24,7 @@ const Hero = ({ title, description, mainImage }) => (
                 </p>
             </div>
         </div>
+        )}
     </div>
 );
 
@@ -72,12 +75,14 @@ const Free_Page = () => {
     return (
         page.isContentShow && (
             <div className="min-h-screen bg-gray-50">
-                <Hero
-                    title={page.title}
-                    description={page.description}
-                    mainImage={page.MainImage}
-                />
+               {page.title && page.description && (
+                 <Hero
+                 title={page.title}
+                 description={page.description}
+                 mainImage={page.MainImage}
+             />
 
+               )}
                 <main className="container mx-auto px-4 py-12">
                     <div className="bg-white rounded-xl shadow-lg p-6 md:p-8 lg:p-12">
                         {page.isContentShow && (

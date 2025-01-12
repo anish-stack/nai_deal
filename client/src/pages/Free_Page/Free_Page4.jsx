@@ -72,11 +72,14 @@ function Free_Page4() {
     return (
         page.isContentShow && (
             <div className="min-h-screen bg-gray-50">
-                <Hero
-                    title={page.title}
-                    description={page.description}
-                    mainImage={page.MainImage}
-                />
+           {page.title && page.description && (
+                 <Hero
+                 title={page.title}
+                 description={page.description}
+                 mainImage={page.MainImage}
+             />
+
+               )}
 
                 <main className="container mx-auto px-4 py-12">
                     <div className="bg-white rounded-xl shadow-lg p-6 md:p-8 lg:p-12">

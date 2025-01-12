@@ -132,7 +132,7 @@ const UserRegister = () => {
             } else {
                 const order = response.data.order;
                 const options = {
-                    key: "rzp_test_cz0vBQnDwFMthJ",
+                    key: "rzp_live_VM1rZfiucpi71n",
                     amount: order?.amount,
                     currency: "INR",
                     name: "Nai Deal",

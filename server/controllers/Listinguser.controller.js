@@ -1554,8 +1554,8 @@ exports.allPayments = async (req, res) => {
                     method: 'get',
                     url: `https://api.razorpay.com/v1/orders/${orderId}`,
                     auth: {
-                        username: "rzp_test_gQGRDFaoEskOdr",
-                        password: "seWgj8epMRq7Oeb7bvC3IZCe"
+                        username: "rzp_live_VM1rZfiucpi71n",
+                        password: "n5qG5D3NwCspamdBVLe2mZh6"
                     },
                     headers: {
                         'Content-Type': 'application/json'

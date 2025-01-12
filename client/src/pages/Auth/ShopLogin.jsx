@@ -65,14 +65,14 @@ const ShopLogin = () => {
       setIsLoading(false);
     }
   };
-  if(localStorage.getItem('ShopToken')){
-    return window.location.href="/Shop-Dashboard"
+  if (localStorage.getItem('ShopToken')) {
+    return window.location.href = "/Shop-Dashboard"
   }
 
 
 
   return (
-    <div className="relative">
+    <div className="relative bg-gradient-to-b from-indigo-50 to-white">
       <div className="flex items-center justify-center">
         <div className=" hidden md:flex relative w-1/2">
           <img
@@ -99,11 +99,11 @@ const ShopLogin = () => {
 
 
 
-        <div className="relative w-full md:w-1/2">
+        <div className="relative bg-gradient-to-b from-indigo-50 to-white w-full md:w-1/2">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="min-h-screen bg-gradient-to-b from-indigo-50 to-white flex flex-col justify-center px-6 py-12 lg:px-8"
+            className=" min-h-dvh bg-gradient-to-b from-indigo-50 to-white flex flex-col justify-center px-6 py-12 lg:px-8"
           >
             <div className="sm:mx-auto sm:w-full sm:max-w-md">
               <motion.div
@@ -213,7 +213,11 @@ const ShopLogin = () => {
                       'Sign in'
                     )}
                   </motion.button>
+                
                 </form>
+                <p className="mt-2 text-center text-sm text-gray-600">
+                    I don't Have an account !! <a href='/Free-Listing' className='text-violet-500'>Create New Account</a>
+                  </p>
               </motion.div>
             </div>
           </motion.div>

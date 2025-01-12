@@ -71,21 +71,26 @@ function Free_Page2() {
     
     return (
         page.isContentShow && (
-            <div className="min-h-screen bg-gray-50">
-                <Hero
-                    title={page.title}
-                    description={page.description}
-                    mainImage={page.MainImage}
-                />
+            <div className="h-full bg-gray-50">
+             {page.title && page.description && (
+                 <Hero
+                 title={page.title}
+                 description={page.description}
+                 mainImage={page.MainImage}
+             />
+
+               )}
 
                 <main className="container mx-auto px-4 py-12">
-                    <div className="bg-white rounded-xl shadow-lg p-6 md:p-8 lg:p-12">
-                        {page.isContentShow && (
-                            <div className="space-y-8">
-                                <ContentRenderer htmlContent={page.HtmlContent} />
-                            </div>
-                        )}
-                    </div>
+                   {page.htmlContent && (
+                     <div className="bg-white rounded-xl shadow-lg p-6 md:p-8 lg:p-12">
+                     {page.isContentShow && (
+                         <div className="space-y-8">
+                             <ContentRenderer htmlContent={page.HtmlContent} />
+                         </div>
+                     )}
+                 </div>
+                   )}
 
                     {page?.isButton && page?.buttonLink && (
                         <div className="mt-12 text-center">

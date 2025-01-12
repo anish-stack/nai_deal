@@ -186,6 +186,7 @@ const Login = () => {
                 </button>
               </div>
             </div>
+      
 
             <motion.button
               whileHover={{ scale: 1.01 }}
@@ -205,7 +206,10 @@ const Login = () => {
               ) : (
                 'Sign in'
               )}
+
+              
             </motion.button>
+            
           </form>
 
           <motion.div
