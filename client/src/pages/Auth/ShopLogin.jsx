@@ -119,7 +119,7 @@ const ShopLogin = () => {
                 Login
               </h2>
               <p className="mt-2 text-center text-sm text-gray-600">
-                Access your shop dashboard
+                Access your dashboard
               </p>
             </div>
 
@@ -215,7 +215,7 @@ const ShopLogin = () => {
                   </motion.button>
                 
                 </form>
-                <p className="mt-2 text-center text-sm text-gray-600">
+                <p className="mt-4 text-center text-md text-gray-600">
                     I don't Have an account !! <a href='/Free-Listing' className='text-violet-500'>Create New Account</a>
                   </p>
               </motion.div>
