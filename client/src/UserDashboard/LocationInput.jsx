@@ -39,11 +39,10 @@ const LocationInput = ({ formData, setFormData, isGeolocationAvailable, isGeoloc
   };
 
   return (
-    <div className="space-y-6">
-      <h3 className="text-lg font-medium text-gray-900">Shop Location</h3>
+    <div className="space-y-6">      
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
         <div>
-          <label className="block text-sm font-medium text-gray-700">Shop No</label>
+          <label className="block text-sm font-medium text-gray-700">Address</label>
           <input
             type="text"
             required

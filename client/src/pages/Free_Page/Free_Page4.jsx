@@ -71,38 +71,30 @@ function Free_Page4() {
     
     return (
         page.isContentShow && (
-            <div className="min-h-screen bg-gray-50">
-           {page.title && page.description && (
+            <div className="bg-gray-50">
+         {page.title && page.description && (
+            <a
+            href={page.buttonLink}>
                  <Hero
                  title={page.title}
                  description={page.description}
                  mainImage={page.MainImage}
              />
-
+</a>
                )}
 
-                <main className="container mx-auto px-4 py-12">
-                    <div className="bg-white rounded-xl shadow-lg p-6 md:p-8 lg:p-12">
-                        {page.isContentShow && (
+                <main className="container mx-auto px-4 ">
+                   
+                        {page.HtmlContent && (
+                             <div className="mt-12 bg-white rounded-xl shadow-lg p-4 md:p-8 lg:p-12">
                             <div className="space-y-8">
                                 <ContentRenderer htmlContent={page.HtmlContent} />
                             </div>
+                             </div>
                         )}
-                    </div>
+                   
 
-                    {page?.isButton && page?.buttonLink && (
-                        <div className="mt-12 text-center">
-                            <a
-                                href={page.buttonLink}
-                                className="inline-block text-white px-8 py-4 rounded-full font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200"
-                                style={{
-                                    background: `linear-gradient(to right, ${page.b1}, ${page.b2})`,
-                                }}
-                            >
-                                {page.buttonText}
-                            </a>
-                        </div>
-                    )}
+                    
                 </main>
             </div>
         )

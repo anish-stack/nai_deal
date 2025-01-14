@@ -147,7 +147,7 @@ const Home = () => {
       <div className='block lg:hidden'>
         <MCategorey />
       </div>
-      <Free_Page2 />
+      <Free_Page />
       <AllListing limit={16} />
       <CityAll />
       {/* <AllListings /> */}
@@ -158,7 +158,7 @@ const Home = () => {
         </p>
       </div> */}
 
-      <Free_Page3 />
+      <Free_Page2 />
       {/* 
       <div className="grid max-w-screen-xl mx-auto grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {services.map((service, index) => (
@@ -170,7 +170,7 @@ const Home = () => {
 
       <OfferBanner />
       <Newsletter />
-      <Free_Page />
+      <Free_Page3 />
       {settings?.isFestiveBottomPopUpShow && (
 
         <>

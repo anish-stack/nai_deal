@@ -14,7 +14,7 @@ const Hero = ({ title, description, mainImage }) => (
     >
         {title && description  && (
 
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-black/30">
+        <div className="absolute inset-0 ">
             <div className="container mx-auto px-4 h-full flex flex-col justify-center">
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
                     {title}
@@ -74,37 +74,31 @@ const Free_Page = () => {
 
     return (
         page.isContentShow && (
-            <div className="min-h-screen bg-gray-50">
-               {page.title && page.description && (
+            <div className="h-full bg-gray-50">
+                
+             {page.title && page.description && (                        
+                <a href={page.buttonLink}>
                  <Hero
                  title={page.title}
                  description={page.description}
                  mainImage={page.MainImage}
              />
+             </a>
 
                )}
-                <main className="container mx-auto px-4 py-12">
-                    <div className="bg-white rounded-xl shadow-lg p-6 md:p-8 lg:p-12">
-                        {page.isContentShow && (
+
+                <main className="container mx-auto px-4">
+                    
+                        {page.HtmlContent && (
+                            <div className="bg-white mt-8 rounded-xl shadow-lg p-6 md:p-8 lg:p-12">
                             <div className="space-y-8">
                                 <ContentRenderer htmlContent={page.HtmlContent} />
                             </div>
+                            </div>
                         )}
-                    </div>
+                    
 
-                    {page?.isButton && page?.buttonLink && (
-                        <div className="mt-12 text-center">
-                            <a
-                                href={page.buttonLink}
-                                className="inline-block text-white px-8 py-4 rounded-full font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200"
-                                style={{
-                                    background: `linear-gradient(to right, ${page.b1}, ${page.b2})`,
-                                }}
-                            >
-                                {page.buttonText}
-                            </a>
-                        </div>
-                    )}
+                    
                 </main>
             </div>
         )

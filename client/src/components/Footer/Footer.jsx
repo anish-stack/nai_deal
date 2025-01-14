@@ -29,7 +29,7 @@ const Footer = () => {
     fetchSettings();
   }, []);
   return (
-    <footer className="bg-gray-900 mt-[100px]">
+    <footer className="bg-gray-900 mt-[80px]">
       {/* Main Footer */}
       <div className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
@@ -57,7 +57,7 @@ const Footer = () => {
           </div>
         </div>
       </div>
-      <div className='container mb-2 '>
+      <div className='container mb-4 '>
         <SocialLinks data={settings?.links} />
 
       </div>
@@ -68,14 +68,12 @@ const Footer = () => {
             <p className="text-gray-400  text-center text-sm">
               © {new Date().getFullYear()} Inde Global. All Rights Reserved.
             </p>
+            <p className="text-gray-400 text-sm flex items-center gap-1">|</p>
             <p className="text-gray-400 text-sm flex items-center gap-1">
-              Designed with <span className="text-red-500">❤️</span> by{' '}
-              <a
-                href="https://digital4now.in/"
-                className="text-purple-400 hover:text-purple-300 transition-colors duration-200"
-              >
-                Digital4Now
-              </a>
+              Designed with <span className="text-red-500"></span> by{' '}
+              
+                D4N
+              
             </p>
           </div>
         </div>
