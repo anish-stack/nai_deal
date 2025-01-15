@@ -16,7 +16,7 @@ const ShopsOfPartner = () => {
     useEffect(() => {
         const fetchPartnerDetails = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/admin-by-partner-user/${partnerId}`);
+                const response = await axios.get(`https://api.naideal.com/api/v1/admin-by-partner-user/${partnerId}`);
                 setPartnerDetails(response.data);
                 setFilteredShops(response.data.shops); // Initialize filtered shops with all shops
             } catch (error) {
@@ -56,7 +56,7 @@ const ShopsOfPartner = () => {
     // Function to fetch payment details when Order ID is clicked
     const shopPaymentInfo = async (id) => {
         try {
-            const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/admin-payments/${id}`);
+            const res = await axios.get(`https://api.naideal.com/api/v1/admin-payments/${id}`);
             setModalData(res.data.orderDetails); // Set payment details to display in modal
             setShowModal(true); // Show the modal
         } catch (error) {

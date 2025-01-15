@@ -11,7 +11,7 @@ const DashboardScreen = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/admin-Statistics`);
+                const response = await axios.get(`https://api.naideal.com/api/v1/admin-Statistics`);
                 setData(response.data.data);
             } catch (error) {
                 console.error('Error fetching dashboard data:', error);

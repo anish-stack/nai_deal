@@ -11,7 +11,7 @@ const UnApprovedPost = () => {
     useEffect(() => {
         const fetchPosts = async () => {
             try {
-                const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/get-Listing-un`);
+                const res = await axios.get(`https://api.naideal.com/api/v1/get-Listing-un`);
                 setUnApprovedPosts(res.data.unApprovedPosts || []);
             } catch (error) {
                 console.error('Error fetching unapproved posts:', error);
@@ -30,7 +30,7 @@ const UnApprovedPost = () => {
 
     const handleApprove = async (postId) => {
         try { 
-            await axios.put(`${process.env.REACT_APP_BACKEND_URL}/admin-approve-post/${postId}`);
+            await axios.put(`https://api.naideal.com/api/v1/admin-approve-post/${postId}`);
             toast.success('Post approved successfully!');
             setUnApprovedPosts(unApprovedPosts.filter((post) => post._id !== postId));
             setModalPost(null);
@@ -41,7 +41,7 @@ const UnApprovedPost = () => {
 
     const handleDelete = async (postId) => {
         try {
-            await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/delete-listing/${postId}`);
+            await axios.delete(`https://api.naideal.com/api/v1/delete-listing/${postId}`);
             toast.success('Post deleted successfully!');
             setUnApprovedPosts(unApprovedPosts.filter((post) => post._id !== postId));
         } catch (error) {
