@@ -15,7 +15,7 @@ const AllPackages = () => {
     useEffect(() => {
         const fetchPackages = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/admin-packages`);
+                const response = await axios.get(`https://api.naideal.com/api/v1/admin-packages`);
                 setPackages(response.data.packages);
             } catch (error) {
                 console.error('Error fetching packages:', error);
@@ -28,7 +28,7 @@ const AllPackages = () => {
 
     const handleDelete = async id => {
         try {
-            const response = await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/admin-delete-packages/${id}`);
+            const response = await axios.delete(`https://api.naideal.com/api/v1/admin-delete-packages/${id}`);
             console.log('Package deleted:', response.data);
             // Optionally, update state to reflect deleted package
             setPackages(packages.filter(pkg => pkg._id !== id));
