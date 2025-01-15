@@ -15,7 +15,8 @@ const ListingCard = ({ item, index }) => {
         transition={{ duration: 0.3, delay: index * 0.1 }}
       >
         <Link
-          to={`/Single-Listing/${item._id}/${item.Title.replace(/\s+/g, '-')}`}
+         to={`/Single-Listing/${item._id}/${item.Title.replace(/\s+/g, '-').replace(/%/g, '')}`}
+
           className="group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
         >
           {/* Image Section */}

@@ -51,7 +51,7 @@ const QuickLinks = () => {
                     to={link.path}
                     className="text-gray-300 hover:text-white transition-colors duration-200 flex items-center gap-2"
                   >
-                    <span className="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
+                    <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
                     {link.label}
                   </Link>
                 </li>

@@ -155,16 +155,27 @@ const PostByCategories = () => {
                                 transition={{ delay: index * 0.1 }}
                                 className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all"
                             >
+
+
+
+
+
+
+
                                 <div className="relative aspect-[4/3]">
+
+                               
+
                                     <img
-                                        src={post.Items[0]?.dishImages[0]?.ImageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c'}
+                                        src={post.Pictures[0]?.ImageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c'}
                                         alt={post.Title}
                                         className="w-full h-full object-cover"
-                                    />
+                                    />                                     
+              
                                     {post.shopDetails?.ListingPlan !== 'Free' && (
                                         <div className="absolute top-3 left-3 flex items-center gap-1 bg-green-500/90 backdrop-blur-sm text-white py-1.5 px-3 rounded-full text-sm font-medium">
                                             <CheckCircle className="w-4 h-4" />
-                                            <span>Verified</span>
+                                            <span>Offer</span>
                                         </div>
                                     )}
                                 </div>
@@ -175,9 +186,11 @@ const PostByCategories = () => {
                                     <p className="text-gray-600 text-sm mb-4 line-clamp-2">
                                         {post.Details}
                                     </p>
+                                    
+                                    
                                     <Link
                                         to={`/Single-Listing/${post._id}/${post.Title.replace(/\s+/g, '-')}`}
-                                        className="block w-full text-center bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg transition-colors"
+                                        className="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-colors"
                                     >
                                         View Details
                                     </Link>

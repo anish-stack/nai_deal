@@ -1,6 +1,6 @@
 const listing = require('../models/listing.model');
 const CategoreiesModel = require('../models/CategoreiesModel');
-
+const allShops = require('../models/User.model')
 exports.SearchByAnyThing = async (req, res) => {
     try {
         const searchQuery = req.query.q || "";
@@ -8,7 +8,7 @@ exports.SearchByAnyThing = async (req, res) => {
 
         const keywords = searchQuery.split(/\s+/).filter(word => !stopWords.includes(word.toLowerCase()));
         const searchQueryString = keywords.join("\\b|\\b");
-
+        const allListingofShops = await allShops.find().populate('ShopCategory')
         const filter = {
             $or: [
                 { Title: { $regex: `\\b${searchQueryString}\\b`, $options: "i" } },
@@ -93,7 +93,8 @@ exports.SearchByAnyThing = async (req, res) => {
         if (!listingData || listingData.length === 0) {
             return res.status(200).json({
                 success: true,
-                show:true,
+                show: true,
+                Shops: allListingofShops,
                 count: fallbackListings.length,
                 message: `Looks like there are no offers available right now. But don't worry, we'll notify you as soon as something exciting comes up! These Offers are available right now !!`,
                 searchSource: searchSource,
@@ -104,6 +105,7 @@ exports.SearchByAnyThing = async (req, res) => {
         // Return search results
         res.status(200).json({
             success: true,
+            Shops: allListingofShops,
             count: listingData.length,
             searchSource: searchSource,
             message: 'Search results found',

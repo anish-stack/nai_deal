@@ -72,7 +72,7 @@ const ShopLogin = () => {
 
 
   return (
-    <div className="relative bg-gradient-to-b from-indigo-50 to-white">
+    <div className="relative bg-gradient-to-b from-blue-50 to-white">
       <div className="flex items-center justify-center">
         <div className=" hidden md:flex relative w-1/2">
           <img
@@ -88,7 +88,7 @@ const ShopLogin = () => {
               <div className="mt-6">
                 <a
                   href="/Free-Listing"
-                  className="inline-block mx-2 w-64 px-6 py-3 text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg text-lg font-medium transition-colors duration-200"
+                  className="inline-block mx-2 w-64 px-6 py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-lg text-lg font-medium transition-colors duration-200"
                 >
                   Sign Up
                 </a>
@@ -99,18 +99,18 @@ const ShopLogin = () => {
 
 
 
-        <div className="relative bg-gradient-to-b from-indigo-50 to-white w-full md:w-1/2">
+        <div className="relative bg-gradient-to-b from-blue-50 to-white w-full md:w-1/2">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className=" min-h-dvh bg-gradient-to-b from-indigo-50 to-white flex flex-col justify-center px-6 py-12 lg:px-8"
+            className=" min-h-dvh bg-gradient-to-b from-blue-50 to-white flex flex-col justify-center px-6 py-12 lg:px-8"
           >
             <div className="sm:mx-auto sm:w-full sm:max-w-md">
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                className="w-20 h-20 mx-auto bg-indigo-600 rounded-full flex items-center justify-center"
+                className="w-20 h-20 mx-auto bg-blue-600 rounded-full flex items-center justify-center"
               >
                 <Store className="w-10 h-10 text-white" />
               </motion.div>
@@ -158,7 +158,7 @@ const ShopLogin = () => {
                         required
                         value={formData.any}
                         onChange={handleChange}
-                        className="block w-full px-3 py-2 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200"
+                        className="block w-full px-3 py-2 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                         placeholder="your@email.com"
                       />
                     </div>
@@ -177,7 +177,7 @@ const ShopLogin = () => {
                         required
                         value={formData.Password}
                         onChange={handleChange}
-                        className="block w-full px-3 py-2 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200"
+                        className="block w-full px-3 py-2 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                       />
                       <button
                         type="button"
@@ -191,7 +191,7 @@ const ShopLogin = () => {
 
                   <div className="flex items-center justify-between">
                     <div className="text-sm">
-                      <a href="/Forget-Password" className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors duration-200">
+                      <a href="/Forget-Password" className="font-medium text-blue-600 hover:text-blue-500 transition-colors duration-200">
                         Forgot your password?
                       </a>
                     </div>
@@ -202,7 +202,7 @@ const ShopLogin = () => {
                     whileTap={{ scale: 0.98 }}
                     type="submit"
                     disabled={isLoading}
-                    className="w-full flex justify-center items-center gap-2 py-3 px-4 rounded-lg bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 text-white font-medium transition-colors duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
+                    className="w-full flex justify-center items-center gap-2 py-3 px-4 rounded-lg bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-white font-medium transition-colors duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
                   >
                     {isLoading ? (
                       <>
@@ -216,7 +216,7 @@ const ShopLogin = () => {
                 
                 </form>
                 <p className="mt-4 text-center text-md text-gray-600">
-                    I don't Have an account !! <a href='/Free-Listing' className='text-violet-500'>Create New Account</a>
+                    I don't Have an account !! <a href='/Free-Listing' className='text-blue-600'>Create New Account</a>
                   </p>
               </motion.div>
             </div>

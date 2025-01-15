@@ -59,7 +59,7 @@ const ShopProfile = () => {
                     <p className="text-gray-600 mb-4">Please try again or contact support if the problem persists.</p>
                     <Link
                         to="/"
-                        className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 transition-colors"
+                        className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
                     >
                         Return Home
                     </Link>

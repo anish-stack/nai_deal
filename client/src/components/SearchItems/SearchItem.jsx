@@ -6,12 +6,15 @@ import toast from 'react-hot-toast';
 import SearchItemHeader from './SearchItemHeader';
 import SearchCard from './SearchCard';
 import NoResults from './NoResults';
+import Shop_card from './Shop_card';
 
 const SearchItem = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [safeMsg, setSafeMsg] = useState('');
+  const [shops, setAllShops] = useState([]);
+
 
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q');
@@ -35,7 +38,7 @@ const SearchItem = () => {
       const { data: response } = await axios.get(
         `https://api.naideal.com/api/v1/Other/search_min?${params.toString()}`
       );
-      console.log(response.data)
+      console.log("search data",response)
       if (response.data.length > 0) {
 
         let sortedData = [...response.data];
@@ -54,7 +57,7 @@ const SearchItem = () => {
           setSafeMsg('')
         }
         setData(sortedData);
-
+        setAllShops(response.Shops || [])
       } else {
         setError('No results found');
       }
@@ -102,6 +105,7 @@ const SearchItem = () => {
             )}
 
             <SearchCard data={data} />
+            <Shop_card data={shops} />
           </>
         )}
       </div>

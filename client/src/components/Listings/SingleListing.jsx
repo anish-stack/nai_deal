@@ -64,9 +64,9 @@ const SingleListing = () => {
         >
             {/* Breadcrumbs */}
             <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-8">
-                <Link to="/" className="hover:text-purple-600 transition-colors">Home</Link>
+                <Link to="/" className="hover:text-blue-600 transition-colors">Home</Link>
                 <ChevronRight className="w-4 h-4" />
-                <Link to="/listings" className="hover:text-purple-600 transition-colors">Listings</Link>
+                <Link to="/listings" className="hover:text-blue-600 transition-colors">Listings</Link>
                 <ChevronRight className="w-4 h-4" />
                 <span className="text-gray-900 font-medium truncate">{listing.Title}</span>
             </nav>
@@ -99,7 +99,7 @@ const SingleListing = () => {
                                         <button
                                             key={index}
                                             onClick={() => setSelectedImage(index)}
-                                            className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${selectedImage === index ? 'border-purple-500 scale-110' : 'border-transparent opacity-70'
+                                            className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${selectedImage === index ? 'border-blue-500 scale-110' : 'border-transparent opacity-70'
                                                 }`}
                                         >
                                             <img
@@ -137,7 +137,7 @@ const SingleListing = () => {
                     {/* Business Details */}
                     <div className="bg-white rounded-2xl shadow-sm border p-6 mb-8">
                         <a href={`/View-More-Offers/Shop-profile/${listing?.shopDetails?._id}/${listing?.shopDetails?.ShopName}`} className="flex items-center gap-4 mb-6">
-                            <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
                                 <a href={`/View-More-Offers/Shop-profile/${listing?.shopDetails?._id}/${listing?.shopDetails?.ShopName}`}> {listing.shopDetails?.ShopName?.[0] || 'N'}</a>
                             </div>
                             <div>
@@ -234,7 +234,7 @@ const SingleListing = () => {
                             <div className="space-y-4">
                                 <a
                                     href={`tel:${listing.shopDetails?.ContactNumber}`}
-                                    className="flex items-center justify-center gap-2 w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg font-medium transition-colors"
+                                    className="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-colors"
                                 >
                                     <Phone className="w-5 h-5" />
                                     Call Now

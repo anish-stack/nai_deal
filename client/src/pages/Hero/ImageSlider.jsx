@@ -48,7 +48,7 @@ export function ImageSlider() {
                         backgroundRepeat: 'no-repeat'
                     }}
                 >
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/90 via-black/20 to-black/70" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/20 to-black/30" />
                 </div>
             ))}
 

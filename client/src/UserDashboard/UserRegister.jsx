@@ -183,7 +183,7 @@ const UserRegister = () => {
                             <div className="mt-6">
                                 <a
                                     href="/Shop-login"
-                                    className="inline-block mx-2 px-6 py-3 text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg text-lg font-medium transition-colors duration-200"
+                                    className="inline-block mx-2 px-6 py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-lg text-lg font-medium transition-colors duration-200"
                                 >
                                     Sign In
                                 </a>
@@ -297,7 +297,7 @@ const UserRegister = () => {
                         <div className='text-center'>
                         <button
                             type="submit"
-                            className="max-w-[320px]  w-full py-3 px-6 bg-indigo-600 text-white text-lg font-semibold rounded-md shadow hover:bg-indigo-700 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            className="max-w-[320px]  w-full py-3 px-6 bg-blue-600 text-white text-lg font-semibold rounded-md shadow hover:bg-blue-700 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                         >
                             Register Your Business
                         </button>

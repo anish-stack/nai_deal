@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, Phone, Tag, Clock } from 'lucide-react';
+import { MapPin, Phone, Tag, Clock, CheckCircle } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 const SearchCard = ({ data }) => {
@@ -10,6 +10,7 @@ const SearchCard = ({ data }) => {
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
       {data.map((item) => (
+        
         <a
           href={`/Single-Listing/${item?._id}/${item.Title.replace(/\s+/g, '-')}}`}
           key={item._id}
@@ -17,16 +18,20 @@ const SearchCard = ({ data }) => {
         >
 
           <div className="relative h-48 overflow-hidden">
+         
             <img
               src={item.Pictures[0]?.ImageUrl || item.Items[0]?.dishImages[0]?.ImageUrl}
               alt={item.Title}
               className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
             />
-
+ <div className="absolute top-3 left-3 flex items-center gap-1 bg-green-500/90 backdrop-blur-sm text-white py-1.5 px-3 rounded-full text-sm font-medium">
+                <CheckCircle className="w-4 h-4" />
+                <span>Offer</span>
+              </div>
           </div>
 
 
-          <div className="p-4">
+          <div className="p-4 relative">
             <div className="mb-3">
               <h3 className="mb-1 text-xl font-semibold text-gray-800">{item.Title}</h3>
               <p className="text-sm text-gray-600 line-clamp-2">{item.Details}</p>
@@ -69,6 +74,7 @@ const SearchCard = ({ data }) => {
                 <span>{formatDistanceToNow(new Date(item.createdAt), { addSuffix: true })}</span>
               </div>
             </div>
+            <div className='bottom-3 mt-2 mx-auto w-1/2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'>View More</div>
           </div>
         </a>
       ))}
