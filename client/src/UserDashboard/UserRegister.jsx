@@ -137,7 +137,7 @@ const UserRegister = () => {
                     currency: "INR",
                     name: "Nai Deal",
                     description: `Payment For Plans Name ${formData.ListingPlan}`,
-                    image: "https://i.pinimg.com/originals/9e/ff/85/9eff85f9a3f9540bff61bbeffa0f6305.jpg",
+                    image: "https://res.cloudinary.com/dglihfwse/image/upload/c_thumb,w_200,g_face/v1733212496/naideal-logo_fajvxe.png",
                     order_id: order?.id,
                     callback_url: `${BackendUrl}/paymentverification`,
                     prefill: {
