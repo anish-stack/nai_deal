@@ -639,7 +639,7 @@ exports.CreateForgetPasswordRequest = async (req, res) => {
                 <p style="color: #666666; font-size: 14px; line-height: 1.5; margin-bottom: 25px;">If you did not request this change, please ignore this email.</p>
                 
                 <div style="text-align: center; margin: 30px 0;">
-                    <a href="https://naideal.com/VerifyOtp?Email=${Email}" style="background: linear-gradient(135deg, #22C55E, #1ea550); color: #ffffff; padding: 14px 35px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; box-shadow: 0 4px 6px rgba(34, 197, 94, 0.2); transition: transform 0.2s ease;">Reset Password</a>
+                    <a href="https://naideal.com/VerifyOtp?Email=${Email}" style="background: #000; color: #ffffff; padding: 14px 35px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; box-shadow: 0 4px 6px rgba(34, 197, 94, 0.2); transition: transform 0.2s ease;">Click Here to Reset Password</a>
                 </div>
                 
                 <div style="margin-top: 30px; border-top: 1px solid #e5e7eb; padding-top: 20px; position: relative;">
@@ -652,21 +652,7 @@ exports.CreateForgetPasswordRequest = async (req, res) => {
                 </div>
             </td>
         </tr>
-        <tr>
-            <td style="background: linear-gradient(135deg, #3B82F6, #2563eb); padding: 30px 20px; text-align: center; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
-                <div style="position: relative;">
-                 
-                    <svg width="100%" height="30" style="position: absolute; top: -29px; left: 0; opacity: 0.1;">
-                        <path d="M0,30 C150,0 450,0 600,30" fill="#3B82F6"></path>
-                    </svg>
-                    <p style="color: #ffffff; font-size: 14px; margin: 0 0 10px 0; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);">© 2024 Naideal. All Rights Reserved.</p>
-                    <p style="color: #ffffff; font-size: 14px; margin: 0;">
-                        Designed with <span style="color: #ff0000; text-shadow: 0 0 3px rgba(255, 0, 0, 0.3);">❤️</span> by
-                        <span style="color: #ffffff; font-weight: bold; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);">Digital4Now</span>
-                    </p>
-                </div>
-            </td>
-        </tr>
+    
     </table>
 </body>
 `
