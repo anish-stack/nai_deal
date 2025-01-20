@@ -8,15 +8,12 @@ const SearchCard = ({ data }) => {
   }
 
   return (
+    <>
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
       {data.map((item) => (
         
-        <a
-          href={`/Single-Listing/${item?._id}/${item.Title.replace(/\s+/g, '-')}}`}
-          key={item._id}
-          className="group cursor-pointer overflow-hidden rounded-lg border bg-white shadow-sm transition-all hover:shadow-md"
-        >
-
+      
+<div className='group overflow-hidden rounded-lg border bg-white shadow-sm transition-all hover:shadow-md'>
           <div className="relative h-48 overflow-hidden">
          
             <img
@@ -74,11 +71,16 @@ const SearchCard = ({ data }) => {
                 <span>{formatDistanceToNow(new Date(item.createdAt), { addSuffix: true })}</span>
               </div>
             </div>
-            <div className='bottom-3 mt-2 mx-auto w-1/2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'>View More</div>
+            </div>
+           <div className='flex justify-center'>
+            <a  href={`/Single-Listing/${item?._id}/${item.Title.replace(/\s+/g, '-').replace(/%/g, '')}}`}
+          key={item._id}  className='bottom-3 mb-4 mx-auto w-1/2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-center'>View More</a>
+           </div>
           </div>
-        </a>
+         
       ))}
     </div>
+     </>
   );
 };
 

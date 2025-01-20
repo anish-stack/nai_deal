@@ -43,7 +43,7 @@ const packages = [
     listings: 10,
     color: 'from-yellow-500 to-yellow-600',
     features: [
-      '24/7 Support',
+      'Priority Support',
       'Full Access',
       'Premium Customizations',
       'Featured Listings',
@@ -62,7 +62,7 @@ const UpgradePackage = ({ selectedPlan }) => {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  
+
     setTimeout(() => setAnimateCards(true), 100);
   }, []);
 
@@ -131,8 +131,8 @@ const UpgradePackage = ({ selectedPlan }) => {
                     <button
                       disabled={isSelected}
                       className={`w-full mt-8 py-3 px-6 rounded-lg font-semibold transition-all duration-300 ${isSelected
-                          ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
-                          : `bg-gradient-to-r ${pkg.color} text-white hover:shadow-lg`
+                        ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
+                        : `bg-gradient-to-r ${pkg.color} text-white hover:shadow-lg`
                         }`}
                     >
                       {isSelected ? 'Current Plan' : `Choose ${pkg.name}`}

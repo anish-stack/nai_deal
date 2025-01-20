@@ -29,7 +29,7 @@ const ForgetPassword = () => {
             setLoading(false);
             setSuccessMessage('Password change request successful. Check your email for further instructions.');
             setTimeout(() => {
-                window.location.href = "/login"
+                window.location.href = "/"
             }, 3000)
         } catch (error) {
             setLoading(false);

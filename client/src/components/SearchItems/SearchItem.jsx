@@ -36,7 +36,8 @@ const SearchItem = () => {
       });
 
       const { data: response } = await axios.get(
-        `https://api.naideal.com/api/v1/Other/search_min?${params.toString()}`
+      //  `http://localhost:4255/api/v1/Other/search_min?${params.toString()}`
+      `http://localhost:4255/api/v1/Other/search_min?${params.toString()}`
       );
       console.log("search data",response)
       if (response.data.length > 0) {
@@ -57,7 +58,8 @@ const SearchItem = () => {
           setSafeMsg('')
         }
         setData(sortedData);
-        setAllShops(response.Shops || [])
+       
+       setAllShops(response.Shops || [])
       } else {
         setError('No results found');
       }
@@ -87,7 +89,7 @@ const SearchItem = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="w-full min-h-screen bg-gray-50">
       <SearchItemHeader />
       <div className="container mx-auto px-4 py-6">
         {loading ? (

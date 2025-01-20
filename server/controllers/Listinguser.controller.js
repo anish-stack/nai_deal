@@ -62,9 +62,13 @@ exports.ListUser = async (req, res) => {
             $or: [{ Email }, { ContactNumber }]
         });
 
-        // If user exists and they don't have a free listing, create a payment order
+
         if (existingUser) {
-            if (existingUser.FreeListing && ListingPlan !== 'Free') {
+            if (existingUser.FreeListing && ListingPlan !== 'Free Plan') {
+                const order = await paymentService.createOrder(ListingPlan, UserName);
+                return res.status(StatusCodes.OK)
+                    .json({ success: true, order });
+            } else if (existingUser.PaymentDone === false) {
                 const order = await paymentService.createOrder(ListingPlan, UserName);
                 return res.status(StatusCodes.OK)
                     .json({ success: true, order });
@@ -105,13 +109,12 @@ exports.ListUser = async (req, res) => {
             Password,
             PartnerId,
             LandMarkCoordinates,
-            FreeListing: ListingPlan === 'Free - Rs:0' ? 'Free Listing' : undefined
+            FreeListing: ListingPlan === 'Free Plan - Rs:0' ? 'Free Listing' : undefined
         };
 
-        // Create new user
+
         const newUser = new ListingUser(userData);
 
-        // Handle different listing plans
         if (ListingPlan === 'Free - Rs:0') {
             await newUser.save();
             await Partner.findByIdAndUpdate(PartnerId, { $inc: { PartnerDoneListing: 1 } });
@@ -120,7 +123,7 @@ exports.ListUser = async (req, res) => {
                 .json({ success: true, message: 'User created successfully', user: newUser });
         }
 
-        // If the plan is not Free, create a payment order
+
         const order = await paymentService.createOrder(ListingPlan, UserName);
         newUser.OrderId = order.id;
         await newUser.save();
@@ -441,7 +444,7 @@ exports.getAllShops = async (req, res) => {
 
 exports.paymentVerification = async (req, res) => {
     try {
-        console.log(req.body)
+
         const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
         const body = razorpay_order_id + "|" + razorpay_payment_id;
@@ -492,15 +495,15 @@ exports.paymentVerification = async (req, res) => {
 // Login a ListingUser
 exports.LoginListUser = async (req, res) => {
     try {
-        console.log("i am")
+
         const { any, Password } = req.body;
-        console.log(req.body)
+
 
         if (!any || !Password) {
             return res.status(400).json({ message: 'Both "any" and "Password" are required' });
         }
 
-        // Find user by Email, UserName, or ContactNumber
+
         const user = await ListingUser.findOne({
             $or: [
                 { Email: any },
@@ -519,7 +522,17 @@ exports.LoginListUser = async (req, res) => {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
-        // Generate and send token
+        if (user.PaymentDone === false) {
+            const order = await paymentService.createOrder(user.ListingPlan, user.UserName);
+            return res.status(StatusCodes.OK)
+                .json({
+                    success: true,
+                    user: user,
+                    message: "Payment Pending Please Pay First",
+                    order
+                });
+        }
+
         await sendToken(user, res, 200);
 
     } catch (error) {
@@ -876,8 +889,13 @@ exports.CreatePost = async (req, res) => {
             });
         }
 
-        const { ListingPlan, HowMuchOfferPost } = CheckMyShop;
-        console.log(ListingPlan, HowMuchOfferPost)
+        const { ListingPlan, HowMuchOfferPost, PackagePlanIssued } = CheckMyShop;
+        if (HowMuchOfferPost >= PackagePlanIssued) {
+            return res.status(403).json({
+                success: false,
+                msg: `You have reached the post limit for your ${ListingPlan} plan. Please upgrade your plan.`
+            });
+        }
         const Plans = await Package.findOne({ packageName: ListingPlan });
         if (!Plans) {
             return res.status(404).json({

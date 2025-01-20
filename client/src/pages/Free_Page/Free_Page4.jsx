@@ -40,7 +40,7 @@ function Free_Page4() {
     useEffect(() => {
         const fetchPages = async () => {
             try {
-                const response = await axios.get('https://api.naideal.com/api/v1/Other/get-free-page');
+                const response = await axios.get('http://localhost:4255/api/v1/Other/get-free-page');
                 // console.log("object",response.data)
                 setPages(response.data);
                 setLoading(false);
@@ -74,7 +74,7 @@ function Free_Page4() {
             <div className="bg-gray-50">
          {page.title && page.description && (
             <a
-            href={page.buttonLink}>
+            href={page.buttonLink} target="_blank">
                  <Hero
                  title={page.title}
                  description={page.description}

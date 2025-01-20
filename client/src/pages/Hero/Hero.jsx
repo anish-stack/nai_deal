@@ -14,10 +14,7 @@ const Hero = () => {
                 <div className="relative z-10 container mx-auto px-4 h-full">
                     <div className="flex flex-col items-center justify-center h-[350px] text-center gap-8 py-20">
 
-
-
                         <SearchBar />
-
 
                     </div>
                 </div>

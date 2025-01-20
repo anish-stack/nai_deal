@@ -13,6 +13,10 @@ const packageSchema = new Schema({
     },
     postsDone: {
         type: String,
+    },
+    isActive: {
+        type: Boolean,
+        default: true
     }
 });
 

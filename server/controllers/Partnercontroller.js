@@ -281,13 +281,10 @@ exports.login = async (req, res) => {
             return res.status(400).json({ message: 'Invalid email or password' });
         }
 
-        // Check if email is verified
         if (!partner.isEmailVerified) {
             return res.status(400).json({ message: 'Please verify your email before logging in' });
         }
-
-        // Generate and send token using sendToken function
-        await sendToken(partner, res, 201); // This function sets the response and sends the token
+        await sendToken(partner, res, 201);
 
     } catch (error) {
         res.status(500).json({ message: error.message });

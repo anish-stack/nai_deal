@@ -16,7 +16,7 @@ const AddressForm = ({ addressData, handleAddressChange, handleGeoCode, fetchCur
     });
 
     try {
-      const { data } = await axios.get('https://api.naideal.com/autocomplete', {
+      const { data } = await axios.get('http://localhost:4255/autocomplete', {
         params: { input: value }
       });
       setSuggestions(data);

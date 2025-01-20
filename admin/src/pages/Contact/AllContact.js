@@ -14,7 +14,7 @@ const AllContact = () => {
 
     const fetchContacts = async () => {
         try {
-            const { data } = await axios.get("https://api.naideal.com/api/v1/Other/get-contacts");
+            const { data } = await axios.get("http://localhost:4255/api/v1/Other/get-contacts");
             setContacts(data);
         } catch (error) {
             console.error("Error fetching contacts:", error);
@@ -24,7 +24,7 @@ const AllContact = () => {
 
     const deleteContact = async (id) => {
         try {
-            await axios.delete(`https://api.naideal.com/api/v1/Other/delete-contacts/${id}`);
+            await axios.delete(`http://localhost:4255/api/v1/Other/delete-contacts/${id}`);
             setContacts(contacts.filter((contact) => contact._id !== id));
             toast.success("Contact deleted successfully!");
         } catch (error) {
@@ -113,6 +113,9 @@ const AllContact = () => {
                             <th className="p-2 border cursor-pointer" onClick={() => handleSort("Email")}>
                                 Email {sortField === "Email" && (sortOrder === "asc" ? "▲" : "▼")}
                             </th>
+                            <th className="p-2 border cursor-pointer" >
+                                Message
+                            </th>
                             <th className="p-2 border cursor-pointer" onClick={() => handleSort("createdAt")}>
                                 Date {sortField === "createdAt" && (sortOrder === "asc" ? "▲" : "▼")}
                             </th>
@@ -125,6 +128,7 @@ const AllContact = () => {
                                 <td className="p-2 text-base border">{contact.Name}</td>
                                 <td className="p-2 text-base border">{contact.PhoneNumber}</td>
                                 <td className="p-2 text-base border">{contact.Email}</td>
+                                <td className="p-2 text-base border">{contact?.Message}</td>
                                 <td className="p-2 text-base border">{new Date(contact.createdAt).toLocaleDateString()}</td>
                                 <td className="p-2 text-base border">
                                     <button

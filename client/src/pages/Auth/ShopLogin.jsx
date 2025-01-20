@@ -46,15 +46,43 @@ const ShopLogin = () => {
 
     try {
       const response = await axios.post(`${BackendUrl}/login-shop-user`, formData);
-      const { token, login } = response.data;
+      console.log(response)
+      const { token, login, message, order, user } = response.data;
 
+      if (message === 'Payment Pending Please Pay First') {
+        toast.error('Payment Pending Please Pay First')
+
+        const options = {
+          key: "rzp_live_VM1rZfiucpi71n",
+          amount: order?.amount,
+          currency: "INR",
+          name: "Nai Deal",
+          description: `Payment For Plans Name ${user.ListingPlan}`,
+          image: "https://i.pinimg.com/originals/9e/ff/85/9eff85f9a3f9540bff61bbeffa0f6305.jpg",
+          order_id: order?.id,
+          callback_url: `${BackendUrl}/paymentverification`,
+          prefill: {
+            name: user.UserName,
+            email: user.Email,
+            contact: user.ContactNumber
+          },
+          theme: { color: "#121212" }
+        };
+
+        const razorpay = new window.Razorpay(options);
+        razorpay.on('payment.failed', () => {
+          toast.error('Payment failed. Please try again.');
+        });
+        razorpay.open();
+        return;
+      }
       localStorage.setItem('ShopToken', token);
       localStorage.setItem('ShopUser', login);
 
       toast.success('Login successful! Redirecting to dashboard...');
-      setTimeout(() => {
-        window.location.href = "/Shop-Dashboard";
-      }, 3000);
+      // setTimeout(() => {
+      //   window.location.href = "/Shop-Dashboard";
+      // }, 3000);
 
     } catch (error) {
       console.log(error)
@@ -66,7 +94,7 @@ const ShopLogin = () => {
     }
   };
   if (localStorage.getItem('ShopToken')) {
-    return window.location.href = "/Shop-Dashboard"
+    // return window.location.href = "/Shop-Dashboard"
   }
 
 
@@ -213,11 +241,11 @@ const ShopLogin = () => {
                       'Sign in'
                     )}
                   </motion.button>
-                
+
                 </form>
                 <p className="mt-4 text-center text-md text-gray-600">
-                    I don't Have an account !! <a href='/Free-Listing' className='text-blue-600'>Create New Account</a>
-                  </p>
+                  I don't Have an account !! <a href='/Free-Listing' className='text-blue-600'>Create New Account</a>
+                </p>
               </motion.div>
             </div>
           </motion.div>

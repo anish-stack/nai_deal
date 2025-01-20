@@ -11,7 +11,8 @@ const ShopProfile = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [allData,setAllData] = useState([])
-    const BackendUrl = import.meta.env.VITE_REACT_APP_BACKEND_URL;
+    // const BackendUrl = import.meta.env.VITE_REACT_APP_BACKEND_URL;
+    const BackendUrl = 'http://localhost:4255/api/v1';
 
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -24,9 +25,11 @@ const ShopProfile = () => {
             setError(null);
             const response = await axios.get(`${BackendUrl}/get-Listing`);
             const data = response.data.data;
+            console.log("datafindShop",response)
             const filteredShop = data?.filter(item => item?.ShopId?._id === id);
             const findShop = data?.find(item => item?.ShopId?._id === id);
-            // console.log("filteredShop",filteredShop)
+            console.log("filteredShop",filteredShop)
+            console.log("findShop",findShop)
 
             if (findShop) {
                 setShopDetails(findShop);
@@ -171,8 +174,9 @@ const ShopProfile = () => {
                                     initial={{ opacity: 0, scale: 0.9 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     transition={{ delay: index * 0.1 }}
-                                    className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                                    className="border border-gray-300 bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                                 >
+
                                     <div className="relative aspect-[4/3]">
                                         <img
                                             src={item?.Pictures[0]?.ImageUrl}
@@ -189,7 +193,7 @@ const ShopProfile = () => {
                                     <div className="p-4">
                                         <h3 className="font-semibold text-gray-900 mb-1">{item.Title}</h3>
                                         <p className=" font-medium text-gray-500 mb-2">{item.Details}</p>
-                                        <div className="flex items-center justify-between">
+                                        <div className="items-center justify-between">
                                             <div className="flex items-center gap-2">
                                                 <Tag className="w-4 h-4 text-gray-400" />
                                                 <div className="">
@@ -199,13 +203,15 @@ const ShopProfile = () => {
                                                 </div>
                                                 {/* <span className="text-gray-900 font-medium">₹{item.MrpPrice}</span> */}
                                             </div>
+                                            <div className="w-full flex justify-center">
                                             <Link
-                                                to={`/Single-Listing/${shopDetails._id}/${shopDetails.Title.replace(/\s+/g, '-')}`}
-                                                className="text-purple-600 hover:text-purple-700 font-medium flex items-center gap-1"
+                                                to={`/Single-Listing/${shopDetails._id}/${shopDetails.Title.replace(/\s+/g, '-').replace(/%/g, '')}`}
+                                                className="bg-blue-600 rounded text-center p-2 text-white hover:bg-blue-700 font-medium flex items-center gap-1"
                                             >
                                                 View Details
-                                                <ChevronRight className="w-4 h-4" />
+                                                <ChevronRight className="w-4 h-4" />                                               
                                             </Link>
+                                            </div>
                                         </div>
                                     </div>
                                 </motion.div>

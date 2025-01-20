@@ -189,7 +189,7 @@ const PostByCategories = () => {
                                     
                                     
                                     <Link
-                                        to={`/Single-Listing/${post._id}/${post.Title.replace(/\s+/g, '-')}`}
+                                        to={`/Single-Listing/${post._id}/${post.Title.replace(/\s+/g, '-').replace(/%/g, '')}`}
                                         className="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-colors"
                                     >
                                         View Details

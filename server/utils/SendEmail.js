@@ -22,6 +22,7 @@ const sendEmail = async (options) => {
       subject: options.subject,
       html: options.message, // Use 'options.message' to define the email message
     };
+    console.log(mailOptions)
 
     await transporter.sendMail(mailOptions);
     console.log("Email sent successfully");

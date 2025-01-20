@@ -42,9 +42,9 @@ const NoResults = ({ message }) => {
           Try:
         </p>
         <ul className="mt-2 space-y-1 text-sm text-gray-600">
-          <li>• Checking for spelling mistakes</li>
-          <li>• Using more general keywords</li>
-          <li>• Removing filters to see more results</li>
+          <li>• Checking for spelling mistakes.</li>
+          <li>• Using more general keywords.</li>
+          <li>• Removing filters to see more results.</li>
         </ul>
       </div>
     </div>

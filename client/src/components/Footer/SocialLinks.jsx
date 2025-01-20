@@ -14,6 +14,7 @@ const socialLinks = [
 // SocialLinks component
 const SocialLinks = ({ data = [] }) => {
   // Check if data is empty or invalid
+
   const linksToRender = (Array.isArray(data) && data.length > 0) ? data : socialLinks;
 
   return (
@@ -38,7 +39,7 @@ const SocialLinks = ({ data = [] }) => {
               {appName === 'Twitter' && <Twitter className="w-5 h-5 text-white" />}
               {appName === 'Instagram' && <Instagram className="w-5 h-5 text-white" />}
               {appName === 'LinkedIn' && <Linkedin className="w-5 h-5 text-white" />}
-              {appName === 'Youtube' && <Youtube className="w-5 h-5 text-white" />}
+              {appName === 'YouTube' && <Youtube className="w-5 h-5 text-white" />}
 
             </a>
           ))}

@@ -8,7 +8,7 @@ exports.SearchByAnyThing = async (req, res) => {
 
         const keywords = searchQuery.split(/\s+/).filter(word => !stopWords.includes(word.toLowerCase()));
         const searchQueryString = keywords.join("\\b|\\b");
-        const allListingofShops = await allShops.find().populate('ShopCategory')
+      
         const filter = {
             $or: [
                 { Title: { $regex: `\\b${searchQueryString}\\b`, $options: "i" } },
@@ -89,23 +89,27 @@ exports.SearchByAnyThing = async (req, res) => {
                     model: CategoreiesModel
                 }
             }).sort({ createdAt: -1 });
+            // console.log("fallbackListings[0].ShopId?.ShopCategory?.CategoriesName",fallbackListings[0].ShopId?.ShopCategory?.CategoriesName)
+            const allListingofShops = await allShops.find({ShopCategory:fallbackListings[0]?.ShopId?.ShopCategory?._id}).populate('ShopCategory')
         // If no data found after fallback
         if (!listingData || listingData.length === 0) {
             return res.status(200).json({
                 success: true,
                 show: true,
-                Shops: allListingofShops,
+                // Shops: allListingofShops,
                 count: fallbackListings.length,
                 message: `Looks like there are no offers available right now. But don't worry, we'll notify you as soon as something exciting comes up! These Offers are available right now !!`,
                 searchSource: searchSource,
                 data: fallbackListings
             });
         }
+        console.log("fallbackListings[0].ShopId?.ShopCategory?.CategoriesName",listingData[0].ShopId?.ShopCategory?.CategoriesName)
+        const allListingofShopsSec = await allShops.find({ShopCategory:listingData[0].ShopId?.ShopCategory?._id}).populate('ShopCategory')
 
         // Return search results
         res.status(200).json({
             success: true,
-            Shops: allListingofShops,
+            Shops: allListingofShopsSec,
             count: listingData.length,
             searchSource: searchSource,
             message: 'Search results found',
@@ -118,7 +122,7 @@ exports.SearchByAnyThing = async (req, res) => {
             success: false,
             message: 'Search results failed',
             error: error.message,
-            searchSource: 'error',  // Indicate an error in the search
+            searchSource: 'error',  
         });
     }
 };
