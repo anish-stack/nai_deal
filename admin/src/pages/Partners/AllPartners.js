@@ -13,7 +13,7 @@ const AllPartners = () => {
 
     const fetchPartners = async () => {
         try {
-            const response = await axios.get(`http://localhost:4255/api/v1/admin-all-partner`);
+            const response = await axios.get(`https://api.naideal.com/api/v1/admin-all-partner`);
             setPartners(response.data.data);
             console.log(response.data.data)
         } catch (error) {
@@ -23,7 +23,7 @@ const AllPartners = () => {
     const handleDelete = async (id) => {
         try {
             console.log("i am click",id)
-            const response = await axios.delete(`http://localhost:4255/api/v1/delete-partner/${id}`);
+            const response = await axios.delete(`https://api.naideal.com/api/v1/delete-partner/${id}`);
             console.log(response.data)
             fetchPartners()
         } catch (error) {

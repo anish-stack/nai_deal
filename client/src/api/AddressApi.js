@@ -2,7 +2,7 @@ import axios from 'axios';
 
 export const updateShopAddress = async (shopId, addressData, coords, token) => {
   const response = await axios.put(
-    `http://localhost:4255/api/v1/update-shop-address/${shopId}`,
+    `https://api.naideal.com/api/v1/update-shop-address/${shopId}`,
     {
       ShopAddress: {
         ...addressData.ShopAddress,
@@ -21,6 +21,6 @@ export const updateShopAddress = async (shopId, addressData, coords, token) => {
 };
 
 export const fetchShopDetails = async (shopId) => {
-  const response = await axios.get(`http://localhost:4255/api/v1/get-single-user/${shopId}`);
+  const response = await axios.get(`https://api.naideal.com/api/v1/get-single-user/${shopId}`);
   return response.data;
 };
