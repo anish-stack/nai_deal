@@ -80,9 +80,9 @@ const ShopLogin = () => {
       localStorage.setItem('ShopUser', login);
 
       toast.success('Login successful! Redirecting to dashboard...');
-      // setTimeout(() => {
-      //   window.location.href = "/Shop-Dashboard";
-      // }, 3000);
+      setTimeout(() => {
+        window.location.href = "/Shop-Dashboard";
+      }, 3000);
 
     } catch (error) {
       console.log(error)
@@ -94,7 +94,7 @@ const ShopLogin = () => {
     }
   };
   if (localStorage.getItem('ShopToken')) {
-    // return window.location.href = "/Shop-Dashboard"
+    return window.location.href = "/Shop-Dashboard"
   }
 
 
