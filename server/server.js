@@ -11,28 +11,16 @@ const PORT = process.env.PORT || 4255;
 const axios = require('axios');
 const sendToken = require('./utils/SendToken');
 const OtherRoutes = require('./routes/OtherRoutes')
-
-
-// cors option
-const corsOption = {
-    origin: [
-        "http://localhost:3000",
-        "http://localhost:3002",
-
-        "http://localhost:5173",
-        "https://naideal.com",
-        "https://www.naidealhai.vercel.app",
-        "https://naiadmindeal.vercel.app",
-        'https://author.naideal.com',
-        "https://www.author.naideal.com",
-        "https://naideal.com",
-        "https://www.naideal.com",
-        "https://www.naiadmindeal.vercel.app"
-    ],
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-};
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    if (req.method === 'OPTIONS') {
+        return res.status(204).end();
+    }
+    next();
+});
 
 // Connect to database
 ConnectDb();
