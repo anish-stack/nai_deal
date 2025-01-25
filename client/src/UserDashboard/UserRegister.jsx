@@ -51,14 +51,18 @@ const UserRegister = () => {
         }
     }, [coords]);
 
-    const fetchCategories = async () => {
-        try {
-            const response = await axios.get(`${BackendUrl}/admin-get-categories`);
-            setCategories(response.data.data);
-        } catch (error) {
-            toast.error('Error fetching categories');
-        }
-    };
+const fetchCategories = async () => {
+    try {
+        const response = await axios.get(`${BackendUrl}/admin-get-categories`);
+        const sortedCategories = response.data.data.sort((a, b) => 
+            a.CategoriesName.localeCompare(b.CategoriesName)
+        );
+        setCategories(sortedCategories);
+    } catch (error) {
+        toast.error('Error fetching categories');
+    }
+};
+
 
     const fetchPackages = async () => {
         try {
