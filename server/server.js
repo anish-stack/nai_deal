@@ -7,7 +7,7 @@ const cors = require('cors');
 const ConnectDb = require('./database/Database');
 const router = require('./routes/Routes');
 const PORT = process.env.PORT || 4255;
-
+const morgan = require('morgan');
 const axios = require('axios');
 const sendToken = require('./utils/SendToken');
 const OtherRoutes = require('./routes/OtherRoutes')
@@ -29,7 +29,7 @@ ConnectDb();
 app.use(cookieParser());
 app.use(express.json({ limit: '1gb' }));
 app.use(express.urlencoded({ extended: true, limit: '1gb' }));
-
+  app.use(morgan('combined'));
 app.use(cors());
 
 // Health check route
@@ -208,7 +208,16 @@ app.get('/', (req, res) => {
 app.use('/api/v1', router);
 app.use('/api/v1/Other', OtherRoutes);
 
-
+app.use((err, req, res, next) => {
+    console.error('Unhandled Error Stack:', err.stack);
+    console.error('Error Message:', err.message);
+    console.error('Request URL:', req.originalUrl);
+    console.error('Request Method:', req.method);
+    res.status(500).json({
+        success: false,
+        message: 'Something went wrong. Please try again later.',
+    });
+});
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);
