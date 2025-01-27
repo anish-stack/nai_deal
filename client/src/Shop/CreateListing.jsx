@@ -67,16 +67,39 @@ const CreateListing = ({ isOpen, onClose }) => {
     }));
   };
 
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    if (formData.Pictures.length + files.length > 5) {
-      toast.error('You can only upload a maximum of 5 images.');
-      return;
-    }
-    setFormData(prev => ({ ...prev, Pictures: [...prev.Pictures, ...files] }));
-    const previews = files.map(file => URL.createObjectURL(file));
-    setImagePreviews(prev => [...prev, ...previews]);
-  };
+ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB size limit
+const VALID_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/jpg']; // Valid image formats
+
+const handleImageChange = (e) => {
+  const files = Array.from(e.target.files);
+  
+  // Check for the number of files
+  if (formData.Pictures.length + files.length > 5) {
+    toast.error('You can only upload a maximum of 5 images.');
+    return;
+  }
+
+  // Validate file types and sizes
+  const invalidFiles = files.filter(file => 
+    !VALID_IMAGE_TYPES.includes(file.type) || file.size > MAX_FILE_SIZE
+  );
+
+  if (invalidFiles.length > 0) {
+    toast.error('Some files are invalid. Ensure the files are images and less than 10MB.');
+    return;
+  }
+
+  // Add valid files to form data
+  setFormData(prev => ({
+    ...prev,
+    Pictures: [...prev.Pictures, ...files]
+  }));
+
+  // Generate image previews
+  const previews = files.map(file => URL.createObjectURL(file));
+  setImagePreviews(prev => [...prev, ...previews]);
+};
+
 
   const handleImageRemove = (index) => {
     setFormData(prev => ({
