@@ -6,6 +6,22 @@ const CitySchema = new mongoose.Schema({
         required: true,
         unique: true,
         trim: true,
+    },
+    image:{
+        url:{
+            type:String,
+        },
+        public_id:{
+            type:String,
+        }
+    },
+    position:{
+        type: Number,
+        unique:true
+    },
+    isShowOnHomeScreen:{
+        type:Boolean,
+        default:false
     }
 }, { timestamps: true });
 

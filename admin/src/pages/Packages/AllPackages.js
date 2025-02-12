@@ -15,7 +15,7 @@ const AllPackages = () => {
     useEffect(() => {
         const fetchPackages = async () => {
             try {
-                const response = await axios.get(`https://api.naideal.com/api/v1/admin-packages`);
+                const response = await axios.get(`http://localhost:7485/api/v1/admin-packages`);
                 setPackages(response.data.packages);
             } catch (error) {
                 console.error('Error fetching packages:', error);
@@ -28,7 +28,7 @@ const AllPackages = () => {
 
     const handleDelete = async id => {
         try {
-            const response = await axios.delete(`https://api.naideal.com/api/v1/admin-delete-packages/${id}`);
+            const response = await axios.delete(`http://localhost:7485/api/v1/admin-delete-packages/${id}`);
             console.log('Package deleted:', response.data);
             // Optionally, update state to reflect deleted package
             setPackages(packages.filter(pkg => pkg._id !== id));
@@ -59,7 +59,7 @@ const AllPackages = () => {
     const handleUpdateSubmit = async e => {
         e.preventDefault();
         try {
-            const response = await axios.put(`https://api.naideal.com/api/v1/admin-update-packages/${selectedPackage._id}`, selectedPackage);
+            const response = await axios.put(`http://localhost:7485/api/v1/admin-update-packages/${selectedPackage._id}`, selectedPackage);
             console.log('Package updated:', response.data);
             toast.success("'Package updated")
             // Optionally, update state or show success message

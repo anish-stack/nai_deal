@@ -9,7 +9,7 @@ const Payments = () => {
     useEffect(() => {
         const fetchPayments = async () => {
             try {
-                const response = await axios.get(`https://api.naideal.com/api/v1/admin-all-payments`);
+                const response = await axios.get(`http://localhost:7485/api/v1/admin-all-payments`);
                 setPayments(response.data.payments);
             } catch (error) {
                 console.error('Error fetching payments:', error);

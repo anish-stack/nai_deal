@@ -19,7 +19,7 @@ const CreatePackage = () => {
     const handleSubmit = async e => {
         e.preventDefault();
         try {
-            const response = await axios.post(`https://api.naideal.com/api/v1/admin-create-packages`, packageDetails);
+            const response = await axios.post(`http://localhost:7485/api/v1/admin-create-packages`, packageDetails);
             console.log('Package created:', response.data);
             toast.success("Package created")
             window.location.href=`/All-Packages`

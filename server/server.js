@@ -66,7 +66,7 @@ app.post('/Fetch-Current-Location', async (req, res) => {
         // Check if any results are returned
         if (addressResponse.data.results.length > 0) {
             const addressComponents = addressResponse.data.results[0].address_components;
-            // console.log(addressComponents)
+            console.log(addressComponents)
 
             let city = null;
             let area = null;
@@ -75,7 +75,7 @@ app.post('/Fetch-Current-Location', async (req, res) => {
 
             // Extract necessary address components
             addressComponents.forEach(component => {
-                if (component.types.includes('locality')) {
+                if (component.types.includes('administrative_area_level_1')) {
                     city = component.long_name;
                 } else if (component.types.includes('sublocality_level_1')) {
                     area = component.long_name;

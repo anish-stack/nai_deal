@@ -1,6 +1,6 @@
 const express = require('express');
 const { createPartner, verifyOtpAndEmail, resendAccountVerifyOtp, resendForgetPasswordOtp, login, logout, verifyForgetPasswordOtp, deletePartnerAccount, forgetPasswordRequest, GetAllShopListByPartner, getAllPartner, GetAllShopListByPartnerAdmin } = require('../controllers/Partnercontroller');
-const { CreateListing, getAllListing, getListingById, deleteListingById, deleteAllListings, UpdateListing, getPostByCategory, UpdateListingAdmin, UpdateListingByBolt } = require('../controllers/ListingControllers');
+const {  UpdateListing, getPostByCategory, UpdateListingAdmin, UpdateListingByBolt } = require('../controllers/ListingControllers');
 const { ListUser, LoginListUser, MyShopDetails, CreatePost, getAllPost, getPostById, deletePostById, deleteAllPost, getMyPostOnly, SearchByPinCodeCityAndWhatYouWant, getAllShops, DeleteListUser, updateDetailsOfListUser, paymentVerification, showPaymentDetails, allPayments, CreateForgetPasswordRequest, verifyOtp, getAllPostApprovedPost, UploadProfileImage, UpdateProfileDetails, getMyAllPost, updateShopAddress, getSingleListingUser } = require('../controllers/Listinguser.controller');
 const { protect } = require('../middlewares/Protect');
 const multer = require('multer');
@@ -23,7 +23,6 @@ router.post('/forget-password-Request', forgetPasswordRequest);
 router.post('/verify-forget-otp', verifyForgetPasswordOtp);
 router.post('/login', login);
 router.post('/logout', logout);
-router.post('/Create-Listing', upload.any(), CreateListing); // Using upload.any() to accept any field names for files
 router.post('/Create-Post', protect, upload.any(), CreatePost);
 router.post('/paymentverification', paymentVerification)
 router.get('/get-Listing-un', getUnApprovedPosts);
@@ -85,8 +84,8 @@ router.get('/admin-by-partner-user/:id', GetAllShopListByPartnerAdmin);
 router.get('/admin-payments/:id', showPaymentDetails);
 router.get('/admin-all-payments', allPayments);
 router.get('/admin-Statistics', getDashboardData);
-router.post('/admin-create-city', createCity);
-router.put('/admin-update-city/:id', updateCity);
+router.post('/admin-create-city',upload.single('image'), createCity);
+router.post('/admin-update-city/:id' ,upload.single('image'),updateCity);
 router.delete('/admin-delete-city/:id', deleteCity);
 router.get('/admin-get-all-cities', getAllCities);
 router.post('/admin-create-categories', upload.array('image'), createCategory);

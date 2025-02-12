@@ -17,7 +17,6 @@ import axios from 'axios';
 import ShopLogin from './pages/Auth/ShopLogin';
 import PartnerDashboard from './pages/Partner/PartnerDashboard';
 import ShopDashboard from './Shop/ShopDashboard';
-import CreateListing from './UserDashboard/CreateListing';
 import SearchProduct from './pages/Search/SearchProduct';
 import ShopProfile from './pages/ShopProfiles/ShopProfile';
 import UpgradePackage from './pages/Packages/UpgradePackage';
@@ -153,7 +152,6 @@ function App() {
         <Route path="/User-register-by-Partner/:PartnerId" locationDetails={locationDetails} element={<UserRegister />} />
         <Route path="/Shop-Login" element={<ShopLogin />} />
         <Route path="/Shop-Dashboard" element={<ShopDashboard />} />
-        <Route path="/Shop-Dashboard/Create-Post" element={<CreateListing />} />
         <Route path="/Search" element={<SearchProduct />} />
         <Route path="/Partner-Dashboard" element={<PartnerDashboard />} />
         <Route path="/View-More-Offers/Shop-profile/:id/:ShopName" element={<ShopProfile />} />

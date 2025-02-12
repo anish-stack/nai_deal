@@ -21,6 +21,7 @@ import CityAll from '../../components/City/CityAll';
 import Free_Page2 from '../Free_Page/Free_Page2';
 import Free_Page3 from '../Free_Page/Free_Page3';
 import Free_Page4 from '../Free_Page/Free_Page4';
+import DynamicCity from '../../components/City/DynamicCity';
 
 const services = [
   {
@@ -58,7 +59,7 @@ const Home = () => {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const response = await axios.get('https://api.naideal.com/api/v1/get-setting');
+        const response = await axios.get('http://localhost:7485/api/v1/get-setting');
         if (response.data.success) {
           setSettings(response.data.data);
           console.log(response.data.data)
@@ -141,6 +142,7 @@ const Home = () => {
       )}
 
       <Hero />
+      <DynamicCity/>
       <div className='hidden lg:block'>
         <Categorey />
       </div>
