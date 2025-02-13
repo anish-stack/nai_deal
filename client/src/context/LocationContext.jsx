@@ -7,9 +7,11 @@ export const LocationContext = createContext();
 export const LocationProvider = ({ children }) => {
     const [location, setLocation] = useState(null);
     const [address, setAddress] = useState(null);
+
+
     const [status, setStatus] = useState('checking'); // checking, granted, denied
 
-    console.log("Current location state:", location);
+
 
     const getLocation = async () => {
         if (!navigator.geolocation) {
@@ -19,7 +21,7 @@ export const LocationProvider = ({ children }) => {
             return;
         }
 
-        // Check if location permission is already denied
+
         try {
             const permissionStatus = await navigator.permissions.query({ name: 'geolocation' });
             if (permissionStatus.state === 'denied') {
@@ -63,7 +65,7 @@ export const LocationProvider = ({ children }) => {
                 lat: location.latitude,
                 lng: location.longitude,
             });
-            console.log("Fetched location data:", );
+            console.log("Fetched location data:",);
             setAddress(data.data.address)
         } catch (error) {
             console.error("Error fetching current city:", error);
@@ -85,9 +87,10 @@ export const LocationProvider = ({ children }) => {
         }
     }, [location]); // Now only runs when `location` is fully set
 
+
     return (
-        <LocationContext.Provider value={{ location, status, reInitializeLocation ,address}}>
-            {children}
-        </LocationContext.Provider>
+        <LocationContext.Provider value={{ location, status, reInitializeLocation, address }}>
+        {children}
+    </LocationContext.Provider>
     );
 };

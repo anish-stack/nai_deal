@@ -39,7 +39,8 @@ const MCategorey = () => {
                     <>
                         {data.reverse().slice(0, 8).map((category, index) => (
                             <div key={index} className="flex w-16 h-16 rounded-[50%] flex-col items-center justify-center space-y-2">
-                                <a href={category.CategoriesName} className="text-center">
+                             <a href={`/Post-by-categories?filter=Categories&Name=${category._id.replace(/\s|&/g, '-')}&title=${category.CategoriesName.replace(/\s|&/g, '-')}`} className="block">
+
                                     <img src={category.CategoriesImage.imageUrl} alt={category.CategoriesName} loading="lazy" className="h-8 transition-all ease-in-out hover:scale-[1.05] w-14 object-contain mx-auto" />
                                     <p className="text-xs cursor-pointer font-bold mt-2">{category.CategoriesName}</p>
                                 </a>

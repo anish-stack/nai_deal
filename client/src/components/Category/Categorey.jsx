@@ -1,127 +1,151 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Skeleton from 'react-loading-skeleton';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, ChevronLeft, Grid } from 'lucide-react';
-import 'react-loading-skeleton/dist/skeleton.css';
-import { Link } from 'react-router-dom';
+import { ChevronRight, ChevronLeft } from 'lucide-react';
 
 const Category = () => {
-    const [data, setData] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(0);
     const BackendUrl = import.meta.env.VITE_REACT_APP_BACKEND_URL;
+    const [cityData, setCityData] = useState({
+        city: '',
+        found: false
+    })
+    // Responsive items per page
+    useEffect(() => {
+        const foundData = JSON.parse(sessionStorage.getItem('cityFound'))
+        const foundCity = sessionStorage.getItem('cityName');
+        if (foundData && foundCity) {
+            setCityData({
+                city: foundCity,
+                found: true
+            })
+        }
+    }, [])
 
-    const itemsPerPage = {
-        sm: 6,
-        md: 8,
-        lg: 16
-    };
 
-    const getItemsPerPage = () => {
-        if (window.innerWidth >= 1024) return itemsPerPage.lg;
-        if (window.innerWidth >= 768) return itemsPerPage.md;
-        return itemsPerPage.sm;
-    };
-
-    const [displayCount, setDisplayCount] = useState(getItemsPerPage());
+    const [itemsPerPage, setItemsPerPage] = useState(12);
 
     useEffect(() => {
         const handleResize = () => {
-            setDisplayCount(getItemsPerPage());
-            setCurrentPage(0); // Reset to first page on resize
+            setItemsPerPage(12);
+            setCurrentPage(0);
         };
 
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const fetchData = async () => {
+    const fetchCategories = async () => {
         try {
             const response = await axios.get(`${BackendUrl}/admin-get-categories`);
-            setData(response.data.data);
-            setLoading(false);
+            setCategories(response.data.data);
         } catch (error) {
             console.error('Error fetching categories:', error);
+        } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchData();
+        fetchCategories();
     }, []);
 
     const nextPage = () => {
         setCurrentPage(prev =>
-            prev + 1 >= Math.ceil(data.length / displayCount) ? 0 : prev + 1
+            prev + 1 >= Math.ceil(categories.length / itemsPerPage) ? 0 : prev + 1
         );
     };
 
     const prevPage = () => {
         setCurrentPage(prev =>
-            prev - 1 < 0 ? Math.ceil(data.length / displayCount) - 1 : prev - 1
+            prev - 1 < 0 ? Math.ceil(categories.length / itemsPerPage) - 1 : prev - 1
         );
     };
 
-    const visibleCategories = data.slice(
-        currentPage * displayCount,
-        (currentPage + 1) * displayCount
+    const visibleCategories = categories.slice(
+        currentPage * itemsPerPage,
+        (currentPage + 1) * itemsPerPage
     );
 
-    const CategoryCard = ({ category }) => (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="relative group"
-        >
-            <div className="bg-white rounded-2xl p-4 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100">
-                <Link to={`/Post-by-categories?filter=Categories&Name=${category._id}&title=${category.CategoriesName}`} className="flex flex-col items-center space-y-2">
-                    <div className="p-4 bg-blue-50 rounded-xl group-hover:bg-blue-100 transition-colors duration-300">
-                        <img
-                            src={category.CategoriesImage.imageUrl}
-                            alt={category.CategoriesName}
-                            className="h-8 w-8 object-contain transition-transform duration-300 group-hover:scale-110"
-                            loading="lazy"
-                        />
-                    </div>
-                    <h3 className="text-sm font-semibold text-gray-700 group-hover:text-blue-400 transition-colors duration-300 text-center">
-                        {category.CategoriesName}
-                    </h3>
-                </Link>
-            </div>
-        </motion.div>
-    );
+    const CategoryCard = ({ category, index }) => {
+        const colors = [
+            'bg-blue-50 hover:bg-blue-100',
+            'bg-purple-50 hover:bg-purple-100',
+            'bg-pink-50 hover:bg-pink-100',
+            'bg-green-50 hover:bg-green-100',
+            'bg-yellow-50 hover:bg-yellow-100'
+        ];
+
+        const colorClass = colors[index % colors.length];
+
+        return (
+            <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                whileHover={{ y: -10 }}
+                className="flex flex-col items-center"
+            >
+                <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    className="relative group cursor-pointer"
+                >
+<a href={`/Post-by-categories?filter=Categories&Name=${category._id.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-')}&title=${category.CategoriesName.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-')}`} className="block">
+
+                        <div className={`rounded-full p-6 ${colorClass} transition-all duration-300 shadow-sm group-hover:shadow-xl`}>
+                            <div className="w-20 h-20 flex items-center justify-center">
+                                <img
+                                    src={category.CategoriesImage.imageUrl}
+                                    alt={category.CategoriesName}
+                                    className="w-12 h-12 object-contain transform transition-transform duration-300 group-hover:scale-125"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="mt-4 text-center">
+                            <h3 className="text-sm font-medium text-gray-800 group-hover:text-blue-600 transition-colors duration-300">
+                                {category.CategoriesName}
+                            </h3>
+                        </div>
+                    </a>
+                </motion.div>
+            </motion.div>
+        );
+    };
 
     const LoadingSkeleton = () => (
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-            <div className="flex flex-col items-center space-y-4">
-                <Skeleton circle width={64} height={64} />
-                <Skeleton width={80} height={20} />
-            </div>
+        <div className="flex flex-col items-center animate-pulse">
+            <div className="rounded-full bg-gray-200 w-32 h-32"></div>
+            <div className="mt-4 h-4 w-20 bg-gray-200 rounded"></div>
         </div>
     );
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            {/* <div className="mb-10 text-center">
-                <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-                    Browse Categories
+        <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+            <motion.div
+
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="flex items-center  justify-center text-center gap-4 sm:gap-6 md:gap-8"
+            >
+                <h2 className="text-3xl font-bold text-center text-gray-900 mb-6">
+                    {cityData?.found ? `Popular Categories in ${cityData.city}` : `Popular Categories`}
+                    <div className="w-36 h-1 mt-2 bg-blue-500 mx-auto rounded-full"></div>
                 </h2>
-                <p className="text-gray-600 max-w-2xl mx-auto">
-                    Explore our wide range of categories
-                </p>
-            </div> */}
+            </motion.div>
 
             <div className="relative">
-                {!loading && data.length > displayCount && (
+                {!loading && categories.length > itemsPerPage && (
                     <>
                         <motion.button
-                            // whileHover={{ scale: 1.1 }}
-                            // whileTap={{ scale: 0.9 }}
-                            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 p-2 rounded-full bg-white shadow-lg text-gray-700 hover:bg-gray-50 hover:text-blue-400 transition-colors duration-300 hidden sm:block"
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 p-3 rounded-full bg-white shadow-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all duration-300 hidden lg:block"
                             onClick={prevPage}
                             aria-label="Previous page"
                         >
@@ -129,9 +153,9 @@ const Category = () => {
                         </motion.button>
 
                         <motion.button
-                            // whileHover={{ scale: 1.1 }}
-                            // whileTap={{ scale: 0.9 }}
-                            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 p-2 rounded-full bg-white shadow-lg text-gray-700 hover:bg-gray-50 hover:text-blue-400 transition-colors duration-300 hidden sm:block"
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 p-3 rounded-full bg-white shadow-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all duration-300 hidden lg:block"
                             onClick={nextPage}
                             aria-label="Next page"
                         >
@@ -140,37 +164,39 @@ const Category = () => {
                     </>
                 )}
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-4 sm:gap-6">
+                <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-6 2xl:grid-cols-10 gap-8 sm:gap-10">
                     <AnimatePresence mode="wait">
                         {loading ? (
-                            Array(displayCount)
-                                .fill(0)
-                                .map((_, index) => (
-                                    <LoadingSkeleton key={index} />
-                                ))
+                            Array(itemsPerPage).fill(0).map((_, index) => (
+                                <LoadingSkeleton key={index} />
+                            ))
                         ) : (
                             visibleCategories.map((category, index) => (
                                 <CategoryCard
-                                    key={category.id || index}
+                                    key={category._id || index}
                                     category={category}
+                                    index={index}
                                 />
                             ))
                         )}
                     </AnimatePresence>
                 </div>
 
-                {!loading && data.length > displayCount && (
-                    <div className="mt-6 flex justify-center gap-2 sm:hidden">
+                {/* Mobile Navigation */}
+                {!loading && categories.length > itemsPerPage && (
+                    <div className="mt-8 flex justify-center gap-4 lg:hidden">
                         <motion.button
-                            whileTap={{ scale: 0.95 }}
-                            className="p-2 rounded-full bg-white shadow-md text-gray-700 hover:bg-gray-50"
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            className="p-3 rounded-full bg-white shadow-md text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all duration-300"
                             onClick={prevPage}
                         >
                             <ChevronLeft className="w-5 h-5" />
                         </motion.button>
                         <motion.button
-                            whileTap={{ scale: 0.95 }}
-                            className="p-2 rounded-full bg-white shadow-md text-gray-700 hover:bg-gray-50"
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            className="p-3 rounded-full bg-white shadow-md text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all duration-300"
                             onClick={nextPage}
                         >
                             <ChevronRight className="w-5 h-5" />

@@ -14,7 +14,7 @@ const AllListing = ({ limit }) => {
     filterVerified,
     setFilterVerified
   } = useListings();
-  console.log(listings)
+
   if (loading) {
     return <LoadingSkeleton />;
   }

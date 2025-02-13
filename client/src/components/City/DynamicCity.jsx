@@ -7,6 +7,7 @@ import { LocationContext } from '../../context/LocationContext';
 const DynamicCity = () => {
     const [cities, setCities] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isCityFound, setCityFound] = useState(false);
     const { location, status, reInitializeLocation, address } = useContext(LocationContext);
     const scrollContainerRef = React.useRef(null);
     const [hoveredCity, setHoveredCity] = useState(null);
@@ -16,45 +17,20 @@ const DynamicCity = () => {
             try {
                 const response = await axios.get('http://localhost:7485/api/v1/admin-get-city');
                 const citiesData = response.data;
-
-                // Enhanced sorting logic to ensure current city comes first
+                // Sort cities with current city first
                 const sortedCities = citiesData.sort((a, b) => {
-                    // Normalize and check if address.city exists
                     const addressCity = address?.city?.toLowerCase() || '';
-
-                    // Create regex to match full or partial city names (like "New Delhi" vs "Delhi")
-                    const aIsCurrentCity = addressCity && new RegExp(`\\b${a.cityName}\\b`, 'i').test(addressCity);
-                    const bIsCurrentCity = addressCity && new RegExp(`\\b${b.cityName}\\b`, 'i').test(addressCity);
-
-                    if (aIsCurrentCity && !bIsCurrentCity) return -1; // Move match to the top
-                    if (!aIsCurrentCity && bIsCurrentCity) return 1;
-                    return 0;
+                    const aIsCurrentCity = addressCity.includes(a.cityName.toLowerCase());
+                    const bIsCurrentCity = addressCity.includes(b.cityName.toLowerCase());
+                    return aIsCurrentCity ? -1 : bIsCurrentCity ? 1 : 0;
                 });
-
-                // Set updated sorted cities
                 setCities(sortedCities);
-
-                // Find the current city based on regex match
-                const currentCity = sortedCities.find(city =>
-                    new RegExp(`\\b${city.cityName}\\b`, 'i').test(address?.city || '')
-                );
-                console.log("currentCity", currentCity)
-
-                if (currentCity) {
-                    setHoveredCity(currentCity._id);
-                    // Ensure scroll container starts at the beginning
-                    if (scrollContainerRef.current) {
-                        scrollContainerRef.current.scrollLeft = 0;
-                    }
-                }
-
                 setLoading(false);
             } catch (error) {
                 console.error('Error fetching cities:', error);
                 setLoading(false);
             }
         };
-
         fetchCities();
     }, [address]);
 
@@ -72,6 +48,29 @@ const DynamicCity = () => {
             });
         }
     };
+    useEffect(() => {
+        if (address?.city) {
+            const foundCity = cities.some((c) => {
+                const regexCityName = new RegExp(`\\b${c.cityName}\\b`, 'i');
+                const regexAddress = new RegExp(`\\b${address.city}\\b`, 'i');
+                return regexCityName.test(address.city) || regexAddress.test(c.cityName);
+            });
+
+
+            setCityFound((prev) => {
+                if (prev !== foundCity) {
+                    sessionStorage.setItem('cityFound', JSON.stringify(foundCity));
+                    sessionStorage.setItem('cityName', address?.city);
+                    return foundCity;
+                }
+                return prev;
+            });
+        } else {
+            setCityFound((prev) => (prev ? false : prev));
+        }
+    }, [address?.city, cities]);
+
+
 
     if (loading) {
         return (
@@ -80,6 +79,7 @@ const DynamicCity = () => {
             </div>
         );
     }
+
 
     if (status === 'denied') {
         return (
@@ -131,7 +131,7 @@ const DynamicCity = () => {
                     transition={{ duration: 0.6 }}
                 >
                     <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                        Explore Our Cities
+                        Explore  Cities
                     </h2>
                     <div className="w-24 h-1 bg-blue-500 mx-auto rounded-full"></div>
                 </motion.div>
@@ -156,16 +156,17 @@ const DynamicCity = () => {
                         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                     >
                         {cities.map((city, index) => {
-                            if (!address?.city) return null; // Ensure address.city exists before matching
+                            if (!address?.city) return null;
 
-                            const regexCityName = new RegExp(`\\b${city.cityName}\\b`, 'i'); // Match city name in address
-                            const regexAddress = new RegExp(`\\b${address.city}\\b`, 'i'); // Match address in city name
+                            const regexCityName = new RegExp(`\\b${city.cityName}\\b`, 'i');
+                            const regexAddress = new RegExp(`\\b${address.city}\\b`, 'i');
 
                             const isCurrentCity = regexCityName.test(address.city) || regexAddress.test(city.cityName);
                             const isHovered = hoveredCity === city._id;
+                            // setCityFound(isCurrentCity)
                             return (
                                 <motion.div
-                                    key={city._id}
+                                    key={city.index}
                                     className="flex-none snap-center"
                                     initial={{ opacity: 0, scale: 0.9 }}
                                     animate={{ opacity: 1, scale: 0.8 }}

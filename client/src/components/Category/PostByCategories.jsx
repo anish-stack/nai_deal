@@ -16,9 +16,10 @@ const PostByCategories = () => {
     const query = new URLSearchParams(window.location.search);
     const categoryName = query.get('Name');
     const title = query.get('title');
-
+    console.log("title",title)
     const BackendUrl = import.meta.env.VITE_REACT_APP_BACKEND_URL;
 
+   
     useEffect(() => {
         fetchPosts();
     }, [categoryName]);
@@ -164,14 +165,14 @@ const PostByCategories = () => {
 
                                 <div className="relative aspect-[4/3]">
 
-                               
+
 
                                     <img
                                         src={post.Pictures[0]?.ImageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c'}
                                         alt={post.Title}
                                         className="w-full h-full object-cover"
-                                    />                                     
-              
+                                    />
+
                                     {post.shopDetails?.ListingPlan !== 'Free' && (
                                         <div className="absolute top-3 left-3 flex items-center gap-1 bg-green-500/90 backdrop-blur-sm text-white py-1.5 px-3 rounded-full text-sm font-medium">
                                             <CheckCircle className="w-4 h-4" />
@@ -186,8 +187,8 @@ const PostByCategories = () => {
                                     <p className="text-gray-600 text-sm mb-4 line-clamp-2">
                                         {post.Details}
                                     </p>
-                                    
-                                    
+
+
                                     <Link
                                         to={`/Single-Listing/${post._id}/${post.Title.replace(/\s+/g, '-').replace(/%/g, '')}`}
                                         className="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-colors"

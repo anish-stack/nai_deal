@@ -29,7 +29,7 @@ ConnectDb();
 app.use(cookieParser());
 app.use(express.json({ limit: '500mb' }));
 app.use(express.urlencoded({ extended: true, limit: '500mb' }));
-  app.use(morgan('common'));
+//   app.use(morgan('common'));
 app.use(cors());
 
 // Health check route
@@ -40,7 +40,7 @@ app.get('/health', (req, res) => {
 
 app.post('/Fetch-Current-Location', async (req, res) => {
     const { lat, lng } = req.body;
-    console.log(lat, lng)
+    // console.log(lat, lng)
     // Check if latitude and longitude are provided
     if (!lat || !lng) {
         return res.status(400).json({
@@ -66,7 +66,7 @@ app.post('/Fetch-Current-Location', async (req, res) => {
         // Check if any results are returned
         if (addressResponse.data.results.length > 0) {
             const addressComponents = addressResponse.data.results[0].address_components;
-            console.log(addressComponents)
+            // console.log(addressComponents)
 
             let city = null;
             let area = null;

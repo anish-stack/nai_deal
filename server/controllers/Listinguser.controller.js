@@ -2,21 +2,16 @@ const ListingUser = require('../models/User.model'); // Adjust the path as per y
 const sendEmail = require('../utils/SendEmail');
 const sendToken = require('../utils/SendToken');
 const Listing = require('../models/listing.model');
-// const dotenv = require('dotenv')
-// dotenv.config()
+
 require('dotenv').config()
 const Cloudinary = require('cloudinary').v2;
-const jwt = require('jsonwebtoken');
-const Razorpay = require('razorpay');
+
 const crypto = require('crypto');
 const axios = require('axios')
 const Plans = require('../models/Pacakge')
 const nodemailer = require('nodemailer');
 const Payment = require('../models/PaymentDetails')
-// const instance = new Razorpay({
-//     key_id: process.env.RAZORPAY_APT_KEY,
-//     key_secret: process.env.RAZORPAY_APT_SECRET,
-// });
+
 const { StatusCodes } = require('http-status-codes');
 const Settings = require('../models/Settings.model')
 const Partner = require('../models/Partner.model')
@@ -1092,24 +1087,23 @@ exports.getAllPost = async (req, res) => {
 };
 exports.getAllPostApprovedPost = async (req, res) => {
     try {
-        let listings = [];
-        const query = req.query;
-        const { lat, lng } = query;
+        const { location, address } = req.query || {};
+        const parsedLocation = location ? JSON.parse(location) : null;
+        const parsedAddress = address ? JSON.parse(address) : null;
 
-        // If no lat or lng is provided, fetch all approved listings without geospatial filtering
-        if (!lat || !lng) {
+        let listings = [];
+
+        if (!parsedLocation) {
             listings = await Listing.find({ isApprovedByAdmin: true }).populate('ShopId');
             return res.status(200).json({
                 success: true,
                 count: listings.length,
-                data: listings.reverse(), // Optional: reverse the order if needed
+                data: listings.reverse(),
             });
         }
 
-        // Convert lat and lng to float and ensure valid coordinates
-        const coordinates = [parseFloat(lng), parseFloat(lat)];
-
-        // Validate coordinates
+        const coordinates = [parseFloat(parsedLocation.longitude), parseFloat(parsedLocation.latitude)];
+        console.log(coordinates)
         if (isNaN(coordinates[0]) || isNaN(coordinates[1])) {
             return res.status(400).json({
                 success: false,
@@ -1117,76 +1111,29 @@ exports.getAllPostApprovedPost = async (req, res) => {
             });
         }
 
-        // Fetch listings within 2km of the provided coordinates, first checking ShopAddress.Location
-        listings = await Listing.aggregate([
-            // Step 1: Populate ShopId first
-            {
-                $lookup: {
-                    from: 'shops',  // Replace 'shops' with the correct collection name for the shops
-                    localField: 'ShopId',  // The field in your Listing collection
-                    foreignField: '_id',  // The field in the Shop collection that matches ShopId
-                    as: 'ShopDetails',  // The name of the new array field to hold populated data
+        const findData = await ListingUser.find({
+            LandMarkCoordinates: {
+                $nearSphere: {
+                    $geometry: { type: "Point", coordinates },
+                    $maxDistance: 5000,
                 },
             },
+        });
 
-            // Step 2: Unwind the populated ShopDetails array
-            {
-                $unwind: {
-                    path: '$ShopDetails',
-                    preserveNullAndEmptyArrays: true,  // Handle cases where there's no matching Shop
-                },
-            },
-
-            // Step 3: GeoNear query using populated ShopAddress.Location
-            {
-                $geoNear: {
-                    near: { type: 'Point', coordinates: coordinates },
-                    distanceField: 'distance',
-                    maxDistance: 2000,  // 2 km in meters
-                    spherical: true,
-                    query: { 'ShopDetails.ShopAddress.Location': { $exists: true } },  // Use the populated field
-                },
-            },
-
-            // Step 4: Apply any additional filtering like isApprovedByAdmin
-            {
-                $match: {
-                    isApprovedByAdmin: true,  // Filter for approved listings
-                },
-            },
-        ]);
-
-        console.log(listings);
-
-
-        // If no listings found based on ShopAddress.Location, check the LandMarkCoordinates field
-        if (listings.length === 0) {
-            listings = await Listing.aggregate([
-                {
-                    $geoNear: {
-                        near: { type: 'Point', coordinates: coordinates },
-                        distanceField: 'distance',
-                        maxDistance: 2000,  // 2 km in meters
-                        spherical: true,
-                        query: { 'ShopId.LandMarkCoordinates': { $exists: true } },
-                    },
-                },
-                { $match: { isApprovedByAdmin: true } },
-            ]);
-        }
-
-        // If still no listings are found, return all approved listings
-        if (listings.length === 0) {
+        if (!findData.length) {
+            console.log("findData",findData.length)
             listings = await Listing.find({ isApprovedByAdmin: true }).populate('ShopId');
+        } else {
+            const findDataIds = findData.map(data => data._id.toString());
+            listings = await Listing.find({ isApprovedByAdmin: true, ShopId: { $in: findDataIds } }).populate('ShopId');
+        
         }
 
-        console.log(listings.length); // Log the listings
-
-        // Return the result to the client
+        console.log("listings.length",listings.length)
         return res.status(200).json({
             success: true,
             count: listings.length,
-            data: listings.reverse(), // Optional: reverse the order if needed
+            data: listings.reverse(),
         });
     } catch (error) {
         console.error('Error fetching listings:', error);
@@ -1196,6 +1143,53 @@ exports.getAllPostApprovedPost = async (req, res) => {
         });
     }
 };
+
+
+
+exports.getAllPostApprovedPostByAddress = async (req, res) => {
+    try {
+        const { address } = req.query || {};
+        const parsedAddress = address ? JSON.parse(address) : null;
+
+        let listings = [];
+
+        if (!parsedAddress) {
+            listings = await Listing.find({ isApprovedByAdmin: true }).populate('ShopId');
+            return res.status(200).json({
+                success: true,
+                count: listings.length,
+                data: listings.reverse(),
+            });
+        }
+
+        const City = parsedAddress.city.toLowerCase();
+
+        const findData = await ListingUser.find({
+            'ShopAddress.City': { $regex: new RegExp(City, 'i') } // Case-insensitive and partial match
+        });
+
+        if (!findData.length) {
+            listings = await Listing.find({ isApprovedByAdmin: true }).populate('ShopId');
+        } else {
+            const findDataIds = findData.map(data => data._id.toString());
+            listings = await Listing.find({ isApprovedByAdmin: true, ShopId: { $in: findDataIds } }).populate('ShopId');
+        }
+
+        return res.status(200).json({
+            success: true,
+            count: listings.length,
+            data: listings.reverse(),
+        });
+    } catch (error) {
+        console.error('Error fetching listings:', error);
+        return res.status(500).json({
+            success: false,
+            error: 'Server error. Could not fetch listings.',
+        });
+    }
+};
+
+
 
 
 function shuffleArray(array) {

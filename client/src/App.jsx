@@ -41,6 +41,7 @@ import CustomerFaq from './components/CFaq/CustomerFaq';
 import Pfaq from './components/PFaq/PFaq';
 import Copywrite from './pages/ReturnAndRefundPolicy/Copywrite';
 import Festival_Pop from './components/Festival_Pop/Festival_Pop';
+import ImageShare from './Shop/Share';
 
 const ScrollToTop = () => {
   const location = useLocation();
@@ -75,7 +76,7 @@ function App() {
           );
 
           const results = response.data.results;
-          console.log('Results From ', results);
+
           if (results && results.length > 0) {
             const addressComponents = results[0].address_components;
             const formattedAddress = results[0].formatted_address;
@@ -144,6 +145,7 @@ function App() {
         <Route path="/Customer-faq" element={<CustomerFaq />} />
         <Route path="/partner-faq" element={<Pfaq />} />
         <Route path="/copyright" element={<Copywrite />} />
+        <Route path="/share" element={<ImageShare />} />
 
         {/* ---- Partner Routes ---- */}
         <Route path="/Partner-Login" element={<Login />} />

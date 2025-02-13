@@ -1,7 +1,7 @@
 const express = require('express');
 const { createPartner, verifyOtpAndEmail, resendAccountVerifyOtp, resendForgetPasswordOtp, login, logout, verifyForgetPasswordOtp, deletePartnerAccount, forgetPasswordRequest, GetAllShopListByPartner, getAllPartner, GetAllShopListByPartnerAdmin } = require('../controllers/Partnercontroller');
-const {  UpdateListing, getPostByCategory, UpdateListingAdmin, UpdateListingByBolt } = require('../controllers/ListingControllers');
-const { ListUser, LoginListUser, MyShopDetails, CreatePost, getAllPost, getPostById, deletePostById, deleteAllPost, getMyPostOnly, SearchByPinCodeCityAndWhatYouWant, getAllShops, DeleteListUser, updateDetailsOfListUser, paymentVerification, showPaymentDetails, allPayments, CreateForgetPasswordRequest, verifyOtp, getAllPostApprovedPost, UploadProfileImage, UpdateProfileDetails, getMyAllPost, updateShopAddress, getSingleListingUser } = require('../controllers/Listinguser.controller');
+const { UpdateListing, getPostByCategory, UpdateListingAdmin, UpdateListingByBolt } = require('../controllers/ListingControllers');
+const { ListUser, LoginListUser, MyShopDetails, CreatePost, getAllPost, getPostById, deletePostById, deleteAllPost, getMyPostOnly, SearchByPinCodeCityAndWhatYouWant, getAllShops, DeleteListUser, updateDetailsOfListUser, paymentVerification, showPaymentDetails, allPayments, CreateForgetPasswordRequest, verifyOtp, getAllPostApprovedPost, UploadProfileImage, UpdateProfileDetails, getMyAllPost, updateShopAddress, getSingleListingUser, getAllPostApprovedPostByAddress } = require('../controllers/Listinguser.controller');
 const { protect } = require('../middlewares/Protect');
 const multer = require('multer');
 const { getUnApprovedPosts, MakeAPostApproved, getDashboardData } = require('../controllers/Shop');
@@ -27,6 +27,7 @@ router.post('/Create-Post', protect, upload.any(), CreatePost);
 router.post('/paymentverification', paymentVerification)
 router.get('/get-Listing-un', getUnApprovedPosts);
 router.get('/get-listing', getAllPostApprovedPost)
+router.get('/get-Listing-By-Address', getAllPostApprovedPostByAddress)
 router.get('/get-listing/:id', getPostById);
 router.delete('/delete-listing/:id', deletePostById);
 router.delete('/delete-all-listings', deleteAllPost);
@@ -40,13 +41,13 @@ router.get('/My-Shop-Post', protect, getMyPostOnly);
 router.get('/Post-by-categories/:Name', getPostByCategory);
 router.post('/Create-Forget-Password', CreateForgetPasswordRequest)
 router.post('/verify-Otp-For-ForgetPassword', verifyOtp)
-router.post('/Upload-Profile-Image',protect,upload.single('image'), UploadProfileImage)
-router.post('/Upload-Profile-Details',protect, UpdateProfileDetails)
+router.post('/Upload-Profile-Image', protect, upload.single('image'), UploadProfileImage)
+router.post('/Upload-Profile-Details', protect, UpdateProfileDetails)
 
 router.post('/Create-Offer-Banner', upload.single('image'), createOfferBanner)
 router.get('/get-offer-Banner', getOfferAllBanner)
 router.delete('/delete-offer-Banner/:id', deleteOfferBanner)
-router.put('/update-offer-Banner/:id',upload.single('image'), updateOfferBanner)
+router.put('/update-offer-Banner/:id', upload.single('image'), updateOfferBanner)
 
 router.put('/get-single-user/:id', getSingleListingUser);
 router.put('/update-shop-address/:userId', updateShopAddress);
@@ -57,7 +58,7 @@ router.get('/get-festival-Banner', getFAllBanner)
 router.get('/get-festival-Banner-query', getBanneronWhicPage)
 
 router.delete('/delete-festival-Banner/:id', deleteFBanner)
-router.put('/update-festival-Banner/:id',upload.single('image'), updateFBanner)
+router.put('/update-festival-Banner/:id', upload.single('image'), updateFBanner)
 
 
 
@@ -67,7 +68,7 @@ router.put('/admin-Shop-Edit-post', upload.fields([
     { name: 'MainImage', maxCount: 1 },
     { name: 'dishImage', maxCount: 10 },
 ]), UpdateListingAdmin)
-    router.put('/admin-Shop-Edit-post-bolt', upload.any(), UpdateListingByBolt)
+router.put('/admin-Shop-Edit-post-bolt', upload.any(), UpdateListingByBolt)
 
 
 // admins
@@ -84,8 +85,8 @@ router.get('/admin-by-partner-user/:id', GetAllShopListByPartnerAdmin);
 router.get('/admin-payments/:id', showPaymentDetails);
 router.get('/admin-all-payments', allPayments);
 router.get('/admin-Statistics', getDashboardData);
-router.post('/admin-create-city',upload.single('image'), createCity);
-router.post('/admin-update-city/:id' ,upload.single('image'),updateCity);
+router.post('/admin-create-city', upload.single('image'), createCity);
+router.post('/admin-update-city/:id', upload.single('image'), updateCity);
 router.delete('/admin-delete-city/:id', deleteCity);
 router.get('/admin-get-all-cities', getAllCities);
 router.post('/admin-create-categories', upload.array('image'), createCategory);
@@ -114,22 +115,22 @@ router.post('/UpdateSetting', UpdateSetting)
 
 
 router.delete('/delete-banner/:id', DeleteBanner)
-router.post('/update-banner/:id',upload.single('image'), UpdateBanner)
+router.post('/update-banner/:id', upload.single('image'), UpdateBanner)
 
 
 
 
 // Route for creating a marquee
-router.post('/create-marquee',createMarquee);
+router.post('/create-marquee', createMarquee);
 
 // Route for updating a marquee
-router.patch('/update-marquee/:id',updateMarquee);
+router.patch('/update-marquee/:id', updateMarquee);
 
 // Route for deleting a marquee
-router.delete('/delete-marquee/:id',deleteMarquee);
+router.delete('/delete-marquee/:id', deleteMarquee);
 
 // Route for getting all marquees
-router.get('/get-all-marquees',getAllMarquee);
+router.get('/get-all-marquees', getAllMarquee);
 
 
 

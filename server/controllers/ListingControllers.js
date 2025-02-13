@@ -526,8 +526,7 @@ exports.UpdateListingAdmin = async (req, res) => {
 exports.getPostByCategory = async (req, res) => {
     try {
         const { Name } = req.params;
-        // console.log(Name)
-        // Fetch all listings by category
+     
         const listings = await ListingUser.find({ ShopCategory: Name });
 
         if (!listings || listings.length === 0) {
@@ -537,10 +536,7 @@ exports.getPostByCategory = async (req, res) => {
 
         const postsPromises = listings.map(async (listing) => {
 
-
             const posts = await Listing.find({ ShopId: listing._id, isApprovedByAdmin: true }).sort({ createdAt: -1 });
-
-
             const postsWithPlan = posts.map(post => ({
                 ...post.toObject(),
                 Plan: listing?.ListingPlan

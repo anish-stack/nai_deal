@@ -1,4 +1,4 @@
-const Post  = require('../models/listing.model')
+const Post = require('../models/listing.model')
 const ListingUser = require('../models/User.model'); // Adjust the path as per your project structure
 const axios = require('axios')
 const dotenv = require('dotenv')
@@ -10,6 +10,10 @@ const Category = require('../models/CategoreiesModel')
 
 exports.getUnApprovedPosts = async (req, res) => {
     try {
+        const { location, address } = req.query || {}
+        console.log("i am hits")
+        console.log("location",location)
+        console.log("address",address)
         const unApprovedPosts = await Post.find({ isApprovedByAdmin: false });
 
         if (!unApprovedPosts || unApprovedPosts.length === 0) {
@@ -59,7 +63,7 @@ exports.getDashboardData = async (req, res) => {
             Category.countDocuments(), // Count total categories concurrently
         ]);
 
- 
+
         // Calculate total posts and percentage of unapproved posts
         const totalPosts = totalApprovedPosts + totalUnapprovedPosts;
         const percentageUnapproved = totalPosts ? ((totalUnapprovedPosts / totalPosts) * 100).toFixed(2) : '0';
@@ -79,7 +83,7 @@ exports.getDashboardData = async (req, res) => {
                 totalSilverListing: totalSilverListing || 0,
                 totalCategoriesWeDeal: totalCategoriesWeDeal || 0,
                 totalCityWeDeal: totalCityWeDeal || 0,
-                totalPaymentAmountRupees:  0,
+                totalPaymentAmountRupees: 0,
             }
         };
 
