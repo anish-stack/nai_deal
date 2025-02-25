@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import toast from 'react-hot-toast'
-import {Link} from 'react-router-dom'
+import toast from 'react-hot-toast';
+import { Link } from 'react-router-dom';
+
 const AllPackages = () => {
     const [packages, setPackages] = useState([]);
     const [showModal, setShowModal] = useState(false);
@@ -9,17 +10,17 @@ const AllPackages = () => {
         _id: '',
         packageName: '',
         packagePrice: '',
-        postsDone: 0
+        postsDone: '',
+        validity: ''
     });
 
     useEffect(() => {
         const fetchPackages = async () => {
             try {
-                const response = await axios.get(`http://localhost:7485/api/v1/admin-packages`);
+                const response = await axios.get(`https://api.naideal.com/api/v1/admin-packages`);
                 setPackages(response.data.packages);
             } catch (error) {
                 console.error('Error fetching packages:', error);
-                // Handle error fetching packages
             }
         };
 
@@ -28,14 +29,11 @@ const AllPackages = () => {
 
     const handleDelete = async id => {
         try {
-            const response = await axios.delete(`http://localhost:7485/api/v1/admin-delete-packages/${id}`);
-            console.log('Package deleted:', response.data);
-            // Optionally, update state to reflect deleted package
+            await axios.delete(`https://api.naideal.com/api/v1/admin-delete-packages/${id}`);
             setPackages(packages.filter(pkg => pkg._id !== id));
-            toast.success("'Package deleted")
+            toast.success("Package deleted");
         } catch (error) {
             console.error('Error deleting package:', error);
-            // Handle error deleting package
         }
     };
 
@@ -59,39 +57,36 @@ const AllPackages = () => {
     const handleUpdateSubmit = async e => {
         e.preventDefault();
         try {
-            const response = await axios.put(`http://localhost:7485/api/v1/admin-update-packages/${selectedPackage._id}`, selectedPackage);
-            console.log('Package updated:', response.data);
-            toast.success("'Package updated")
-            // Optionally, update state or show success message
+            await axios.put(`https://api.naideal.com/api/v1/admin-update-packages/${selectedPackage._id}`, selectedPackage);
+            toast.success("Package updated");
             handleCloseModal();
-            // Update packages list after update
             const updatedPackages = packages.map(pkg => (pkg._id === selectedPackage._id ? selectedPackage : pkg));
             setPackages(updatedPackages);
         } catch (error) {
             console.error('Error updating package:', error);
-            toast.success(" Error In  Package updating")
-            // Handle error updating package
+            toast.error("Error in package update");
         }
     };
 
     return (
         <div className="container mx-auto px-4 py-8">
             <h2 className="text-2xl font-bold mb-4">All Packages</h2>
-            <div className="flex  mb-4 mt-4">
-            <Link
-                to="/create-package"
-                className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600 transition duration-300"
-            >
-                Create Package
-            </Link>
-        </div>
+            <div className="flex mb-4 mt-4">
+                <Link
+                    to="/create-package"
+                    className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600 transition duration-300"
+                >
+                    Create Package
+                </Link>
+            </div>
             <div className="overflow-x-auto">
                 <table className="min-w-full bg-white border border-gray-300">
                     <thead>
                         <tr>
                             <th className="border border-gray-300 px-4 py-2">Name</th>
-                            <th className="border border-gray-300 px-4 py-2">How Many Post In This</th>
+                            <th className="border border-gray-300 px-4 py-2">Posts</th>
                             <th className="border border-gray-300 px-4 py-2">Price</th>
+                            <th className="border border-gray-300 px-4 py-2">Validity (Days)</th>
                             <th className="border border-gray-300 px-4 py-2">Actions</th>
                         </tr>
                     </thead>
@@ -101,6 +96,7 @@ const AllPackages = () => {
                                 <td className="border border-gray-300 px-4 py-2">{pkg.packageName}</td>
                                 <td className="border border-gray-300 px-4 py-2">{pkg.postsDone}</td>
                                 <td className="border border-gray-300 px-4 py-2">{pkg.packagePrice}</td>
+                                <td className="border border-gray-300 px-4 py-2">{pkg.validity}</td>
                                 <td className="border border-gray-300 px-4 py-2">
                                     <button
                                         onClick={() => handleUpdateClick(pkg)}
@@ -127,7 +123,7 @@ const AllPackages = () => {
                         <h2 className="text-2xl font-bold mb-4">Update Package</h2>
                         <form onSubmit={handleUpdateSubmit}>
                             <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="packageName">
                                     Name
                                 </label>
                                 <input
@@ -142,11 +138,11 @@ const AllPackages = () => {
                             </div>
 
                             <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="description">
-                                How Many Post in This Package
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="postsDone">
+                                    Posts
                                 </label>
                                 <input
-                                  type="text"
+                                    type="text"
                                     id="postsDone"
                                     name="postsDone"
                                     value={selectedPackage.postsDone}
@@ -157,7 +153,7 @@ const AllPackages = () => {
                             </div>
 
                             <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="price">
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="packagePrice">
                                     Price
                                 </label>
                                 <input
@@ -165,6 +161,21 @@ const AllPackages = () => {
                                     id="packagePrice"
                                     name="packagePrice"
                                     value={selectedPackage.packagePrice}
+                                    onChange={handleChange}
+                                    className="border border-gray-300 rounded-md p-2 w-full"
+                                    required
+                                />
+                            </div>
+
+                            <div className="mb-4">
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="validity">
+                                    Validity (Days)
+                                </label>
+                                <input
+                                    type="number"
+                                    id="validity"
+                                    name="validity"
+                                    value={selectedPackage.validity}
                                     onChange={handleChange}
                                     className="border border-gray-300 rounded-md p-2 w-full"
                                     required

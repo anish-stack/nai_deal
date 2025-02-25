@@ -2,17 +2,74 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Phone, Mail, Star, ChevronRight, CheckCircle, Share2, Heart, Tag } from 'lucide-react';
+import { MapPin, Phone, Mail, Star, ChevronRight, CheckCircle, Share2, Heart, Tag, X } from 'lucide-react';
 import Skeleton from 'react-loading-skeleton';
 import Free_Page4 from '../../pages/Free_Page/Free_Page4';
+import toast from 'react-hot-toast';
 
 const SingleListing = () => {
     const { id } = useParams();
     const [listing, setListing] = useState(null);
     const [loading, setLoading] = useState(true);
     const [selectedImage, setSelectedImage] = useState(0);
+    const [showForm, setShowForm] = useState(false);
     const [isLiked, setIsLiked] = useState(false);
+    const [formLoading,setFormLoading] = useState(false)
     const BackendUrl = import.meta.env.VITE_REACT_APP_BACKEND_URL;
+    const [shopId,setShopId] = useState('')
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        phone: '',
+        message: '',
+        shopId: ''
+    })
+
+    useEffect(() => {
+        // Show form automatically after 2 seconds
+        const timer = setTimeout(() => {
+            setShowForm(true);
+        }, 2000);
+
+        return () => clearTimeout(timer);
+    }, []);
+
+    useEffect(()=>{
+        setFormData((prevData) => ({
+            ...prevData,
+            shopId: shopId
+        }))
+    },[shopId])
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setFormLoading(true)
+        try {
+            const response = await axios.post(`https://api.naideal.com/api/v1/send_enquiry_form`, formData);
+            toast.success('Form submitted successfully');
+            setShowForm(false);
+            setFormData({
+                name: '',
+                email: '',
+                phone: '',
+                message: '',
+            });
+            setFormLoading(false)
+        } catch (error) {
+            console.log("Internal server error", error);
+            toast.error('Failed to submit form');
+        }finally{
+            setFormLoading(false)
+        }
+    };
 
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -24,6 +81,7 @@ const SingleListing = () => {
             const response = await axios.get(`${BackendUrl}/get-listing/${encodeURIComponent(id)}`);
             console.log(response.data.data)
             setListing(response.data.data);
+            setShopId(response.data.data?.shopDetails?._id)
             setLoading(false);
         } catch (error) {
             console.error('Error fetching single data:', error);
@@ -62,6 +120,92 @@ const SingleListing = () => {
             animate={{ opacity: 1 }}
             className="max-w-7xl mx-auto px-4 py-8"
         >
+            {/* Popup Form */}
+            <AnimatePresence>
+                {showForm && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+                        onClick={(e) => e.target === e.currentTarget && setShowForm(false)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            className="bg-white rounded-2xl p-6 w-full max-w-md relative"
+                        >
+                            <button
+                                onClick={() => setShowForm(false)}
+                                className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+
+                            <h2 className="text-2xl font-bold text-gray-900 mb-4">Contact Us</h2>
+                            <p className="text-gray-600 mb-6">Fill out this form and we'll get back to you soon!</p>
+
+                            <form onSubmit={handleSubmit} className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        value={formData.name}
+                                        onChange={handleChange}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        required
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        required
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                                    <input
+                                        type="tel"
+                                        name="phone"
+                                        value={formData.phone}
+                                        onChange={handleChange}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        required
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                                    <textarea
+                                        name="message"
+                                        value={formData.message}
+                                        onChange={handleChange}
+                                        rows="4"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        required
+                                    ></textarea>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors"
+                                >
+                                    {formLoading ? 'Loading...' : 'Submit'}
+                                </button>
+                            </form>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
             {/* Breadcrumbs */}
             <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-8">
                 <Link to="/" className="hover:text-blue-600 transition-colors">Home</Link>
@@ -246,33 +390,45 @@ const SingleListing = () => {
                                     <Mail className="w-5 h-5" />
                                     Send Email
                                 </a>
+                                <button
+                                    onClick={() => setShowForm(true)}
+                                    className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-full shadow-lg transition-colors z-40 flex items-center gap-2"
+                                >
+                                    <Mail className="w-5 h-5" />
+                                    Contact Us
+                                </button>
                             </div>
                         </div>
 
                         {/* Business Hours */}
-                        <div className="bg-white rounded-2xl shadow-sm border p-6">
-                            <div className="flex items-center gap-2 mb-4">
+                        {
+                            listing?.shopDetails?.BussinessHours ? (
+                                <div className="bg-white rounded-2xl shadow-sm border p-6">
+                                    <div className="flex items-center gap-2 mb-4">
 
-                                <i className="fa-regular fa-clock text-3xl text-gray-400"></i>
-                                <h3 className="text-lg font-semibold text-gray-900">Business Hours</h3>
-                            </div>
-                            <div className="space-y-2 text-sm">
-                                <div className="flex justify-between">
-                                    <span className="text-gray-600">Working Time</span>
-                                    <span className="text-gray-900 font-medium">{`${listing?.shopDetails?.BussinessHours?.openTime || "09:00 AM"} - ${listing?.shopDetails?.BussinessHours?.closeTime || "11:00 PM"}`}</span>                                    {/* <span className="text-gray-900 font-medium">9:00 AM - 6:00 PM</span> */}
-                                </div>
-                                {/* <div className="flex justify-between">
+                                        <i className="fa-regular fa-clock text-3xl text-gray-400"></i>
+                                        <h3 className="text-lg font-semibold text-gray-900">Business Hours</h3>
+                                    </div>
+                                    <div className="space-y-2 text-sm">
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-600">Working Time</span>
+                                            <span className="text-gray-900 font-medium">{`${listing?.shopDetails?.BussinessHours?.openTime || "09:00 AM"} - ${listing?.shopDetails?.BussinessHours?.closeTime || "11:00 PM"}`}</span>                                    {/* <span className="text-gray-900 font-medium">9:00 AM - 6:00 PM</span> */}
+                                        </div>
+                                        {/* <div className="flex justify-between">
                                     <span className="text-gray-600">Saturday</span>
                                     <span className="text-gray-900 font-medium">10:00 AM - 4:00 PM</span>
                                 </div> */}
-                                      <div className="flex justify-between">
-                                    <span className="text-gray-600">{listing?.shopDetails?.BussinessHours?.offDay  ==='All Day Open' ? 'Open': 'Closed'}</span>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-600">{listing?.shopDetails?.BussinessHours?.offDay === 'All Day Open' ? 'Open' : 'Closed'}</span>
 
-                                    <span className="text-red-600 font-medium">{listing?.shopDetails?.BussinessHours?.offDay ==='All Day Open' ? 'All Day Open' : listing?.shopDetails?.BussinessHours?.offDay }</span>
+                                            <span className="text-red-600 font-medium">{listing?.shopDetails?.BussinessHours?.offDay === 'All Day Open' ? 'All Day Open' : listing?.shopDetails?.BussinessHours?.offDay}</span>
 
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
+                            ) : (<></>)
+                        }
+
 
                         <div className="bg-white rounded-xl shadow-md border p-6">
                             {/* <!-- Header --> */}
@@ -319,9 +475,9 @@ const SingleListing = () => {
                     </div>
                 </div>
             </div>
-           <div className='mt-3 '>
-           <Free_Page4/>
-           </div>
+            <div className='mt-3 '>
+                <Free_Page4 />
+            </div>
         </motion.div>
     );
 };

@@ -50,7 +50,7 @@ const useAddress = (shopDetails, coords) => {
       return;
     }
     try {
-      const response = await axios.get(`http://localhost:7485/geocode?address=${landmark}`);
+      const response = await axios.get(`https://api.naideal.com/geocode?address=${landmark}`);
       const locationData = response.data;
       setAddressData(prev => ({
         ...prev,
@@ -72,7 +72,7 @@ const useAddress = (shopDetails, coords) => {
     }
 
     try {
-      const response = await axios.post(`http://localhost:7485/Fetch-Current-Location`, {
+      const response = await axios.post(`https://api.naideal.com/Fetch-Current-Location`, {
         lat: coords.latitude,
         lng: coords.longitude
       });
@@ -89,7 +89,7 @@ const useAddress = (shopDetails, coords) => {
           ShopLongitude: locationData.address?.lng || ''
         }
       }));
-      toast.success('Current location fetched successfully');
+      // toast.success('Current location fetched successfully');
     } catch (error) {
       toast.error('Error fetching current location');
     }

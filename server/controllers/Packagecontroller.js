@@ -2,13 +2,22 @@ const Package = require('../models/Pacakge');
 
 exports.createPackage = async (req, res) => {
     try {
-        const { packageName, packagePrice, postsDone } = req.body;
+        const { packageName, packagePrice, postsDone, validity } = req.body;
+
+        if (!validity || validity <= 0) {
+            return res.status(400).json({ success: false, message: 'Validity must be a positive number' });
+        }
+
+        // Calculate expiry date based on validity (days)
+        const expiryDate = new Date(Date.now() + validity * 24 * 60 * 60 * 1000);
 
         // Create a new package instance
         const newPackage = new Package({
             packageName,
             packagePrice,
-            postsDone
+            postsDone,
+            validity,
+            expiryDate // Set expiry date manually
         });
 
         // Save the package to the database
@@ -22,15 +31,20 @@ exports.createPackage = async (req, res) => {
 };
 exports.updatePackage = async (req, res) => {
     try {
-        const { packageName, packagePrice, postsDone } = req.body;
+        const { packageName, packagePrice, postsDone, validity } = req.body; // Added validity field
         const packageId = req.params.id;
 
         // Find the package by ID and update its fields
-        const updatedPackage = await Package.findByIdAndUpdate(packageId, {
-            packageName,
-            packagePrice,
-            postsDone
-        }, { new: true }); // { new: true } ensures we get the updated package back
+        const updatedPackage = await Package.findByIdAndUpdate(
+            packageId,
+            {
+                packageName,
+                packagePrice,
+                postsDone,
+                validity // Updating validity
+            },
+            { new: true } // { new: true } ensures we get the updated package back
+        );
 
         if (!updatedPackage) {
             return res.status(404).json({ success: false, message: 'Package not found' });
@@ -42,6 +56,7 @@ exports.updatePackage = async (req, res) => {
         return res.status(500).json({ success: false, message: 'Failed to update package' });
     }
 };
+
 
 exports.deletePackage = async (req, res) => {
     try {

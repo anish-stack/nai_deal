@@ -74,6 +74,8 @@ exports.createCategory = async (req, res) => {
     // Save category to database
     const savedCategory = await newCategory.save();
 
+    console.log("savedCategory",savedCategory)
+
     // Respond with success message and saved category data
     res.status(201).json({
       success: true,
@@ -215,3 +217,23 @@ exports.getAllCategories = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch categories' });
   }
 };
+
+exports.getAllCategoryAdmin = async (req, res) => {
+  try {
+    const allCategory = await Categories.find()
+    if(!allCategory){
+      return res.status(404).json({
+        success: false,
+        message: "No categories found"
+      })
+    }
+    res.status(200).json({
+      success: true,
+      message: "Categories fetched successfully",
+      data: allCategory
+    })
+  } catch (error) {
+    console.log("Internal server error",error)
+    res.status(500).json({ success: false, message: "Internal Server Error", error: error.message });
+  }
+}

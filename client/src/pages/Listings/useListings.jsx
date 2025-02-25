@@ -10,7 +10,7 @@ export function useListings() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(`http://localhost:7485/api/v1/get-Listing?location=${JSON.stringify(location)}&address=${JSON.stringify(address)}`);
+      const response = await axios.get(`https://api.naideal.com/api/v1/get-Listing?location=${JSON.stringify(location)}&address=${JSON.stringify(address)}`);
       setListings(response.data.data);
       setLoading(false);
     } catch (error) {

@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
 const ListingUserSchema = new mongoose.Schema({
-    ProfilePic:{
-        type:String
+    ProfilePic: {
+        type: String
     },
     UserName: {
         type: String,
@@ -41,12 +41,12 @@ const ListingUserSchema = new mongoose.Schema({
         },
         Location: {
             type: {
-                type: String, 
-                enum: ['Point'], 
+                type: String,
+                enum: ['Point'],
                 required: true
             },
             coordinates: {
-                type: [Number], 
+                type: [Number],
                 required: true
             }
         }
@@ -67,20 +67,20 @@ const ListingUserSchema = new mongoose.Schema({
         }
     },
 
-    BussinessHours:{
-        openTime:{
+    BussinessHours: {
+        openTime: {
             type: String,
-         
+
         },
-        closeTime:{
+        closeTime: {
             type: String,
         },
-        offDay:{
+        offDay: {
             type: String,
         },
     },
 
-    
+
 
     HowMuchOfferPost: {
         type: Number,
@@ -89,7 +89,7 @@ const ListingUserSchema = new mongoose.Schema({
         type: String,
         required: [true, "Please provide a Password"]
     },
-    ListingPlan:{
+    ListingPlan: {
         type: String,
         required: [true, "Please provide Listing Plan"]
     },
@@ -102,7 +102,7 @@ const ListingUserSchema = new mongoose.Schema({
     newPassword: {
         type: String
     },
-    PackageId:{
+    PackageId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Package",
     },
@@ -120,15 +120,18 @@ const ListingUserSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    PackagePlanIssued:{
+    PackagePlanIssued: {
         type: Number,
     },
-    isUpdatedProfile:{
-        type:Boolean,
+    isUpdatedProfile: {
+        type: Boolean,
     },
     PartnerId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Partner"
+    },
+    gstNo: {
+        type: String
     }
 }, { timestamps: true });
 

@@ -281,6 +281,14 @@ exports.login = async (req, res) => {
             return res.status(400).json({ message: 'Invalid email or password' });
         }
 
+        if(partner.isShow === false){
+            return res.status(400).json({ message: 'Your account is not active' });
+        }
+
+        if(partner.isBlock === true){
+            return res.status(400).json({ message: 'Your account is blocked' });
+        }
+
         if (!partner.isEmailVerified) {
             return res.status(400).json({ message: 'Please verify your email before logging in' });
         }
@@ -375,3 +383,37 @@ exports.getAllPartner = async (req,res)=>{
         })
     }
 }
+
+exports.updateIsBlock = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { isBlock } = req.body;
+        // const updatedPartner = await Partner.findByIdAndUpdate(id, { isBlock }, { new: true });
+        const updatedPartner = await Partner.findById(id);
+        if (!updatedPartner) {
+            return res.status(404).json({ message: 'Partner not found' });
+        }
+        updatedPartner.isBlock = isBlock;
+        await updatedPartner.save();
+        res.status(200).json({ message: 'Partner updated successfully',data:updatedPartner });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+exports.updateIsShow = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { isShow } = req.body;
+        // const updatedPartner = await Partner.findByIdAndUpdate(id, { isShow }, { new: true });
+        const updatedPartner = await Partner.findById(id);
+        if (!updatedPartner) {
+            return res.status(404).json({ message: 'Partner not found' });
+        }
+        updatedPartner.isShow = isShow;
+        await updatedPartner.save();
+        res.status(200).json({ message: 'Partner updated successfully',data:updatedPartner }); 
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};

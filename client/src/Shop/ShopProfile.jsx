@@ -13,6 +13,8 @@ const ShopProfile = ({ shopDetails, onUpgradePackage, onLogout, onProfileUpload,
     const [edit, setEdit] = useState(false);
     const [bussinessHours, setBussinessHours] = useState(false);
     const [address, setAddress] = useState(false);
+    const [planDetail,setPlanDetail] = useState(null)
+  const [remainingTime, setRemainingTime] = useState("");
     const [formData, sedFormData] = useState({
         BussinessHours: {
             openTime: '',
@@ -29,12 +31,57 @@ const ShopProfile = ({ shopDetails, onUpgradePackage, onLogout, onProfileUpload,
         userDecisionTimeout: 5000,
     });
 
+    useEffect(() => {
+        const fetchPlans = async () => {
+          try {
+            const { data } = await axios.get(`https://api.naideal.com/api/v1/admin-packages`);
+            // console.log("data", data.packages);
+            const allPlans = data.packages;
+            const planInfo = allPlans.find(plan => plan.packageName === shopDetails?.ListingPlan);
+            
+            if (planInfo) {
+              setPlanDetail(planInfo);
+              calculateRemainingTime(planInfo.updatedAt, planInfo.validity);
+            }
+          } catch (error) {
+            console.log("Internal server error", error);
+          }
+        };
+    
+        const calculateRemainingTime = (updatedAt, validity) => {
+          const updatedDate = new Date(updatedAt);
+          const expiryDate = new Date(updatedDate);
+          expiryDate.setDate(updatedDate.getDate() + validity);
+    
+          const now = new Date();
+          const timeDiff = expiryDate - now; // Difference in milliseconds
+    
+          if (timeDiff > 0) {
+            const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+    
+            setRemainingTime(`${days} days, ${hours} hours, ${minutes} minutes left`);
+          } else {
+            setRemainingTime("Expired");
+          }
+        };
+    
+        fetchPlans();
+      }, [shopDetails]);
+
     const {
         addressData,
         handleAddressChange,
         handleGeoCode,
         fetchCurrentLocation
     } = useAddress(shopDetails, coords);
+
+    useEffect(() => {
+        if (!shopDetails?.BussinessHours) {
+            toast.error('Please add bussiness hours first');
+        }
+    }, [shopDetails])
 
     const handleAddressSubmit = async (e) => {
         e.preventDefault();
@@ -62,7 +109,7 @@ const ShopProfile = ({ shopDetails, onUpgradePackage, onLogout, onProfileUpload,
                 }
             }
         } catch (error) {
-            console.log("Internal server error",error)
+            console.log("Internal server error", error)
             // toast.error(error.response?.data?.message || 'Error updating address');
         }
     };
@@ -86,13 +133,13 @@ const ShopProfile = ({ shopDetails, onUpgradePackage, onLogout, onProfileUpload,
     const OnClose = () => {
         setEdit(false);
     };
-    const offDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday',"All Day Open"];
+    const offDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', "All Day Open"];
 
     const handleBussinessHours = async (e) => {
         e.preventDefault();
 
         try {
-            const { data } = await axios.post('http://localhost:7485/api/v1/Other/add-bussiness-hours', formData, {
+            const { data } = await axios.post('https://api.naideal.com/api/v1/Other/add-bussiness-hours', formData, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('ShopToken')}`,
@@ -202,6 +249,10 @@ const ShopProfile = ({ shopDetails, onUpgradePackage, onLogout, onProfileUpload,
                         <div className="flex items-center text-gray-700">
                             <Package className="w-5 h-5 mr-2" />
                             <span>Package: {shopDetails?.ListingPlan || "Basic"}</span>
+                        </div>
+                        <div className="flex items-center text-gray-700">
+                            <Package className="w-5 h-5 mr-2" />
+                            <span>Package expired in: {remainingTime}</span>
                         </div>
                         <div className="flex items-center text-gray-700">
                             <Mail className="w-5 h-5 mr-2" />

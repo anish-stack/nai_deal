@@ -16,6 +16,8 @@ const ShopDashboard = () => {
   const [profile, setProfile] = useState(null);
   const BackendUrl = import.meta.env.VITE_REACT_APP_BACKEND_URL;
 
+
+
   const fetchMyShopDetails = async () => {
     try {
       const response = await axios.get(`${BackendUrl}/My-Shop-Details`, {
@@ -34,6 +36,18 @@ const ShopDashboard = () => {
     }
   };
 
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+
+      } catch (error) {
+        console.log("Internal server error", error)
+      }
+    }
+  }, [])
+
   useEffect(() => {
     if (!token) {
       navigate('/Shop-login');
@@ -51,7 +65,7 @@ const ShopDashboard = () => {
     formData.append('image', profile);
     try {
       const response = await axios.post(
-        'http://localhost:7485/api/v1/Upload-Profile-Image',
+        'https://api.naideal.com/api/v1/Upload-Profile-Image',
         formData,
         {
           headers: {
@@ -82,6 +96,8 @@ const ShopDashboard = () => {
     return null;
   }
 
+  // console.log("shopDetails.PackagePlanIssued ",shopDetails.PackagePlanIssued )
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
@@ -105,15 +121,19 @@ const ShopDashboard = () => {
                   <h2 className="text-2xl font-bold text-gray-800">My Posts</h2>
                   <p className="text-gray-600">
                     {shopDetails ? (
-                      `${shopDetails.HowMuchOfferPost || "0"} / ${
-                        shopDetails.PackagePlanIssued 
+                      `${shopDetails.HowMuchOfferPost || "0"} / ${shopDetails.PackagePlanIssued
                       } posts used`
                     ) : "Loading..."}
                   </p>
                 </div>
                 <button
                   onClick={() => setIsCreateListingOpen(true)}
-                  className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors"
+                  disabled={shopDetails?.HowMuchOfferPost >= shopDetails?.PackagePlanIssued}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors 
+    ${shopDetails?.HowMuchOfferPost >= shopDetails?.PackagePlanIssued
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-green-500 hover:bg-green-600 text-white"
+                    }`}
                 >
                   <Plus className="w-5 h-5" />
                   Post Offer
@@ -130,6 +150,7 @@ const ShopDashboard = () => {
         <CreateListing
           isOpen={isCreateListingOpen}
           onClose={() => setIsCreateListingOpen(false)}
+          listingBtn={shopDetails.PackagePlanIssued}
         />
       )}
     </div>

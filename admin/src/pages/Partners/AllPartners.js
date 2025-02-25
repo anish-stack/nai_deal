@@ -13,23 +13,48 @@ const AllPartners = () => {
 
     const fetchPartners = async () => {
         try {
-            const response = await axios.get(`http://localhost:7485/api/v1/admin-all-partner`);
+            const response = await axios.get(`https://api.naideal.com/api/v1/admin-all-partner`);
             setPartners(response.data.data);
-            console.log(response.data.data)
+            // console.log(response.data.data)
         } catch (error) {
             console.error('Error fetching partners:', error);
         }
     };
     const handleDelete = async (id) => {
         try {
-            console.log("i am click",id)
-            const response = await axios.delete(`http://localhost:7485/api/v1/delete-partner/${id}`);
-            console.log(response.data)
+            console.log("i am click", id)
+            const response = await axios.delete(`https://api.naideal.com/api/v1/delete-partner/${id}`);
+            // console.log(response.data)
             fetchPartners()
         } catch (error) {
             console.error('Error fetching partners:', error);
         }
     };
+
+    const handleUpdateIsShow = async (isShow, id) => {
+        try {
+            const updateStatus = !isShow;
+            const response = await axios.put(`https://api.naideal.com/api/v1/update-Is-Show/${id}`, { isShow: updateStatus });
+            // console.log(response?.data)
+
+            fetchPartners()
+        } catch (error) {
+            console.log("Internal server error", error)
+        }
+    }
+
+    const handleUpdateIsBlock = async (isBlock, id) => {
+        try {
+            const updateStatus = !isBlock;
+            const response = await axios.put(`https://api.naideal.com/api/v1/update-Is-Block/${id}`, { isBlock: updateStatus });
+            // console.log(response?.data);
+            fetchPartners();
+        } catch (error) {
+            console.log("Internal server error", error);
+        }
+    };
+
+
     // Logic to paginate partners
     const indexOfLastPartner = currentPage * partnersPerPage;
     const indexOfFirstPartner = indexOfLastPartner - partnersPerPage;
@@ -58,17 +83,37 @@ const AllPartners = () => {
                             <th className="text-left py-2 px-4">Partner Email</th>
                             <th className="text-left py-2 px-4">Partner Contact Number</th>
                             <th className="text-left py-2 px-4">Listing Done</th>
+                            <th className="text-left py-2 px-4">Able to login</th>
+                            <th className="text-left py-2 px-4">Block</th>
 
                             <th className="text-left py-2 px-4">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {currentPartners.reverse().map((partner) => (
-                            <tr key={partner.partnerId}>
+                        {currentPartners.reverse().map((partner, index) => (
+                            <tr key={index}>
                                 <td className="py-2 px-4">{partner.PartnerName}</td>
                                 <td className="py-2 px-4">{partner.PartnerEmail}</td>
                                 <td className="py-2 px-4">{partner.PartnerContactDetails}</td>
                                 <td className="py-2 px-4">{partner.PartnerDoneListing}</td>
+                                <td className="py-2 px-4">{
+                                    <label class="inline-flex items-center cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={partner?.isShow}
+                                            onChange={() => handleUpdateIsShow(partner?.isShow, partner?._id)}
+                                            className="sr-only peer"
+                                        />
+                                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
+                                    </label>
+                                }</td>
+                                <td className="py-2 px-4">{
+                                    <label class="inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" checked={partner?.isBlock} onChange={() => handleUpdateIsBlock(partner?.isBlock, partner?._id)} class="sr-only peer" />
+                                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
+                                    </label>
+                                }</td>
+                                {/* <td className="py-2 px-4">{partner.PartnerDoneListing}</td> */}
 
 
                                 <td className="py-2 px-4">

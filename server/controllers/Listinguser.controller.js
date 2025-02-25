@@ -38,7 +38,7 @@ exports.ListUser = async (req, res) => {
         const {
             UserName, Email, ContactNumber, ShopName,
             ShopAddress, ShopCategory, ListingPlan,
-            HowMuchOfferPost, Password, LandMarkCoordinates
+            HowMuchOfferPost, Password, LandMarkCoordinates,gstNo
         } = req.body;
 
         // console.log(req.body)
@@ -104,7 +104,8 @@ exports.ListUser = async (req, res) => {
             Password,
             PartnerId,
             LandMarkCoordinates,
-            FreeListing: ListingPlan === 'Free Plan - Rs:0' ? 'Free Listing' : undefined
+            FreeListing: ListingPlan === 'Free Plan - Rs:0' ? 'Free Listing' : undefined,
+            gstNo
         };
 
 
@@ -376,7 +377,7 @@ exports.UpdateProfileDetails = async (req, res) => {
         }
 
         // Destructure the fields from the request body
-        const { ShopName, UserName, Email, ContactNumber } = req.body;
+        const { ShopName, UserName, Email, ContactNumber, gstNo, ShopCategory } = req.body;
         console.log(req.body)
         // Prepare an object for the updated fields
         const updatedFields = {};
@@ -394,6 +395,14 @@ exports.UpdateProfileDetails = async (req, res) => {
         if (ContactNumber && ContactNumber !== checkShop.ContactNumber) {
             updatedFields.ContactNumber = ContactNumber;
         }
+        if (gstNo && gstNo !== checkShop.gstNo) {
+            updatedFields.gstNo = gstNo;
+        }
+        if (ShopCategory && ShopCategory !== checkShop.ShopCategory) {
+            updatedFields.ShopCategory = ShopCategory;
+        }
+
+        // console.log("shopcategory",)
 
 
         // If no fields were updated, return a response

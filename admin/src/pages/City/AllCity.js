@@ -18,7 +18,7 @@ const AllCity = () => {
     const fetchCities = async () => {
         try {
             setLoading(true);
-            const response = await axios.get('http://localhost:7485/api/v1/admin-get-city');
+            const response = await axios.get('https://api.naideal.com/api/v1/admin-get-city');
             setCities(response.data || []);
         } catch (error) {
             toast.error('Failed to fetch cities');
@@ -54,7 +54,7 @@ const AllCity = () => {
 
         try {
             setIsSubmitting(true);
-            await axios.post('http://localhost:7485/api/v1/admin-create-city', formData, {
+            await axios.post('https://api.naideal.com/api/v1/admin-create-city', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             setCreateData({ cityName: '', image: null, previewUrl: '' });
@@ -85,7 +85,7 @@ const AllCity = () => {
 
         try {
             setIsSubmitting(true);
-            await axios.post(`http://localhost:7485/api/v1/admin-update-city/${selectedCityId}`, formData, {
+            await axios.post(`https://api.naideal.com/api/v1/admin-update-city/${selectedCityId}`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             setUpdateData({ cityName: '', image: null, previewUrl: '' });
@@ -104,7 +104,7 @@ const AllCity = () => {
 
         try {
             setIsSubmitting(true);
-            await axios.delete(`http://localhost:7485/api/v1/admin-delete-city/${id}`);
+            await axios.delete(`https://api.naideal.com/api/v1/admin-delete-city/${id}`);
             await fetchCities();
             toast.success('City deleted successfully');
         } catch (error) {

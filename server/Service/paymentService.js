@@ -6,6 +6,8 @@ class PaymentService {
     this.razorpay = new Razorpay({
       key_id: process.env.RAZORPAY_KEY_ID || "rzp_live_VM1rZfiucpi71n",
       key_secret: process.env.RAZORPAY_KEY_SECRET || "n5qG5D3NwCspamdBVLe2mZh6",
+      // key_id: process.env.RAZORPAY_KEY_ID || "rzp_test_cz0vBQnDwFMthJ",
+      // key_secret: process.env.RAZORPAY_KEY_SECRET || "aIM7S3NfvUHlM84tcZRQpNht",
     });
   }
 

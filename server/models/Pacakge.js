@@ -17,7 +17,22 @@ const packageSchema = new Schema({
     isActive: {
         type: Boolean,
         default: true
+    },
+    validity: {
+        type: Number, // Store validity in days
+        required: true
+    },
+    expiryDate: {
+        type: Date // Store calculated expiry date
     }
+}, { timestamps: true });
+
+// Middleware to set expiryDate automatically
+packageSchema.pre('save', function (next) {
+    if (this.validity) {
+        this.expiryDate = new Date(Date.now() + this.validity * 24 * 60 * 60 * 1000); // Convert days to milliseconds
+    }
+    next();
 });
 
 // Create a model based on the schema

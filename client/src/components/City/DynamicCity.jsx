@@ -15,7 +15,7 @@ const DynamicCity = () => {
     useEffect(() => {
         const fetchCities = async () => {
             try {
-                const response = await axios.get('http://localhost:7485/api/v1/admin-get-city');
+                const response = await axios.get('https://api.naideal.com/api/v1/admin-get-city');
                 const citiesData = response.data;
                 // Sort cities with current city first
                 const sortedCities = citiesData.sort((a, b) => {

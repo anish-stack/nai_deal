@@ -27,7 +27,7 @@ const AllShop = () => {
     const fetchShops = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(`http://localhost:7485/api/v1/all-shops`);
+            const res = await axios.get(`https://api.naideal.com/api/v1/all-shops`);
             setShops(res.data.reverse());
             setError(null);
         } catch (error) {
@@ -50,7 +50,7 @@ const AllShop = () => {
 
     const handleDelete = async (id) => {
         try {
-            await axios.delete(`http://localhost:7485/api/v1/delete-shop/${id}`);
+            await axios.delete(`https://api.naideal.com/api/v1/delete-shop/${id}`);
             setShops(shops.filter(shop => shop._id !== id));
             setDeleteModalOpen(false);
         } catch (error) {

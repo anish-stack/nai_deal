@@ -6,7 +6,10 @@ const EditProfile = ({ profile, isOpen, OnClose }) => {
         ShopName: '',
         ContactNumber: '',
         Email: '',
+        gstNo: '',
+        ShopCategory: '',
     });
+    const [categories, setCategories] = useState([]);
     const [isLoading, setIsLoading] = useState(false);  // Loading state
 
     // Effect to set initial data when the profile prop is passed
@@ -17,9 +20,27 @@ const EditProfile = ({ profile, isOpen, OnClose }) => {
                 ShopName: profile.ShopName || '',
                 ContactNumber: profile.ContactNumber || '',
                 Email: profile.Email || '',
+                gstNo: profile.gstNo || '',
+                ShopCategory: profile.ShopCategory || '',
             });
         }
     }, [profile, isOpen]);
+
+    const fetchCategories = async () => {
+        try {
+            const response = await axios.get(`https://api.naideal.com/api/v1/admin-get-categories`);
+            const sortedCategories = response.data.data.sort((a, b) =>
+                a.CategoriesName.localeCompare(b.CategoriesName)
+            );
+            setCategories(sortedCategories);
+        } catch (error) {
+            toast.error('Error fetching categories');
+        }
+    };
+
+    useEffect(() => {
+        fetchCategories();
+    }, [])
 
     // Handle input change
     const handleChange = (e) => {
@@ -46,7 +67,7 @@ const EditProfile = ({ profile, isOpen, OnClose }) => {
         setIsLoading(true);  // Start loading
 
         try {
-            const res = await axios.post('http://localhost:7485/api/v1/Upload-Profile-Details', updateData, {
+            const res = await axios.post('https://api.naideal.com/api/v1/Upload-Profile-Details', updateData, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
@@ -128,6 +149,38 @@ const EditProfile = ({ profile, isOpen, OnClose }) => {
                             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700" htmlFor="Email">
+                            GST No
+                        </label>
+                        <input
+                            type="text"
+                            id="gstNo"
+                            name="gstNo"
+                            value={updateData.gstNo}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Shop Category</label>
+                        <select
+                            name="ShopCategory"
+                            value={updateData.ShopCategory._id}  // Ensure correct state variable
+                            onChange={handleChange}  // Properly handle updates
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                        >
+                            <option value="">Select a category</option>
+                            {categories.map((category) => (
+                                <option key={category._id} value={category._id}>
+                                    {category.CategoriesName}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
 
                     <div className="flex justify-between items-center mt-6">
                         <button

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import toast from 'react-hot-toast'
+import toast from 'react-hot-toast';
+
 const CreatePackage = () => {
     const [packageDetails, setPackageDetails] = useState({
         packageName: '',
         postsDone: '',
-        packagePrice: 0
+        packagePrice: '',
+        validity: '' // Added validity field
     });
 
     const handleChange = e => {
@@ -19,15 +21,13 @@ const CreatePackage = () => {
     const handleSubmit = async e => {
         e.preventDefault();
         try {
-            const response = await axios.post(`http://localhost:7485/api/v1/admin-create-packages`, packageDetails);
+            const response = await axios.post(`https://api.naideal.com/api/v1/admin-create-packages`, packageDetails);
             console.log('Package created:', response.data);
-            toast.success("Package created")
-            window.location.href=`/All-Packages`
-            // Optionally, reset form state or show success message
+            toast.success("Package created");
+            window.location.href = `/All-Packages`;
         } catch (error) {
             console.error('Error creating package:', error);
-            toast.error("Error creating package")
-            // Handle error (show error message, etc.)
+            toast.error("Error creating package");
         }
     };
 
@@ -37,8 +37,8 @@ const CreatePackage = () => {
 
             <form onSubmit={handleSubmit}>
                 <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
-                       Package Name
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="packageName">
+                        Package Name
                     </label>
                     <input
                         type="text"
@@ -52,11 +52,11 @@ const CreatePackage = () => {
                 </div>
 
                 <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="description">
-                        How Many Post in This Package
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="postsDone">
+                        How Many Posts in This Package
                     </label>
                     <input
-                      type="text"
+                        type="text"
                         id="postsDone"
                         name="postsDone"
                         value={packageDetails.postsDone}
@@ -67,7 +67,7 @@ const CreatePackage = () => {
                 </div>
 
                 <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="price">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="packagePrice">
                         Price
                     </label>
                     <input
@@ -75,6 +75,22 @@ const CreatePackage = () => {
                         id="packagePrice"
                         name="packagePrice"
                         value={packageDetails.packagePrice}
+                        onChange={handleChange}
+                        className="border border-gray-300 rounded-md p-2 w-full"
+                        required
+                    />
+                </div>
+
+                {/* Validity Field */}
+                <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="validity">
+                        Validity (in days)
+                    </label>
+                    <input
+                        type="number"
+                        id="validity"
+                        name="validity"
+                        value={packageDetails.validity}
                         onChange={handleChange}
                         className="border border-gray-300 rounded-md p-2 w-full"
                         required

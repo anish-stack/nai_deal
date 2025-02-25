@@ -10,7 +10,7 @@ const CreateListing = ({ isOpen, onClose }) => {
   const [btnLoading, setBtnLoading] = useState(false);
   const [formData, setFormData] = useState({
     Title: '',
-    Details: '',
+    // Details: '',
     tags: "",
     Items: [{ itemName: '', Discount: '', dishImages: [], MrpPrice: '' }],
     Pictures: [],
@@ -25,22 +25,37 @@ const CreateListing = ({ isOpen, onClose }) => {
 
 
   useEffect(() => {
-    const isFormIncomplete = !formData.Title || !formData.Details ||
+    const isFormIncomplete = !formData.Title ||
       formData.Items.some(item => !item.itemName || !item.Discount);
     const isImageLimitExceeded = formData.Pictures.length > 5;
     setIsSubmitDisabled(isFormIncomplete || isImageLimitExceeded);
   }, [formData]);
 
 
+  // const handleInputChange = (e) => {
+  //   const { name, value } = e.target;
+  //   if (name === 'tags') {
+  //     const tags = value.split(',').map(tag => tag.trim());
+  //     setFormData({ ...formData, tags: tags });
+  //   } else {
+  //     setFormData({ ...formData, [name]: value });
+  //   }
+  // };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     if (name === 'tags') {
-      const tags = value.split(',').map(tag => tag.trim());
-      setFormData({ ...formData, tags: tags });
+      const tags = value.split(',').map(tag => tag.trim()).slice(0, 5);
+      if (tags.length > 5) {
+        toast.error('You can only add up to 5 tags.');
+        return;
+      }
+      setFormData({ ...formData, tags });
     } else {
       setFormData({ ...formData, [name]: value });
     }
   };
+  
 
   const handleItemChange = (index, e) => {
     const { name, value, files } = e.target;
@@ -53,12 +68,25 @@ const CreateListing = ({ isOpen, onClose }) => {
     setFormData(prev => ({ ...prev, Items: items }));
   };
 
+  // const handleAddItem = () => {
+  //   setFormData(prev => ({
+  //     ...prev,
+  //     Items: [...prev.Items, { itemName: '', Discount: '', MrpPrice: '', dishImages: [] }]
+  //   }));
+  // };
+
   const handleAddItem = () => {
+    if (formData.Items.length >= 12) {
+      toast.error('You can only add up to 12 items.');
+      return;
+    }
+
     setFormData(prev => ({
       ...prev,
       Items: [...prev.Items, { itemName: '', Discount: '', MrpPrice: '', dishImages: [] }]
     }));
   };
+
 
   const handleRemoveItem = (index) => {
     setFormData(prev => ({
@@ -67,38 +95,38 @@ const CreateListing = ({ isOpen, onClose }) => {
     }));
   };
 
- const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB size limit
-const VALID_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/jpg']; // Valid image formats
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB size limit
+  const VALID_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp']; // Valid image formats
 
-const handleImageChange = (e) => {
-  const files = Array.from(e.target.files);
-  
-  // Check for the number of files
-  if (formData.Pictures.length + files.length > 5) {
-    toast.error('You can only upload a maximum of 5 images.');
-    return;
-  }
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
 
-  // Validate file types and sizes
-  const invalidFiles = files.filter(file => 
-    !VALID_IMAGE_TYPES.includes(file.type) || file.size > MAX_FILE_SIZE
-  );
+    // Check for the number of files
+    if (formData.Pictures.length + files.length > 5) {
+      toast.error('You can only upload a maximum of 5 images.');
+      return;
+    }
 
-  if (invalidFiles.length > 0) {
-    toast.error('Some files are invalid. Ensure the files are images and less than 10MB.');
-    return;
-  }
+    // Validate file types and sizes
+    const invalidFiles = files.filter(file =>
+      !VALID_IMAGE_TYPES.includes(file.type) || file.size > MAX_FILE_SIZE
+    );
 
-  // Add valid files to form data
-  setFormData(prev => ({
-    ...prev,
-    Pictures: [...prev.Pictures, ...files]
-  }));
+    if (invalidFiles.length > 0) {
+      toast.error('Some files are invalid. Ensure the files are images and less than 10MB.');
+      return;
+    }
 
-  // Generate image previews
-  const previews = files.map(file => URL.createObjectURL(file));
-  setImagePreviews(prev => [...prev, ...previews]);
-};
+    // Add valid files to form data
+    setFormData(prev => ({
+      ...prev,
+      Pictures: [...prev.Pictures, ...files]
+    }));
+
+    // Generate image previews
+    const previews = files.map(file => URL.createObjectURL(file));
+    setImagePreviews(prev => [...prev, ...previews]);
+  };
 
 
   const handleImageRemove = (index) => {
@@ -112,6 +140,39 @@ const handleImageChange = (e) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // console.log(formData.HtmlContent)
+    // Ensure all required fields are filled
+    if (!formData.Title.trim()) {
+      toast.error("Title is required.");
+      return;
+    }
+    // if (!formData.Details.trim()) {
+    //   toast.error("Details are required.");
+    //   return;
+    // }
+    if (formData.Items.length === 0) {
+      toast.error("At least one item is required.");
+      return;
+    }
+
+    for (const item of formData.Items) {
+      if (!item.itemName.trim()) {
+        toast.error("Each item must have a name.");
+        return;
+      }
+      if (!item.Discount.trim()) {
+        toast.error("Each item must have a discount.");
+        return;
+      }
+      if (!item.MrpPrice.trim()) {
+        toast.error("Each item must have an MRP price.");
+        return;
+      }
+    }
+
+    if (formData.Pictures.length === 0) {
+      toast.error("At least one post image is required.");
+      return;
+    }
     try {
       const data = new FormData();
       Object.keys(formData).forEach(key => {
@@ -198,7 +259,7 @@ const handleImageChange = (e) => {
               />
             </div>
 
-            <div>
+            {/* <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Details <span className="text-red-500">*</span>
               </label>
@@ -211,7 +272,7 @@ const handleImageChange = (e) => {
                 placeholder="Enter post details"
                 required
               />
-            </div>
+            </div> */}
             <div>
               <label htmlFor="tags" className="block text-sm font-medium text-gray-700">Tags</label>
               <input

@@ -38,6 +38,14 @@ const PartnerSchema = new mongoose.Schema({
     isEmailVerified: {
         type: Boolean,
         default: false
+    },
+    isBlock: {
+        type: Boolean,
+        default: false
+    },
+    isShow: {
+        type: Boolean,
+        default: false
     }
 
 }, { timestamps: true });

@@ -25,7 +25,8 @@ const initialFormData = {
     ShopCategory: '',
     ListingPlan: 'Free',
     HowMuchOfferPost: '',
-    Password: ''
+    Password: '',
+    gstNo: ''
 };
 const BackendUrl = import.meta.env.VITE_REACT_APP_BACKEND_URL;
 // console.log(BackendUrl)
@@ -51,17 +52,17 @@ const UserRegister = () => {
         }
     }, [coords]);
 
-const fetchCategories = async () => {
-    try {
-        const response = await axios.get(`${BackendUrl}/admin-get-categories`);
-        const sortedCategories = response.data.data.sort((a, b) => 
-            a.CategoriesName.localeCompare(b.CategoriesName)
-        );
-        setCategories(sortedCategories);
-    } catch (error) {
-        toast.error('Error fetching categories');
-    }
-};
+    const fetchCategories = async () => {
+        try {
+            const response = await axios.get(`${BackendUrl}/admin-get-categories`);
+            const sortedCategories = response.data.data.sort((a, b) =>
+                a.CategoriesName.localeCompare(b.CategoriesName)
+            );
+            setCategories(sortedCategories);
+        } catch (error) {
+            toast.error('Error fetching categories');
+        }
+    };
 
 
     const fetchPackages = async () => {
@@ -77,7 +78,7 @@ const fetchCategories = async () => {
         if (!coords) return;
 
         try {
-            const response = await axios.post(`http://localhost:7485/Fetch-Current-Location`, {
+            const response = await axios.post(`https://api.naideal.com/Fetch-Current-Location`, {
                 lat: coords.latitude,
                 lng: coords.longitude
             });
@@ -104,7 +105,7 @@ const fetchCategories = async () => {
             return
         }
         try {
-            const response = await axios.get(`http://localhost:7485/geocode?address=${landmark}`)
+            const response = await axios.get(`https://api.naideal.com/geocode?address=${landmark}`)
             const locationData = response.data;
             console.log(locationData)
             setFormData((prev) => ({
@@ -123,6 +124,47 @@ const fetchCategories = async () => {
     const handleSubmit = async (e) => {
         console.log(formData)
         e.preventDefault();
+        // Check for empty fields
+        if (!formData.UserName) {
+            toast.error("Username is required.");
+            return;
+        }
+        if (!formData.Email) {
+            toast.error("Email is required.");
+            return;
+        }
+        if (!formData.ContactNumber) {
+            toast.error("Contact Number is required.");
+            return;
+        }
+        if (!formData.ShopName) {
+            toast.error("Business Name is required.");
+            return;
+        }
+        if (!formData.ShopAddress.City) {
+            toast.error("City is required.");
+            return;
+        }
+        if (!formData.ShopAddress.PinCode) {
+            toast.error("Pin Code is required.");
+            return;
+        }
+        if (!formData.ShopAddress.ShopAddressStreet) {
+            toast.error("Shop Address Street is required.");
+            return;
+        }
+        if (!formData.ShopCategory) {
+            toast.error("Business Category is required.");
+            return;
+        }
+        if (!formData.ListingPlan) {
+            toast.error("Listing Plan is required.");
+            return;
+        }
+        if (!formData.Password) {
+            toast.error("Password is required.");
+            return;
+        }
         try {
             const response = await axios.post(`${BackendUrl}/register-list-user`, formData, {
                 headers: {
@@ -171,7 +213,7 @@ const fetchCategories = async () => {
         <>
 
             <div className="gap-6 w-full max-w-7xl mx-auto grid lg:grid-cols-2 grid-cols-1 bg-white mt-2 overflow-hidden">
-              
+
 
                 <div className="relative w-full">
                     <img
@@ -277,7 +319,7 @@ const fetchCategories = async () => {
                                 value={formData.ShopCategory}
                                 onChange={(category) => setFormData({ ...formData, ShopCategory: category })}
                             />
-                
+
                             <PackageSelector
                                 packages={packages}
                                 value={formData.ListingPlan}
@@ -285,27 +327,40 @@ const fetchCategories = async () => {
                             />
                         </div>
 
-                        {/* Password */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Password</label>
-                            <input
-                                type="password"
-                                required
-                                value={formData.Password}
-                                onChange={(e) => setFormData({ ...formData, Password: e.target.value })}
-                                className="max-w-[220px] px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                            />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">GST No. (optional)</label>
+                                <input
+                                    type="text"
+                                    value={formData.gstNo}
+                                    onChange={(e) => setFormData({ ...formData, gstNo: e.target.value })}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                />
+                            </div>
+
+                            {/* Password */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">Password</label>
+                                <input
+                                    type="password"
+                                    required
+                                    value={formData.Password}
+                                    onChange={(e) => setFormData({ ...formData, Password: e.target.value })}
+                                    className="max-w-[220px] px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                />
+                            </div>
                         </div>
+
 
                         {/* Submit Button */}
                         <div className='text-center'>
-                        <button
-                            type="submit"
-                            className="max-w-[320px]  w-full py-3 px-6 bg-blue-600 text-white text-lg font-semibold rounded-md shadow hover:bg-blue-700 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                        >
-                            Register Your Business
-                        </button>
-                        <p className='mt-5'><a href="/terms-and-conditions" target='_blank'>Read terms and conditions</a></p>
+                            <button
+                                type="submit"
+                                className="max-w-[320px]  w-full py-3 px-6 bg-blue-600 text-white text-lg font-semibold rounded-md shadow hover:bg-blue-700 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                            >
+                                Register Your Business
+                            </button>
+                            <p className='mt-5'><a href="/terms-and-conditions" target='_blank'>Read terms and conditions</a></p>
                         </div>
                     </form>
                 </div>
