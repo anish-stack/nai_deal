@@ -6,39 +6,38 @@ class PaymentService {
     this.razorpay = new Razorpay({
       key_id: process.env.RAZORPAY_KEY_ID || "rzp_live_VM1rZfiucpi71n",
       key_secret: process.env.RAZORPAY_KEY_SECRET || "n5qG5D3NwCspamdBVLe2mZh6",
-      // key_id: process.env.RAZORPAY_KEY_ID || "rzp_test_cz0vBQnDwFMthJ",
-      // key_secret: process.env.RAZORPAY_KEY_SECRET || "aIM7S3NfvUHlM84tcZRQpNht",
     });
   }
 
-  async createOrder(listingPlan, userName) {
-    console.log("Received Listing Plan:", listingPlan);
-    console.log("Received User Name:", userName);
-
+  async createOrder(listingPlan, userName, couponDiscount = 0) {
     // Extract package name from the listing plan string
     const extractedPlanName = listingPlan.split('-')[0].trim();
-    console.log("Extracted Plan Name:", extractedPlanName);
 
     const plansRates = await Plans.find();
-    console.log("Plans from Database:", plansRates);
-
-    // Find the matching plan in the database
     const planDb = plansRates.find(plan => plan.packageName === extractedPlanName);
 
     if (!planDb) {
       throw new Error('Invalid Listing Plan');
     }
 
-    // Prepare Razorpay order options
+    // Apply discount if available
+    let finalPrice = parseInt(planDb.packagePrice);
+
+    if (couponDiscount > 0) {
+      const discountAmount = (finalPrice * couponDiscount) / 100;
+      finalPrice -= discountAmount;
+      finalPrice = Math.max(finalPrice, 0); // Ensure price doesn't go negative
+    }
+
+    // Convert to paise (multiply by 100)
     const options = {
-      amount: parseInt(planDb.packagePrice) * 100, // Convert to paise
+      amount: Math.round(finalPrice * 100), 
       currency: 'INR',
       receipt: `user_${userName}_${Date.now()}`,
     };
 
     console.log("Creating Razorpay Order with Options:", options);
 
-    // Create and return the Razorpay order
     return this.razorpay.orders.create(options);
   }
 }

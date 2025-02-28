@@ -21,6 +21,7 @@ const menuItems = [
   { path: '/All-Payments-Details', label: 'Payments', icon: CreditCard },
   { path: '/All-Packages', label: 'Packages', icon: Package },
   { path: '/Settings', label: 'Settings', icon: Settings },
+  { path: '/all-coupons', label: 'Coupons', icon: PartyPopper },
 ];
 
 const Header = () => {

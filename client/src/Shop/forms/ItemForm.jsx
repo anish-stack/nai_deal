@@ -2,9 +2,15 @@ import React from 'react';
 import { X } from 'lucide-react';
 
 const ItemForm = ({ item, index, onChange, onRemove, canRemove }) => {
+  // Calculate the after-discount price
+  const calculateDiscountedPrice = (mrp, discount) => {
+    if (!mrp || isNaN(mrp) || !discount || isNaN(discount)) return '';
+    return (mrp - (mrp * discount) / 100).toFixed(2);
+  };
+
   return (
     <div className="p-4 bg-gray-50 rounded-lg space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <input
           type="text"
           name="itemName"
@@ -26,13 +32,21 @@ const ItemForm = ({ item, index, onChange, onRemove, canRemove }) => {
           max="100"
         />
         <input
-          type="text"
+          type="number"
           name="MrpPrice"
           placeholder="MRP Price"
           value={item.MrpPrice}
           onChange={(e) => onChange(index, e)}
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           required
+        />
+        <input
+          type="text"
+          name="AfterDiscountPrice"
+          placeholder="After Discount Price"
+          value={calculateDiscountedPrice(item.MrpPrice, item.Discount)}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-200 text-gray-700 cursor-not-allowed"
+          readOnly
         />
       </div>
       

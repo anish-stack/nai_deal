@@ -12,7 +12,7 @@ const CreateListing = ({ isOpen, onClose }) => {
     Title: '',
     // Details: '',
     tags: "",
-    Items: [{ itemName: '', Discount: '', dishImages: [], MrpPrice: '' }],
+    Items: [{ itemName: '', Discount: '', dishImages: [], MrpPrice: '', AfterDiscountPrice:'' }],
     Pictures: [],
     HtmlContent: ''
   });
@@ -83,7 +83,7 @@ const CreateListing = ({ isOpen, onClose }) => {
 
     setFormData(prev => ({
       ...prev,
-      Items: [...prev.Items, { itemName: '', Discount: '', MrpPrice: '', dishImages: [] }]
+      Items: [...prev.Items, { itemName: '', Discount: '', MrpPrice: '', dishImages: [], AfterDiscountPrice:'' }]
     }));
   };
 
@@ -181,6 +181,7 @@ const CreateListing = ({ isOpen, onClose }) => {
             data.append(`Items[${index}].itemName`, item.itemName);
             data.append(`Items[${index}].Discount`, item.Discount);
             data.append(`Items[${index}].MrpPrice`, item.MrpPrice);
+            data.append(`Items[${index}].AfterDiscountPrice`, item.AfterDiscountPrice);
             item.dishImages.forEach((file, fileIndex) => {
               data.append(`Items[${index}].dishImages[${fileIndex}]`, file);
             });

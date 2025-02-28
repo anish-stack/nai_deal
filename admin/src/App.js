@@ -27,6 +27,7 @@ import FestivalPop from './pages/FestivalPop/Festival.pop';
 import AdminPage from './pages/Free_Space/Free_Space';
 
 import { Toaster } from 'react-hot-toast';
+import AllCoupon from './pages/Coupon/AllCoupon';
 
 const App = () => {
   // Retrieve and decrypt the session data
@@ -75,6 +76,7 @@ const App = () => {
           <Route path="/manage-offer-banners" element={<ProtectedRoute><AllBanners /></ProtectedRoute>} />
           <Route path="/manage-pop-festivals" element={<ProtectedRoute><FestivalPop /></ProtectedRoute>} />
           <Route path="/manage-admin_page" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
+          <Route path="/all-coupons" element={<ProtectedRoute><AllCoupon /></ProtectedRoute>} />
 
 
           

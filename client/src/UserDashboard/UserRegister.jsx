@@ -6,7 +6,9 @@ import toast from 'react-hot-toast';
 import LocationInput from './LocationInput';
 import PackageSelector from './PackageSelector';
 import CategorySelector from './CategorySelector';
+import CouponSelector from './CouponSelector';
 import image from './register.png'
+
 const initialFormData = {
     UserName: '',
     Email: '',
@@ -26,24 +28,42 @@ const initialFormData = {
     ListingPlan: 'Free',
     HowMuchOfferPost: '',
     Password: '',
-    gstNo: ''
+    gstNo: '',
+    couponCode: ''
 };
 const BackendUrl = import.meta.env.VITE_REACT_APP_BACKEND_URL;
+const validateEmail = (email) => /\S+@\S+\.\S+/.test(email);
+const validatePhoneNumber = (number) => /^\d{10}$/.test(number);
+const validatePinCode = (pincode) => /^\d{6}$/.test(pincode);
+const validateGST = (gst) => /^[0-9A-Z]{15}$/.test(gst);
 // console.log(BackendUrl)
 const UserRegister = () => {
     const [formData, setFormData] = useState(initialFormData);
     const [categories, setCategories] = useState([]);
     const [packages, setPackages] = useState([]);
     const navigate = useNavigate();
+    const [allCoupon, setAllCoupon] = useState([]);
+    const [appliedCoupon, setAppliedCoupon] = useState(null);
 
     const { coords, isGeolocationAvailable, isGeolocationEnabled } = useGeolocated({
         positionOptions: { enableHighAccuracy: false },
         userDecisionTimeout: 5000,
     });
+    
+    const handleFetchCoupon = async() => {
+        try {
+            const {data} = await axios.get('https://api.naideal.com/api/v1/get-all-coupon-code')
+            const allData = data.data
+            setAllCoupon(allData)
+        } catch (error) {
+            console.log("Internal server error",error)
+        }
+    }
 
     useEffect(() => {
         fetchCategories();
         fetchPackages();
+        handleFetchCoupon();
     }, []);
 
     useEffect(() => {
@@ -63,7 +83,6 @@ const UserRegister = () => {
             toast.error('Error fetching categories');
         }
     };
-
 
     const fetchPackages = async () => {
         try {
@@ -99,6 +118,7 @@ const UserRegister = () => {
             toast.error('Error fetching location');
         }
     };
+    
     const handleGeoCode = async (landmark) => {
         if (!landmark) {
             toast.error('Please enter landmark to proceed')
@@ -117,12 +137,45 @@ const UserRegister = () => {
             }))
         } catch (error) {
             console.log(error)
-
         }
     }
 
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        let newValue = value;
+        setFormData({ ...formData, [name]: newValue });
+    };
+
+    const handleBlur = (e) => {
+        const { name, value } = e.target;
+
+        if (name === "Email" && !validateEmail(value)) {
+            toast.error("Invalid email format");
+        } else if (name === "ContactNumber" && !validatePhoneNumber(value)) {
+            toast.error("Invalid phone number");
+        } else if (name === "PinCode" && !validatePinCode(value)) {
+            toast.error("Invalid pin code");
+        } else if (name === "gstNo" && value && !validateGST(value)) {
+            toast.error("Invalid GST number");
+        }
+    };
+
+    const handleCouponSelect = (coupon) => {
+        setAppliedCoupon(coupon);
+        if (coupon) {
+            setFormData(prev => ({
+                ...prev,
+                couponCode: coupon.code
+            }));
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                couponCode: ''
+            }));
+        }
+    };
+
     const handleSubmit = async (e) => {
-        console.log(formData)
         e.preventDefault();
         // Check for empty fields
         if (!formData.UserName) {
@@ -165,16 +218,20 @@ const UserRegister = () => {
             toast.error("Password is required.");
             return;
         }
+
+        console.log("object",formData)
+        
         try {
             const response = await axios.post(`${BackendUrl}/register-list-user`, formData, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('B2bToken')}`
                 }
             });
-
-            if (formData.ListingPlan === 'Free') {
+            
+            console.log("response.data.order",response.data)
+            if (formData.ListingPlan === 'Free Plan') {
                 toast.success('Business listed successfully');
-                navigate('/Shop-login');
+                return navigate('/Shop-login');
             } else {
                 const order = response.data.order;
                 const options = {
@@ -209,12 +266,8 @@ const UserRegister = () => {
     };
 
     return (
-
         <>
-
             <div className="gap-6 w-full max-w-7xl mx-auto grid lg:grid-cols-2 grid-cols-1 bg-white mt-2 overflow-hidden">
-
-
                 <div className="relative w-full">
                     <img
                         src={image}
@@ -270,14 +323,15 @@ const UserRegister = () => {
                                 />
                             </div>
 
-
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">Business Name</label>
                                 <input
                                     type="text"
                                     required
                                     value={formData.ShopName}
-                                    onChange={(e) => setFormData({ ...formData, ShopName: e.target.value })}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    name='ShopName'
                                     className="w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                 />
                             </div>
@@ -287,7 +341,9 @@ const UserRegister = () => {
                                 <input
                                     type="email"
                                     value={formData.Email}
-                                    onChange={(e) => setFormData({ ...formData, Email: e.target.value })}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    name='Email'
                                     className="w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                 />
                             </div>
@@ -297,7 +353,9 @@ const UserRegister = () => {
                                 <input
                                     type="tel"
                                     value={formData.ContactNumber}
-                                    onChange={(e) => setFormData({ ...formData, ContactNumber: e.target.value })}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    name='ContactNumber'
                                     className="w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                 />
                             </div>
@@ -327,13 +385,23 @@ const UserRegister = () => {
                             />
                         </div>
 
+                        {/* Coupon Section */}
+                        <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                            <CouponSelector 
+                                coupons={allCoupon} 
+                                onCouponSelect={handleCouponSelect} 
+                            />
+                        </div>
+
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">GST No. (optional)</label>
                                 <input
                                     type="text"
                                     value={formData.gstNo}
-                                    onChange={(e) => setFormData({ ...formData, gstNo: e.target.value })}
+                                    name='gstNo'
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
                                     className="w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                 />
                             </div>
@@ -344,19 +412,20 @@ const UserRegister = () => {
                                 <input
                                     type="password"
                                     required
+                                    name='Password'
                                     value={formData.Password}
-                                    onChange={(e) => setFormData({ ...formData, Password: e.target.value })}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
                                     className="max-w-[220px] px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                 />
                             </div>
                         </div>
 
-
                         {/* Submit Button */}
                         <div className='text-center'>
                             <button
                                 type="submit"
-                                className="max-w-[320px]  w-full py-3 px-6 bg-blue-600 text-white text-lg font-semibold rounded-md shadow hover:bg-blue-700 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                className="max-w-[320px] w-full py-3 px-6 bg-blue-600 text-white text-lg font-semibold rounded-md shadow hover:bg-blue-700 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                             >
                                 Register Your Business
                             </button>
@@ -366,8 +435,6 @@ const UserRegister = () => {
                 </div>
             </div>
         </>
-
-
     );
 }
 
