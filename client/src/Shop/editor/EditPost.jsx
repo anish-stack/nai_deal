@@ -142,7 +142,6 @@ const EditPost = () => {
     } catch (err) {
       // Handle error
       console.error(err.message);
-      // setError(err.message); // If you have an error state
     } finally {
       setSubmitting(false);
     }
@@ -251,8 +250,8 @@ const EditPost = () => {
                     item.dishImages &&
                     item.dishImages.map((image, imgIndex) => (
                       <img
-                        key={`${index}-${imgIndex}`} 
-                        src={image.ImageUrl || "https://via.placeholder.com/64"} 
+                        key={`${index}-${imgIndex}`}
+                        src={image.ImageUrl || "https://via.placeholder.com/64"}
                         className="object-cover w-32 h-32 rounded-sm"
                         alt={`Dish ${index}-${imgIndex}`}
                       />

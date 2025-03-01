@@ -9,6 +9,7 @@ const Header = ({ locationDetails }) => {
     const [pincodeInput, setPincodeInput] = useState('');
     const ShopToken = localStorage.getItem('ShopToken')
     const PartnerToken = localStorage.getItem('B2bToken')
+    const [marquee, setMarquee] = useState([])
 
     const [data, setData] = useState([])
     const [city, setCity] = useState([])
@@ -34,9 +35,22 @@ const Header = ({ locationDetails }) => {
         }
     }
 
+    const handleFetchMarquee = async () => {
+        try {
+            const { data } = await axios.get(`${BackendUrl}/get-all-marquees`)
+            const all = data.data
+            const active = all.filter((item) => item.active === true)
+            const reverse = active.reverse()
+            setMarquee(reverse)
+        } catch (error) {
+            console.log("Internal server error", error)
+        }
+    }
+
     useEffect(() => {
         fetchData()
         fetchCity()
+        handleFetchMarquee()
     }, [])
 
     const location = useLocation()
@@ -71,6 +85,14 @@ const Header = ({ locationDetails }) => {
 
     return (
         <div className='w-full shadow-md'>
+            <div className="w-full py-1 bg-gray-200">
+                <marquee behavior="scroll" direction="left" className="text-lg font-medium">
+                    {marquee.map((item) => (
+                        <span key={item._id} className="mx-4">{item.title}</span>
+                    ))}
+                </marquee>
+            </div>
+
             <div className='max-w-[1400px] flex items-center justify-between mx-auto px-3 py-4'>
                 <div className="logo p-2">
                     <Link to={'/'} className='text-xl font-extrabold text-slate-900 md:text-2xl'>

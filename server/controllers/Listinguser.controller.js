@@ -13,12 +13,12 @@ const nodemailer = require('nodemailer');
 const Payment = require('../models/PaymentDetails')
 
 const { StatusCodes } = require('http-status-codes');
-const Settings = require('../models/Settings.model')
 const Partner = require('../models/Partner.model')
 const { validationResult } = require('express-validator');
 const authService = require('../Service/authService');
 const paymentService = require('../Service/paymentService');
 const Package = require('../models/Pacakge');
+const CouponModel = require('../models/Coupon.model');
 Cloudinary.config({
     cloud_name: process.env.CLOUD_NAME,
     api_key: process.envCLOUDINARY_API_KEY,
@@ -28,6 +28,7 @@ Cloudinary.config({
 
 exports.ListUser = async (req, res) => {
     try {
+        console.log("i am hit")
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(StatusCodes.BAD_REQUEST)
@@ -38,8 +39,12 @@ exports.ListUser = async (req, res) => {
         const {
             UserName, Email, ContactNumber, ShopName,
             ShopAddress, ShopCategory, ListingPlan,
-            HowMuchOfferPost, Password, LandMarkCoordinates,gstNo
+            HowMuchOfferPost, Password, LandMarkCoordinates, gstNo,couponCode
         } = req.body;
+        console.log("couponCode", couponCode)
+
+        const coupon = await CouponModel.findOne({ code: couponCode });
+        const couponDiscount = coupon ? coupon.discount : 0;
 
         // console.log(req.body)
         // Auth check
@@ -57,14 +62,17 @@ exports.ListUser = async (req, res) => {
             $or: [{ Email }, { ContactNumber }]
         });
 
-
         if (existingUser) {
-            if (existingUser.FreeListing && ListingPlan !== 'Free Plan') {
-                const order = await paymentService.createOrder(ListingPlan, UserName);
+            if (existingUser.FreeListing && ListingPlan === 'Free Plan') {
+                existingUser.PaymentDone = true;
+                await existingUser.save();
+                return sendToken(existingUser, res, 200);
+            } else if (existingUser.FreeListing && ListingPlan !== 'Free Plan') {
+                const order = await paymentService.createOrder(ListingPlan, UserName, couponDiscount);
                 return res.status(StatusCodes.OK)
                     .json({ success: true, order });
             } else if (existingUser.PaymentDone === false) {
-                const order = await paymentService.createOrder(ListingPlan, UserName);
+                const order = await paymentService.createOrder(ListingPlan, UserName,couponDiscount);
                 return res.status(StatusCodes.OK)
                     .json({ success: true, order });
             } else {
@@ -72,6 +80,8 @@ exports.ListUser = async (req, res) => {
                     .json({ success: false, message: 'User already exists with this Email or Contact Number and has a Free Listing Memeber' });
             }
         }
+
+        // console.log("Free Plan ListingPlan", ListingPlan)
 
         // Prepare shop address
         const formattedShopAddress = {
@@ -91,6 +101,7 @@ exports.ListUser = async (req, res) => {
 
         const plans = await Plans.find()
         const plan = plans.find(plan => plan.packageName === ListingPlan)
+        // console.log("plan", plan)
 
 
         // Create user data
@@ -104,14 +115,15 @@ exports.ListUser = async (req, res) => {
             Password,
             PartnerId,
             LandMarkCoordinates,
-            FreeListing: ListingPlan === 'Free Plan - Rs:0' ? 'Free Listing' : undefined,
+            FreeListing: ListingPlan === 'Free Plan' ? 'Free Listing' : undefined,
             gstNo
         };
+        // console.log("ListingPlan ListingPlan", ListingPlan)
 
-
-        const newUser = new ListingUser(userData);
-
-        if (ListingPlan === 'Free - Rs:0') {
+        if (ListingPlan == 'Free Plan') {
+            // console.log("i am in freeeeeee")
+            userData.PaymentDone = true
+            const newUser = new ListingUser(userData);
             await newUser.save();
             await Partner.findByIdAndUpdate(PartnerId, { $inc: { PartnerDoneListing: 1 } });
 
@@ -119,8 +131,11 @@ exports.ListUser = async (req, res) => {
                 .json({ success: true, message: 'User created successfully', user: newUser });
         }
 
+        // console.log("i am out")
+        const newUser = new ListingUser(userData);
 
-        const order = await paymentService.createOrder(ListingPlan, UserName);
+
+        const order = await paymentService.createOrder(ListingPlan, UserName,couponDiscount);
         newUser.OrderId = order.id;
         await newUser.save();
 
@@ -937,10 +952,17 @@ exports.CreatePost = async (req, res) => {
         for (const index of Object.keys(itemsMap)) {
             const item = itemsMap[index];
             const uploadedImages = await Promise.all(item.dishImages.map(file => uploadToCloudinary(file)));
+
+            // Calculate AfterDiscountPrice
+            const MrpPrice = parseFloat(req.body[`Items[${index}].MrpPrice`]) || 0;
+            const Discount = parseFloat(req.body[`Items[${index}].Discount`]) || 0;
+            const AfterDiscountPrice = (MrpPrice - (MrpPrice * (Discount / 100))).toFixed(2);
+
             Items.push({
                 itemName: req.body[`Items[${index}].itemName`],
-                MrpPrice: req.body[`Items[${index}].MrpPrice`],
-                Discount: req.body[`Items[${index}].Discount`],
+                MrpPrice: MrpPrice.toString(),
+                Discount: Discount,
+                AfterDiscountPrice: AfterDiscountPrice.toString(),
                 dishImages: uploadedImages
             });
         }
@@ -1130,15 +1152,15 @@ exports.getAllPostApprovedPost = async (req, res) => {
         });
 
         if (!findData.length) {
-            console.log("findData",findData.length)
+            console.log("findData", findData.length)
             listings = await Listing.find({ isApprovedByAdmin: true }).populate('ShopId');
         } else {
             const findDataIds = findData.map(data => data._id.toString());
             listings = await Listing.find({ isApprovedByAdmin: true, ShopId: { $in: findDataIds } }).populate('ShopId');
-        
+
         }
 
-        console.log("listings.length",listings.length)
+        console.log("listings.length", listings.length)
         return res.status(200).json({
             success: true,
             count: listings.length,

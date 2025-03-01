@@ -11,6 +11,7 @@ const { createCategory, updateCategory, getAllCategories, deleteCategory, getAll
 const { CreateBanner, GetAllBanner, UpdateBanner, DeleteBanner, GetAllBannerActive, MakeSetting, GetSetting, UpdateSetting, createMarquee, updateMarquee, deleteMarquee, getAllMarquee, createBanner, getAllBanner, deleteBanner, updateBanner, createOfferBanner, getOfferAllBanner, deleteOfferBanner, updateOfferBanner } = require('../controllers/Webpage.controller');
 const { createFBanner, getFAllBanner, getBanneronWhicPage, deleteFBanner, updateFBanner } = require('../controllers/Festival_controller');
 const { createFormData, getAllFormData, deleteFormData } = require('../controllers/FormData.controller');
+const { createCoupon, getAllCoupons, updateCoupon, deleteCoupon, getCouponById, checkCouponIsAvailable } = require('../controllers/coupon.controller');
 const router = express.Router();
 
 const storage = multer.memoryStorage();
@@ -27,8 +28,8 @@ router.post('/logout', logout);
 router.post('/Create-Post', protect, upload.any(), CreatePost);
 router.post('/paymentverification', paymentVerification)
 router.get('/get-Listing-un', getUnApprovedPosts);
-router.get('/get-listing', getAllPostApprovedPost)
-router.get('/get-Listing-By-Address', getAllPostApprovedPostByAddress)
+router.get('/get-listing', getAllPostApprovedPost);
+router.get('/get-Listing-By-Address', getAllPostApprovedPostByAddress);
 router.get('/get-listing/:id', getPostById);
 router.delete('/delete-listing/:id', deletePostById);
 router.delete('/delete-all-listings', deleteAllPost);
@@ -142,6 +143,16 @@ router.get('/get-all-marquees', getAllMarquee);
 router.post('/send_enquiry_form', createFormData);
 router.get('/get_enquiry_form', getAllFormData);
 router.delete('/delete_enquiry_form/:id', deleteFormData);
+
+// coupon code routes here 
+
+router.post('/create-coupon-code', createCoupon);
+router.get('/get-all-coupon-code', getAllCoupons);
+router.get('/get-single-coupon-code/:id', getCouponById);
+router.put('/update-coupon-code/:id', updateCoupon);
+router.delete('/delete-coupon-code/:id', deleteCoupon);
+router.post('/verify-coupon-code', checkCouponIsAvailable);
+
 
 
 

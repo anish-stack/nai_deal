@@ -47,7 +47,10 @@ const ListingData = new mongoose.Schema({
                         required: true
                     }
                 }
-            ]
+            ],
+            AfterDiscountPrice: {
+                type: String
+            }
         }
     ],
     isApprovedByAdmin: {
