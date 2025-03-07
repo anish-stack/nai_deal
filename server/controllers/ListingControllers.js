@@ -226,133 +226,62 @@ exports.UpdateListingByBolt = async (req, res) => {
         const listingId = req.query.ListingId;
         const ShopId = req.query.id;
 
-        // console.log("Received request to update listing...");
-        // console.log("Listing ID:", listingId);
-        // console.log("Shop ID:", ShopId);
-
         if (!ShopId) {
-            console.log("No Shop ID provided. Returning error.");
-            return res.status(401).json({
-                success: false,
-                msg: "Please Login",
-            });
+            return res.status(401).json({ success: false, msg: "Please Login" });
         }
 
-        // Check if listing exists and belongs to the shop
+        // Fetch the existing listing
         const existingListing = await Listing.findOne({ _id: listingId, ShopId });
         if (!existingListing) {
-            console.log("Listing not found or unauthorized.");
-            return res.status(404).json({
-                success: false,
-                msg: "Listing not found or unauthorized",
-            });
+            return res.status(404).json({ success: false, msg: "Listing not found or unauthorized" });
         }
 
         const { Title, Details, HtmlContent, ItemsUpdated } = req.body;
-        // console.log("Request body:", req.body);
 
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            console.log("Validation errors:", errors.array());
-            return res.status(400).json({ success: false, errors: errors.array() });
-        }
-
-        // Check if files are provided
-        // console.log("Files received:", req.files);
-
-        // If files are not provided, initialize filesArray as an empty array
-        const filesArray = Array.isArray(req.files) ? req.files : Object.values(req.files).flat();
-        console.log("Files array after handling:", filesArray);
-
-        if (filesArray.length === 0) {
-            console.log("No files to upload.");
-        }
-
-        // Handle dish images
-        const itemsMap = {};
-        filesArray.forEach((file) => {
-            const fieldName = file.fieldname;
-            // console.log("Processing file:", file);
-            if (fieldName.startsWith("dishImages")) {
-                const itemIndex = fieldName.split("[")[1].split("]")[0];
-                // console.log("itemIndex for dish image:", itemIndex);
-                itemsMap[itemIndex] = itemsMap[itemIndex] || { dishImages: [] };
-                itemsMap[itemIndex].dishImages.push(file);
-            }
-        });
-
-        // Helper function to upload to Cloudinary
+        // Helper function to upload images to Cloudinary
         const uploadToCloudinary = async (file) => {
             return new Promise((resolve, reject) => {
-                console.log("Uploading to Cloudinary:", file);
                 Cloudinary.uploader.upload_stream(
                     { folder: "your_upload_folder" },
                     (error, result) => {
-                        if (error) {
-                            console.log("Cloudinary upload error:", error);
-                            reject(error);
-                        } else {
-                            console.log("Cloudinary upload result:", result);
-                            resolve({ public_id: result.public_id, ImageUrl: result.secure_url });
-                        }
+                        if (error) reject(error);
+                        else resolve({ public_id: result.public_id, ImageUrl: result.secure_url });
                     }
                 ).end(file.buffer);
             });
         };
 
-        // Handle updated items
-        const updatedItems = JSON.parse(ItemsUpdated);
+        // ✅ Preserve existing items & images
+        const updatedItems = JSON.parse(ItemsUpdated || "{}");
         const updatedListingItems = [];
 
-        // console.log("Updated items received:", updatedItems);
-
         for (const [index, item] of Object.entries(updatedItems)) {
-            const existingItem = existingListing.Items[index]; // Get the existing item at this index
+            const existingItem = existingListing.Items[index] || {}; // Preserve existing item
 
-            // console.log("Processing item:", item);
-            // console.log("Existing item:", existingItem);
+            let dishImages = existingItem.dishImages || []; // Preserve existing images
 
-            // Handle dish images (upload new ones if provided, keep existing ones if not)
-            let dishImages = [];
-
-            console.log("Dish images found for item:", req.files);
-            if (item.dishImages && item.dishImages.length > 0) {
-                // Only upload valid dish images
-                dishImages = await uploadToCloudinary(req.files[0]);
-                // dishImages = await Promise.all(item.dishImages.map(async (image) => {
-                //     if (image && image.buffer) {
-                //         return await uploadToCloudinary(image);
-                //     } else {
-                //         console.log("Invalid dish image data:", image);
-                //         return null; // Ignore invalid images
-                //     }
-                // }));
-            } else {
-                // If no new dish images are provided, keep the existing images
-                dishImages = existingItem?.dishImages || []; // Preserve existing images
+            if (req.files && req.files[`dishImages[${index}]`]) {
+                const newImages = await Promise.all(req.files[`dishImages[${index}]`].map(uploadToCloudinary));
+                dishImages = [...dishImages, ...newImages]; // Append new images to existing ones
             }
 
-            // Update the item with either the new values or the existing ones
             updatedListingItems.push({
-                itemName: item.itemName || existingItem?.itemName,
-                MrpPrice: item.MrpPrice || existingItem?.MrpPrice,
-                Discount: item.Discount || existingItem?.Discount,
-                dishImages, // Updated dish images (keeps existing ones if none are uploaded)
+                itemName: item.itemName || existingItem.itemName,
+                MrpPrice: item.MrpPrice || existingItem.MrpPrice,
+                Discount: item.Discount || existingItem.Discount,
+                dishImages, // ✅ Keep old images if no new ones are provided
             });
         }
 
-        // Handle general pictures update
-        let updatedPictures = existingListing.Pictures;
-        const pictureFiles = filesArray.filter((file) => file.fieldname === "MainImage");
+        // ✅ Preserve existing main images
+        let updatedPictures = existingListing.Pictures || [];
 
-        if (pictureFiles.length > 0) {
-            console.log("Main image files found, uploading...");
-            updatedPictures = await Promise.all(pictureFiles.map(uploadToCloudinary));
-        } else {
-            console.log("No main image files provided.");
+        if (req.files && req.files.MainImage) {
+            const newPictures = await Promise.all(req.files.MainImage.map(uploadToCloudinary));
+            updatedPictures = [...updatedPictures, ...newPictures]; // Append new images
         }
 
-        // Update the listing
+        // ✅ Update the listing while preserving images
         const updatedListing = await Listing.findByIdAndUpdate(
             listingId,
             {
@@ -360,28 +289,19 @@ exports.UpdateListingByBolt = async (req, res) => {
                 Details: Details || existingListing.Details,
                 HtmlContent: HtmlContent || existingListing.HtmlContent,
                 Items: updatedListingItems.length > 0 ? updatedListingItems : existingListing.Items,
-                Pictures: updatedPictures,
+                Pictures: updatedPictures.length > 0 ? updatedPictures : existingListing.Pictures, // ✅ Preserve existing images
                 updatedAt: Date.now(),
             },
             { new: true, runValidators: true }
         );
 
-        console.log("Listing updated successfully.");
-
-        return res.status(200).json({
-            success: true,
-            msg: "Listing updated successfully",
-            listing: updatedListing,
-        });
+        return res.status(200).json({ success: true, msg: "Listing updated successfully", listing: updatedListing });
     } catch (error) {
         console.error("Error during update:", error);
-        return res.status(500).json({
-            success: false,
-            msg: "Error updating listing",
-            error: error.message,
-        });
+        return res.status(500).json({ success: false, msg: "Error updating listing", error: error.message });
     }
 };
+
 
 
 

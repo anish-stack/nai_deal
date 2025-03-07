@@ -89,13 +89,17 @@ const EditPost = () => {
   };
 
   const handleItemImageChange = async (index, files) => {
-    const newItems = [...listing.Items];
-    newItems[index] = {
-      ...newItems[index],
-      dishImages: Array.from(files)
-    };
-    setListing(prev => ({ ...prev, Items: newItems }));
+    setListing(prev => {
+      const newItems = [...prev.Items];
+      newItems[index] = {
+        ...newItems[index],
+        dishImages: files.length > 0 ? Array.from(files) : prev.Items[index].dishImages // Retain old images if no new files selected
+      };
+      return { ...prev, Items: newItems };
+    });
   };
+
+
 
   const handlePicturesChange = (files) => {
     setListing(prev => ({
@@ -115,14 +119,15 @@ const EditPost = () => {
       //   formData.append('HtmlContent', listing.HtmlContent);
       formData.append('ItemsUpdated', JSON.stringify(listing.Items));
       listing.Items.forEach((item, index) => {
-
-
-        if (item.dishImages) {
+        if (item.dishImages && item.dishImages.length > 0) {
           Array.from(item.dishImages).forEach((file, imageIndex) => {
-            formData.append(`dishImages[${imageIndex}]`, file);
+            if (file instanceof File) {
+              formData.append(`dishImages[${imageIndex}]`, file);
+            }
           });
         }
       });
+
 
       if (listing.Pictures?.[0]) {
         formData.append('MainImage', listing.Pictures[0]);

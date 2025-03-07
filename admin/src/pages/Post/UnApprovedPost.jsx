@@ -29,7 +29,7 @@ const UnApprovedPost = () => {
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     const handleApprove = async (postId) => {
-        try { 
+        try {
             await axios.put(`https://api.naideal.com/api/v1/admin-approve-post/${postId}`);
             toast.success('Post approved successfully!');
             setUnApprovedPosts(unApprovedPosts.filter((post) => post._id !== postId));
@@ -63,6 +63,21 @@ const UnApprovedPost = () => {
         setModalPost(null);
     };
 
+    const truncateHtml = (html, wordLimit) => {
+        if (!html) return "";
+
+        // Create a temporary DOM element to strip HTML tags
+        const tempElement = document.createElement("div");
+        tempElement.innerHTML = html;
+        const text = tempElement.textContent || tempElement.innerText || "";
+
+        // Split into words and limit them
+        const words = text.split(/\s+/).slice(0, wordLimit).join(" ");
+
+        return words + (text.split(/\s+/).length > wordLimit ? "..." : "");
+    };
+
+
     return (
         <div className="container mx-auto px-4 py-6">
             <h1 className="text-2xl font-bold mb-4">Unapproved Posts</h1>
@@ -83,7 +98,10 @@ const UnApprovedPost = () => {
                             {currentPosts.map((post) => (
                                 <tr key={post._id}>
                                     <td className="border border-gray-300  px-4 py-2">{post.Title}</td>
-                                    <td className="border border-gray-300  px-4 py-2">{post.Details.slice(0, 20)}...</td>
+                                    <td className="border border-gray-300 px-4 py-2">
+                                        <span dangerouslySetInnerHTML={{ __html: truncateHtml(post?.HtmlContent, 10) }}></span>
+                                    </td>
+
                                     <td className="border border-gray-300 px-4 py-2">{formatDateTime(post.createdAt)}</td>
                                     <td className="border flex  px-4 py-2">
                                         <button

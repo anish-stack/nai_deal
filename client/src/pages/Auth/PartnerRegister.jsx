@@ -63,10 +63,11 @@ const PartnerRegister = () => {
         try {
             const response = await axios.post(`${BackendUrl}/Create-Register`, formData);
             toast.success(response.data.message);
-            window.location.href = `/Otp?email=${formData.PartnerEmail}&Partner-register=true&Date=${Date.now()}`;
+            window.location.href = `/Otp?phone=${formData.PartnerContactDetails}&Partner-register=true&Date=${Date.now()}`;
         } catch (error) {
             const errorMessage = error.response?.data?.message || 'Registration failed. Please try again.';
             toast.error(errorMessage);
+            console.log(error)
             setIsLoading(false);
         }
     };
