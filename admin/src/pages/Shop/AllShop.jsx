@@ -23,6 +23,22 @@ const AllShop = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const shopsPerPage = 7;
+    const [allMembershipPlans, setAllMembershipPlans] = useState([]);
+    const [selectedPackages, setSelectedPackages] = useState({});
+
+    // Fetch Membership Plans
+    const handleFetchMembershipPlans = async () => {
+        try {
+            const response = await axios.get("https://api.naideal.com/api/v1/admin-packages");
+            setAllMembershipPlans(response.data.packages);
+        } catch (error) {
+            console.error("Error fetching membership plans:", error);
+        }
+    };
+
+    useEffect(() => {
+        handleFetchMembershipPlans();
+    }, []);
 
     const fetchShops = async () => {
         try {
@@ -42,11 +58,33 @@ const AllShop = () => {
         fetchShops();
     }, []);
 
+    // Handle Package Update
+    const handleUpdatePackage = async (shopId, packageId) => {
+        try {
+            if (!packageId) {
+                alert("Please select a valid package.");
+                return;
+            }
+            await axios.put(`https://api.naideal.com/api/v1/admin-update-package/${shopId}`, { packageId });
+            alert("Package updated successfully!");
+
+            // Update local state to reflect change
+            // setShops((prevShops) =>
+            //     prevShops.map((shop) =>
+            //         shop._id === shopId ? { ...shop, ListingPlan: packageId } : shop
+            //     )
+            // );
+        } catch (error) {
+            console.log("Error updating package:", error);
+            alert("Failed to update package.");
+        }
+    };
+
     const handleView = (id, Name) => {
         window.location.href = `/All-Post?id=${id}`
     };
 
-    
+
 
     const handleDelete = async (id) => {
         try {
@@ -57,8 +95,6 @@ const AllShop = () => {
             console.error('Error deleting shop:', error);
         }
     };
-
-
 
     const filteredShops = shops.filter((shop) => {
         return (
@@ -131,6 +167,7 @@ const AllShop = () => {
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Package</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Posts</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Update Package</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
@@ -164,6 +201,24 @@ const AllShop = () => {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     {shop.HowMuchOfferPost || 0}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <select
+                                        value={selectedPackages[shop._id] || ""} // Get the selected value per shop
+                                        onChange={(e) => {
+                                            const packageId = e.target.value;
+                                            setSelectedPackages((prev) => ({ ...prev, [shop._id]: packageId })); // Update state
+                                            handleUpdatePackage(shop._id, packageId);
+                                        }}
+                                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    >
+                                        <option value="">--Select--</option>
+                                        {allMembershipPlans.map((plan) => (
+                                            <option key={plan._id} value={plan._id}>
+                                                {plan.packageName}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div className="flex space-x-2">
