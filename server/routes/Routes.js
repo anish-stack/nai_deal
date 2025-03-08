@@ -1,7 +1,7 @@
 const express = require('express');
 const { createPartner, verifyOtpAndEmail, resendAccountVerifyOtp, resendForgetPasswordOtp, login, logout, verifyForgetPasswordOtp, deletePartnerAccount, forgetPasswordRequest, GetAllShopListByPartner, getAllPartner, GetAllShopListByPartnerAdmin, updateIsShow, updateIsBlock } = require('../controllers/Partnercontroller');
 const { UpdateListing, getPostByCategory, UpdateListingAdmin, UpdateListingByBolt } = require('../controllers/ListingControllers');
-const { ListUser, LoginListUser, MyShopDetails, CreatePost, getAllPost, getPostById, deletePostById, deleteAllPost, getMyPostOnly, SearchByPinCodeCityAndWhatYouWant, getAllShops, DeleteListUser, updateDetailsOfListUser, paymentVerification, showPaymentDetails, allPayments, CreateForgetPasswordRequest, verifyOtp, getAllPostApprovedPost, UploadProfileImage, UpdateProfileDetails, getMyAllPost, updateShopAddress, getSingleListingUser, getAllPostApprovedPostByAddress } = require('../controllers/Listinguser.controller');
+const { ListUser, LoginListUser, MyShopDetails, CreatePost, getAllPost, getPostById, deletePostById, deleteAllPost, getMyPostOnly, SearchByPinCodeCityAndWhatYouWant, getAllShops, DeleteListUser, updateDetailsOfListUser, paymentVerification, showPaymentDetails, allPayments, CreateForgetPasswordRequest, verifyOtp, getAllPostApprovedPost, UploadProfileImage, UpdateProfileDetails, getMyAllPost, updateShopAddress, getSingleListingUser, getAllPostApprovedPostByAddress, updatePackageInUser } = require('../controllers/Listinguser.controller');
 const { protect } = require('../middlewares/Protect');
 const multer = require('multer');
 const { getUnApprovedPosts, MakeAPostApproved, getDashboardData } = require('../controllers/Shop');
@@ -153,7 +153,7 @@ router.put('/update-coupon-code/:id', updateCoupon);
 router.delete('/delete-coupon-code/:id', deleteCoupon);
 router.post('/verify-coupon-code', checkCouponIsAvailable);
 
-
+router.put('/admin-update-package/:id',updatePackageInUser);
 
 
 
