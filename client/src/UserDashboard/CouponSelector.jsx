@@ -37,7 +37,9 @@ const CouponSelector = ({ coupons, onCouponSelect }) => {
       if (response.data.success) {
         setIsValid(true);
         onCouponSelect(response.data.data);
-        toast.success('Coupon applied successfully!');
+        setSelectedCoupon(response.data.data);
+        // toast.success('Coupon applied successfully!');
+        toast.success(`Coupon "${response.data.data.code}" applied with ${response.data.data.discount}% discount`);
       } else {
         setIsValid(false);
         onCouponSelect(null);
@@ -65,7 +67,7 @@ const CouponSelector = ({ coupons, onCouponSelect }) => {
       <label className="block text-sm font-medium text-gray-700 mb-2">Apply Coupon</label>
       
       {/* Available Coupons */}
-      {coupons && coupons.length > 0 && (
+      {/* {coupons && coupons.length > 0 && (
         <div className="mb-3">
           <p className="text-sm text-gray-600 mb-2">Available Coupons:</p>
           <div className="flex flex-wrap gap-2">
@@ -85,7 +87,7 @@ const CouponSelector = ({ coupons, onCouponSelect }) => {
             ))}
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Manual Coupon Input */}
       <div className="flex items-center gap-2">

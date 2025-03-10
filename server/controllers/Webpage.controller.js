@@ -202,7 +202,7 @@ exports.UpdateBanner = async (req, res) => {
 exports.MakeSetting = async (req, res) => {
     try {
 
-        const { logo, footerLogo, BioFooter, isFestiveTopPopUpShow, isFestiveBottomPopUpShow, AboveTopGif, BottomGifLink, GstNo, contactNumber, adminId, officeAddress, links, FooterEmail } = req.body;
+        const { logo, footerLogo, BioFooter, isFestiveTopPopUpShow, isFestiveBottomPopUpShow, AboveTopGif, BottomGifLink, GstNo, contactNumber, adminId, officeAddress, links, FooterEmail, marquee } = req.body;
 
 
         const newSetting = new Settings({
@@ -219,6 +219,7 @@ exports.MakeSetting = async (req, res) => {
             AboveTopGif,
             BottomGifLink,
             GstNo,
+            marquee
         });
 
         const savedSetting = await newSetting.save();

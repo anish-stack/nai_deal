@@ -392,7 +392,7 @@ const SingleListing = () => {
                                 </a>
                                 <button
                                     onClick={() => setShowForm(true)}
-                                    className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-full shadow-lg transition-colors z-40 flex items-center gap-2"
+                                    className="flex items-center justify-center gap-2 w-full bg-[#1FB355] hover:bg-[#0ea345] text-white py-3 px-4 rounded-lg font-medium transition-colors"
                                 >
                                     <Mail className="w-5 h-5" />
                                     Contact Us
