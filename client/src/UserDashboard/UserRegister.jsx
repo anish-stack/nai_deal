@@ -160,6 +160,8 @@ const UserRegister = () => {
         }
     };
 
+    
+
     const handleCouponSelect = (coupon) => {
         setAppliedCoupon(coupon);
         if (coupon) {

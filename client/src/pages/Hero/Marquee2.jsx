@@ -3,40 +3,32 @@ import axios from 'axios';
 
 const Marquee2 = () => {
     const [announcements, setAnnouncements] = useState([]);
+    const [settings, setSettings] = useState({})
 
-    const API_URL = 'https://api.naideal.com/api/v1/get-all-marquees';
 
     // Fetch all marquees when the component mounts
     useEffect(() => {
-        const fetchMarquees = async () => {
-            try {
-                const response = await axios.get(API_URL);
+        const fetchSettings = async () => {
+              try {
+                const response = await axios.get('https://api.naideal.com/api/v1/get-setting');
                 if (response.data.success) {
-                    // Assuming the response contains an array of marquees
-                    setAnnouncements(response.data.data.map(marquee => marquee.title)); // Adjust based on API response
+                  setSettings(response.data.data);
+                  console.log(response.data.data)
                 } else {
-                    console.error('Failed to fetch marquees:', response.data.message);
+                  console.error(response.data.message);
                 }
-            } catch (error) {
-                console.error('Error fetching marquees:', error.message);
-            }
-        };
-
-        fetchMarquees();
+              } catch (error) {
+                console.error('Error fetching settings:', error.message);
+              }
+            };
+            fetchSettings();
     }, []); // Empty dependency array means this effect runs only once when the component mounts
 
     return (
         <div>
             <div className="bg-gradient-to-r from-[#48c777] to-[#08a742] overflow-hidden py-2">
-                <div className="flex animate-marquee whitespace-nowrap">
-                    {announcements.concat(announcements).map((text, index) => (
-                        <span
-                            key={index}
-                            className="mx-4 text-white font-medium"
-                        >
-                            {text}
-                        </span>
-                    ))}
+                <div className="flex items-center justify-center">
+                    <span>{settings?.marquee}</span>
                 </div>
             </div>
         </div>

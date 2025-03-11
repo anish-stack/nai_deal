@@ -19,6 +19,7 @@ const Settings = () => {
     FooterEmail: '',
     footerLogo: '',
     BioFooter: '',
+    marquee: '',
   });
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
@@ -214,6 +215,17 @@ const Settings = () => {
             rows={4}
             name="BioFooter"
             value={settings.BioFooter}
+            onChange={handleChange}
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+        </div>
+
+        <div>
+          <label className="block font-medium text-gray-700">Marquee</label>
+          <textarea
+            rows={4}
+            name="marquee"
+            value={settings.marquee}
             onChange={handleChange}
             className="w-full p-2 border border-gray-300 rounded"
           />

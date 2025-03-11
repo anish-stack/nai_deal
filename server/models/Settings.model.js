@@ -62,6 +62,9 @@ const SettingsSchema = new mongoose.Schema({
         type: String,
         trim: true,
 
+    },
+    marquee: {
+        type: String
     }
 }, {
     timestamps: true // Automatically adds createdAt and updatedAt fields
