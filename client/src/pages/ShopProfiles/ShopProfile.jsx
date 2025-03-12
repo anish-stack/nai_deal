@@ -10,7 +10,7 @@ const ShopProfile = () => {
     const [shopDetails, setShopDetails] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [allData,setAllData] = useState([])
+    const [allData, setAllData] = useState([])
     // const BackendUrl = import.meta.env.VITE_REACT_APP_BACKEND_URL;
     const BackendUrl = 'https://api.naideal.com/api/v1';
 
@@ -25,11 +25,11 @@ const ShopProfile = () => {
             setError(null);
             const response = await axios.get(`${BackendUrl}/get-Listing`);
             const data = response.data.data;
-            console.log("datafindShop",response)
+            console.log("datafindShop", response)
             const filteredShop = data?.filter(item => item?.ShopId?._id === id);
             const findShop = data?.find(item => item?.ShopId?._id === id);
-            console.log("filteredShop",filteredShop)
-            console.log("findShop",findShop)
+            console.log("filteredShop", filteredShop)
+            console.log("findShop", findShop)
 
             if (findShop) {
                 setShopDetails(findShop);
@@ -139,7 +139,12 @@ const ShopProfile = () => {
                             </div>
                             <div>
                                 <h3 className="font-medium text-gray-900">Phone</h3>
-                                <a href={`tel:${ShopId?.ContactNumber}`} className="text-gray-600">{ShopId?.ContactNumber}</a>
+                                <p className="text-gray-600">
+                                    {ShopId?.showNumber
+                                        ? <a href={`tel:${ShopId?.ContactNumber}`} className="text-gray-600">{ShopId?.ContactNumber}</a>
+                                        :<a className="text-gray-600">${ShopId.ContactNumber.slice(0, 2)}******{ShopId.ContactNumber.slice(-2)}</a>}
+                                </p>
+                                {/* <a href={`tel:${ShopId?.ContactNumber}`} className="text-gray-600">${ShopId.ContactNumber.slice(0, 2)}******${ShopId.ContactNumber.slice(-2)}</a> */}
                             </div>
                         </div>
 
@@ -149,7 +154,10 @@ const ShopProfile = () => {
                             </div>
                             <div>
                                 <h3 className="font-medium text-gray-900">Email</h3>
-                                <a href={`mailto:${ShopId?.Email}`} className="text-gray-600">{ShopId?.Email}</a>
+                                {ShopId?.showNumber
+                                        ? <a href={`mailto:${ShopId?.Email}`} className="text-gray-600">{ShopId?.Email}</a>
+                                        :<a className="text-gray-600">${ShopId?.Email.slice(0, 2)}******{ShopId?.Email.slice(-2)}</a>}
+                                {/* <a href={`mailto:${ShopId?.Email}`} className="text-gray-600">{ShopId?.Email}</a> */}
 
                             </div>
                         </div>
@@ -197,20 +205,20 @@ const ShopProfile = () => {
                                             <div className="flex items-center gap-2">
                                                 <Tag className="w-4 h-4 text-gray-400" />
                                                 <div className="">
-                                                    {item?.tags.slice(0,1).map((tag,index)=>(
+                                                    {item?.tags.slice(0, 1).map((tag, index) => (
                                                         <span className=' font-light text-sm' key={index}>#{tag}</span>
                                                     ))}
                                                 </div>
                                                 {/* <span className="text-gray-900 font-medium">₹{item.MrpPrice}</span> */}
                                             </div>
                                             <div className="w-full flex justify-center">
-                                            <Link
-                                                to={`/Single-Listing/${shopDetails._id}/${shopDetails.Title.replace(/\s+/g, '-').replace(/%/g, '')}`}
-                                                className="bg-blue-600 rounded text-center p-2 text-white hover:bg-blue-700 font-medium flex items-center gap-1"
-                                            >
-                                                View Details
-                                                <ChevronRight className="w-4 h-4" />                                               
-                                            </Link>
+                                                <Link
+                                                    to={`/Single-Listing/${shopDetails._id}/${shopDetails.Title.replace(/\s+/g, '-').replace(/%/g, '')}`}
+                                                    className="bg-blue-600 rounded text-center p-2 text-white hover:bg-blue-700 font-medium flex items-center gap-1"
+                                                >
+                                                    View Details
+                                                    <ChevronRight className="w-4 h-4" />
+                                                </Link>
                                             </div>
                                         </div>
                                     </div>
