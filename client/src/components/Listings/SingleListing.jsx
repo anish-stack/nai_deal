@@ -326,9 +326,9 @@ const SingleListing = () => {
                                         <p className="font-medium text-gray-900">Contact</p>
                                         {/* <p className="text-gray-600">{listing.shopDetails?.ContactNumber}</p> */}
                                         <p className="text-gray-600">
-                                            {listing.shopDetails?.ContactNumber
-                                                ? `${listing.shopDetails.ContactNumber.slice(0, 2)}******${listing.shopDetails.ContactNumber.slice(-2)}`
-                                                : ""}
+                                            {listing.shopDetails?.showNumber
+                                                ? `${listing.shopDetails.ContactNumber}`
+                                                : `${listing.shopDetails.ContactNumber.slice(0, 2)}******${listing.shopDetails.ContactNumber.slice(-2)}`}
                                         </p>
 
                                     </div>
@@ -337,7 +337,12 @@ const SingleListing = () => {
                                     <Mail className="w-5 h-5 text-gray-400 mt-1" />
                                     <div>
                                         <p className="font-medium text-gray-900">Email</p>
-                                        <p className="text-gray-600">{listing.shopDetails?.Email}</p>
+                                        {/* <p className="text-gray-600">{listing.shopDetails?.Email}</p> */}
+                                        <p className="text-gray-600">
+                                            {listing.shopDetails?.showNumber
+                                                ? `${listing.shopDetails?.Email}`
+                                                : `${listing.shopDetails?.Email.slice(0, 2)}******${listing.shopDetails?.Email.slice(-2)}`}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -394,20 +399,29 @@ const SingleListing = () => {
                         <div className="bg-white rounded-2xl shadow-sm border p-6">
                             <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Contact</h3>
                             <div className="space-y-4">
-                                <a
-                                    href={`tel:${listing.shopDetails?.ContactNumber}`}
-                                    className="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-colors"
-                                >
-                                    <Phone className="w-5 h-5" />
-                                    Call Now
-                                </a>
-                                <a
-                                    href={`mailto:${listing.shopDetails?.Email}`}
-                                    className="flex items-center justify-center gap-2 w-full bg-gray-100 hover:bg-gray-200 text-gray-900 py-3 px-4 rounded-lg font-medium transition-colors"
-                                >
-                                    <Mail className="w-5 h-5" />
-                                    Send Email
-                                </a>
+                                <p className="text-gray-600">
+                                    {listing.shopDetails?.showNumber
+                                        ? <>
+                                            <a
+                                                href={`tel:${listing.shopDetails?.ContactNumber}`}
+                                                className="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-colors"
+                                            >
+                                                <Phone className="w-5 h-5" />
+                                                Call Now
+                                            </a>
+                                            <a
+                                                href={`mailto:${listing.shopDetails?.Email}`}
+                                                className="flex items-center justify-center gap-2 w-full bg-gray-100 hover:bg-gray-200 text-gray-900 py-3 px-4 rounded-lg font-medium transition-colors"
+                                            >
+                                                <Mail className="w-5 h-5" />
+                                                Send Email
+                                            </a>
+                                        </>
+                                        : <>
+
+                                        </>}
+                                </p>
+
                                 <button
                                     onClick={() => setShowForm(true)}
                                     className="flex items-center justify-center gap-2 w-full bg-[#1FB355] hover:bg-[#0ea345] text-white py-3 px-4 rounded-lg font-medium transition-colors"

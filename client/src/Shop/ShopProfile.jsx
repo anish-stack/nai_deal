@@ -23,7 +23,7 @@ const ShopProfile = ({ shopDetails, onUpgradePackage, onLogout, onProfileUpload,
         }
     });
 
-    console.log("object",shopDetails)
+    console.log("object", shopDetails)
     const [shopData, setShopData] = useState(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false); // State to manage the delete modal visibility
     const [deleteReason, setDeleteReason] = useState(''); // State to manage the delete reason
@@ -71,6 +71,19 @@ const ShopProfile = ({ shopDetails, onUpgradePackage, onLogout, onProfileUpload,
 
         fetchPlans();
     }, [shopDetails]);
+
+    const handleUpdateShowNumber = async (id, showNumber) => {
+        const updatedStatus = !showNumber
+        try {
+            const res = await axios.put(`https://api.naideal.com/api/v1/update_show_detail/${id}`, {
+                showNumber: updatedStatus
+            })
+            toast.success('Status Updated')
+            window.location.reload();
+        } catch (error) {
+            console.log("Internal server error", error)
+        }
+    }
 
     const {
         addressData,
@@ -134,17 +147,17 @@ const ShopProfile = ({ shopDetails, onUpgradePackage, onLogout, onProfileUpload,
 
     const handleShareProfile = async (username) => {
         if (!username) return alert("Username is required!");
-    
+
         const profileUrl = `https://naideal.com/${username}`;
         const message = `Check out my profile on NaiDeal: ${profileUrl}`;
-        
+
         // Encode the message for WhatsApp URL
         const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-    
+
         // Open WhatsApp share link
         window.open(whatsappUrl, "_blank");
     };
-    
+
 
     const OnClose = () => {
         setEdit(false);
@@ -278,9 +291,9 @@ const ShopProfile = ({ shopDetails, onUpgradePackage, onLogout, onProfileUpload,
                         <div className="flex items-center text-gray-700">
                             <Phone className="w-5 h-5 mr-2" />
                             <span>{shopDetails?.ContactNumber
-                                                ? `${shopDetails.ContactNumber.slice(0, 2)}******${shopDetails.ContactNumber.slice(-2)}`
-                                                : ""}</span>
-                            
+                                ? `${shopDetails.ContactNumber.slice(0, 2)}******${shopDetails.ContactNumber.slice(-2)}`
+                                : ""}</span>
+
                         </div>
                         <div className="flex items-center text-gray-700">
                             <MapPin className="w-5 h-5 mr-2" />
@@ -316,14 +329,22 @@ const ShopProfile = ({ shopDetails, onUpgradePackage, onLogout, onProfileUpload,
                             <Crown className="w-6 h-6" />
                             <span className="text-lg font-semibold">Upgrade Your Package</span>
                         </button>
-                        
-                    <button
-                        onClick={() => {handleShareProfile(shopDetails?.UserName)}}
-                        className="flex items-center w-full justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition-all duration-300"
-                    >
-                        <i className="fa-solid fa-share w-5 h-5"></i>
-                        <span>Share Profile</span>
-                    </button>
+
+                        <button
+                            onClick={() => { handleShareProfile(shopDetails?.UserName) }}
+                            className="flex items-center w-full justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition-all duration-300"
+                        >
+                            <i className="fa-solid fa-share w-5 h-5"></i>
+                            <span>Share Profile</span>
+                        </button>
+                        <button
+                            onClick={() => handleUpdateShowNumber(shopDetails?._id, shopDetails?.showNumber)}
+                            className={`w-full flex items-center justify-center gap-2 ${shopDetails?.showNumber ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'
+                                } text-white py-2 px-4 rounded-lg transition-all duration-300`}
+                        >
+                            {shopDetails?.showNumber ? 'Hide Number' : 'Show Number'}
+                        </button>
+
                     </div>
                 </div>
             </div>

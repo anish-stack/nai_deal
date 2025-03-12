@@ -135,6 +135,10 @@ const ListingUserSchema = new mongoose.Schema({
     },
     gstNo: {
         type: String
+    },
+    showNumber : {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true });
 
