@@ -64,7 +64,7 @@ const CouponSelector = ({ coupons, onCouponSelect }) => {
 
   return (
     <div className="w-full">
-      <label className="block text-sm font-medium text-gray-700 mb-2">Apply Coupon</label>
+      <label className="block text-sm font-medium text-gray-700 mb-2">Apply Coupon(optional)</label>
       
       {/* Available Coupons */}
       {/* {coupons && coupons.length > 0 && (

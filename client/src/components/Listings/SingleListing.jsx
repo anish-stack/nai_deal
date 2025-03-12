@@ -14,9 +14,9 @@ const SingleListing = () => {
     const [selectedImage, setSelectedImage] = useState(0);
     const [showForm, setShowForm] = useState(false);
     const [isLiked, setIsLiked] = useState(false);
-    const [formLoading,setFormLoading] = useState(false)
+    const [formLoading, setFormLoading] = useState(false)
     const BackendUrl = import.meta.env.VITE_REACT_APP_BACKEND_URL;
-    const [shopId,setShopId] = useState('')
+    const [shopId, setShopId] = useState('')
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -34,12 +34,12 @@ const SingleListing = () => {
         return () => clearTimeout(timer);
     }, []);
 
-    useEffect(()=>{
+    useEffect(() => {
         setFormData((prevData) => ({
             ...prevData,
             shopId: shopId
         }))
-    },[shopId])
+    }, [shopId])
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -66,7 +66,7 @@ const SingleListing = () => {
         } catch (error) {
             console.log("Internal server error", error);
             toast.error('Failed to submit form');
-        }finally{
+        } finally {
             setFormLoading(false)
         }
     };
@@ -75,6 +75,17 @@ const SingleListing = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         fetchSingleData();
     }, [id]);
+
+    const calculateDiscountPrice = (originalPrice, discountPercentage) => {
+        if (!originalPrice || !discountPercentage) return originalPrice; // If no discount, return the original price.
+
+        const discountAmount = (originalPrice * discountPercentage) / 100;
+        const finalPrice = originalPrice - discountAmount;
+
+        return finalPrice; // Returning price with 2 decimal places
+    };
+
+
 
     const fetchSingleData = async () => {
         try {
@@ -313,7 +324,13 @@ const SingleListing = () => {
                                     <Phone className="w-5 h-5 text-gray-400 mt-1" />
                                     <div>
                                         <p className="font-medium text-gray-900">Contact</p>
-                                        <p className="text-gray-600">{listing.shopDetails?.ContactNumber}</p>
+                                        {/* <p className="text-gray-600">{listing.shopDetails?.ContactNumber}</p> */}
+                                        <p className="text-gray-600">
+                                            {listing.shopDetails?.ContactNumber
+                                                ? `${listing.shopDetails.ContactNumber.slice(0, 2)}******${listing.shopDetails.ContactNumber.slice(-2)}`
+                                                : ""}
+                                        </p>
+
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-3">
@@ -357,7 +374,8 @@ const SingleListing = () => {
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-2">
                                             <Tag className="w-4 h-4 text-gray-400" />
-                                            <span className="text-gray-900">₹{item.MrpPrice}</span>
+                                            <del className="text-gray-900">₹{item.MrpPrice}</del>
+                                            <span className="text-gray-900">₹{item?.AfterDiscountPrice || calculateDiscountPrice(item.MrpPrice, item.Discount)}</span>
                                         </div>
                                         <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-sm font-medium">
                                             {item.Discount}% Off

@@ -7,17 +7,20 @@ const ListingUserSchema = new mongoose.Schema({
     },
     UserName: {
         type: String,
-        required: [true, "Please provide a User Name"]
+        required: [true, "Please provide a User Name"],
+        unique: true
     },
     ShopName: {
         type: String,
         required: [true, "Please provide a Shop Name"]
     },
     ContactNumber: {
-        type: String
+        type: String,
+        unique: true
     },
     Email: {
         type: String,
+        unique: true
     },
     ShopAddress: {
         City: {

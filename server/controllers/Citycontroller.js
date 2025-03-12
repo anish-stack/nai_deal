@@ -120,11 +120,17 @@ exports.updateCity = async (req, res) => {
 exports.deleteCity = async (req, res) => {
     try {
         const { id } = req.params;
-        const deletedCity = await City.findByIdAndDelete(id);
+        const deletedCity = await City.findById(id);
 
         if (!deletedCity) {
             return res.status(404).json({ error: 'City not found' });
         }
+
+        if(deletedCity.image && deletedCity.image.public_id) {
+            await Cloudinary.uploader.destroy(deletedCity.image.public_id);
+        }
+
+        await City.findByIdAndDelete(id);
 
         res.json(deletedCity);
     } catch (error) {
