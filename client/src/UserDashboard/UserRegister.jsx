@@ -36,6 +36,7 @@ const validateEmail = (email) => /\S+@\S+\.\S+/.test(email);
 const validatePhoneNumber = (number) => /^\d{10}$/.test(number);
 const validatePinCode = (pincode) => /^\d{6}$/.test(pincode);
 const validateGST = (gst) => /^[0-9A-Z]{15}$/.test(gst);
+const validateUserName = (name) => /^[a-z]+$/.test(name);
 // console.log(BackendUrl)
 const UserRegister = () => {
     const [formData, setFormData] = useState(initialFormData);
@@ -44,19 +45,20 @@ const UserRegister = () => {
     const navigate = useNavigate();
     const [allCoupon, setAllCoupon] = useState([]);
     const [appliedCoupon, setAppliedCoupon] = useState(null);
+    const [errors, setErrors] = useState({});
 
     const { coords, isGeolocationAvailable, isGeolocationEnabled } = useGeolocated({
         positionOptions: { enableHighAccuracy: false },
         userDecisionTimeout: 5000,
     });
-    
-    const handleFetchCoupon = async() => {
+
+    const handleFetchCoupon = async () => {
         try {
-            const {data} = await axios.get('https://api.naideal.com/api/v1/get-all-coupon-code')
+            const { data } = await axios.get('https://api.naideal.com/api/v1/get-all-coupon-code')
             const allData = data.data
             setAllCoupon(allData)
         } catch (error) {
-            console.log("Internal server error",error)
+            console.log("Internal server error", error)
         }
     }
 
@@ -71,6 +73,30 @@ const UserRegister = () => {
             fetchCurrentLocation();
         }
     }, [coords]);
+
+    const handleBlur = (e) => {
+        const { name, value } = e.target;
+        let errorMsg = '';
+
+        if (name === 'UserName' && !validateUserName(value)) {
+            errorMsg = 'Username must be in lowercase letters only';
+        } else if (name === 'Email' && !validateEmail(value)) {
+            errorMsg = 'Invalid email format';
+        } else if (name === 'ContactNumber' && !validatePhoneNumber(value)) {
+            errorMsg = 'Invalid phone number (10 digits required)';
+        } else if (name === 'PinCode' && !validatePinCode(value)) {
+            errorMsg = 'Invalid pin code (6 digits required)';
+        } else if (name === 'gstNo' && value && !validateGST(value)) {
+            errorMsg = 'Invalid GST number';
+        } else if (name === 'Password' && value.length < 6) {
+            errorMsg = 'Password must be at least 6 characters long';
+        }
+
+        setErrors((prevErrors) => ({
+            ...prevErrors,
+            [name]: errorMsg
+        }));
+    };
 
     const fetchCategories = async () => {
         try {
@@ -118,7 +144,7 @@ const UserRegister = () => {
             toast.error('Error fetching location');
         }
     };
-    
+
     const handleGeoCode = async (landmark) => {
         if (!landmark) {
             toast.error('Please enter landmark to proceed')
@@ -146,21 +172,21 @@ const UserRegister = () => {
         setFormData({ ...formData, [name]: newValue });
     };
 
-    const handleBlur = (e) => {
-        const { name, value } = e.target;
+    // const handleBlur = (e) => {
+    //     const { name, value } = e.target;
 
-        if (name === "Email" && !validateEmail(value)) {
-            toast.error("Invalid email format");
-        } else if (name === "ContactNumber" && !validatePhoneNumber(value)) {
-            toast.error("Invalid phone number");
-        } else if (name === "PinCode" && !validatePinCode(value)) {
-            toast.error("Invalid pin code");
-        } else if (name === "gstNo" && value && !validateGST(value)) {
-            toast.error("Invalid GST number");
-        }
-    };
+    //     if (name === "Email" && !validateEmail(value)) {
+    //         toast.error("Invalid email format");
+    //     } else if (name === "ContactNumber" && !validatePhoneNumber(value)) {
+    //         toast.error("Invalid phone number");
+    //     } else if (name === "PinCode" && !validatePinCode(value)) {
+    //         toast.error("Invalid pin code");
+    //     } else if (name === "gstNo" && value && !validateGST(value)) {
+    //         toast.error("Invalid GST number");
+    //     }
+    // };
 
-    
+
 
     const handleCouponSelect = (coupon) => {
         setAppliedCoupon(coupon);
@@ -221,16 +247,16 @@ const UserRegister = () => {
             return;
         }
 
-        console.log("object",formData)
-        
+        console.log("object", formData)
+
         try {
             const response = await axios.post(`${BackendUrl}/register-list-user`, formData, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('B2bToken')}`
                 }
             });
-            
-            console.log("response.data.order",response.data)
+
+            console.log("response.data.order", response.data)
             if (formData.ListingPlan === 'Free Plan') {
                 toast.success('Business listed successfully');
                 return navigate('/Shop-login');
@@ -303,29 +329,22 @@ const UserRegister = () => {
                         {/* Basic Information */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div>
+                                {errors.UserName && <p className="text-red-500 text-sm">{errors.UserName}</p>}
                                 <label className="block text-sm font-medium text-gray-700">Username</label>
                                 <input
                                     type="text"
                                     required
+                                    name="UserName"
                                     value={formData.UserName}
-                                    onChange={(e) => {
-                                        if (e.target.value.includes(' ')) {
-                                            alert('Spaces are not allowed in the username.');
-                                            return;
-                                        }
-                                        setFormData({ ...formData, UserName: e.target.value });
-                                    }}
-                                    onKeyDown={(e) => {
-                                        if (e.key === ' ') {
-                                            e.preventDefault();
-                                            alert('Spaces are not allowed in the username.');
-                                        }
-                                    }}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
                                     className="w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                 />
                             </div>
 
+
                             <div>
+                               
                                 <label className="block text-sm font-medium text-gray-700">Business Name</label>
                                 <input
                                     type="text"
@@ -339,6 +358,7 @@ const UserRegister = () => {
                             </div>
 
                             <div>
+                            {errors.Email && <p className="text-red-500 text-sm">{errors.Email}</p>}
                                 <label className="block text-sm font-medium text-gray-700">Email</label>
                                 <input
                                     type="email"
@@ -351,6 +371,7 @@ const UserRegister = () => {
                             </div>
 
                             <div>
+                                {errors.ContactNumber && <p className="text-red-500 text-sm">{errors.ContactNumber}</p>}
                                 <label className="block text-sm font-medium text-gray-700">Contact Number</label>
                                 <input
                                     type="tel"
@@ -388,10 +409,11 @@ const UserRegister = () => {
                         </div>
 
                         {/* Coupon Section */}
-                        <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                            <CouponSelector 
-                                coupons={allCoupon} 
-                                onCouponSelect={handleCouponSelect} 
+                        {/* <div className="border border-gray-200 rounded-lg p-4 bg-gray-50"> */}
+                        <div className="rounded-lg">
+                            <CouponSelector
+                                coupons={allCoupon}
+                                onCouponSelect={handleCouponSelect}
                             />
                         </div>
 
@@ -410,6 +432,7 @@ const UserRegister = () => {
 
                             {/* Password */}
                             <div>
+                                {errors.Password && <p className="text-red-500 text-sm">{errors.Password}</p>}
                                 <label className="block text-sm font-medium text-gray-700">Password</label>
                                 <input
                                     type="password"

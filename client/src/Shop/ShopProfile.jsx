@@ -13,8 +13,8 @@ const ShopProfile = ({ shopDetails, onUpgradePackage, onLogout, onProfileUpload,
     const [edit, setEdit] = useState(false);
     const [bussinessHours, setBussinessHours] = useState(false);
     const [address, setAddress] = useState(false);
-    const [planDetail,setPlanDetail] = useState(null)
-  const [remainingTime, setRemainingTime] = useState("");
+    const [planDetail, setPlanDetail] = useState(null)
+    const [remainingTime, setRemainingTime] = useState("");
     const [formData, sedFormData] = useState({
         BussinessHours: {
             openTime: '',
@@ -22,6 +22,8 @@ const ShopProfile = ({ shopDetails, onUpgradePackage, onLogout, onProfileUpload,
             offDay: ''
         }
     });
+
+    console.log("object",shopDetails)
     const [shopData, setShopData] = useState(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false); // State to manage the delete modal visibility
     const [deleteReason, setDeleteReason] = useState(''); // State to manage the delete reason
@@ -33,42 +35,42 @@ const ShopProfile = ({ shopDetails, onUpgradePackage, onLogout, onProfileUpload,
 
     useEffect(() => {
         const fetchPlans = async () => {
-          try {
-            const { data } = await axios.get(`https://api.naideal.com/api/v1/admin-packages`);
-            // console.log("data", data.packages);
-            const allPlans = data.packages;
-            const planInfo = allPlans.find(plan => plan.packageName === shopDetails?.ListingPlan);
-            
-            if (planInfo) {
-              setPlanDetail(planInfo);
-              calculateRemainingTime(planInfo.updatedAt, planInfo.validity);
+            try {
+                const { data } = await axios.get(`https://api.naideal.com/api/v1/admin-packages`);
+                // console.log("data", data.packages);
+                const allPlans = data.packages;
+                const planInfo = allPlans.find(plan => plan.packageName === shopDetails?.ListingPlan);
+
+                if (planInfo) {
+                    setPlanDetail(planInfo);
+                    calculateRemainingTime(planInfo.updatedAt, planInfo.validity);
+                }
+            } catch (error) {
+                console.log("Internal server error", error);
             }
-          } catch (error) {
-            console.log("Internal server error", error);
-          }
         };
-    
+
         const calculateRemainingTime = (updatedAt, validity) => {
-          const updatedDate = new Date(updatedAt);
-          const expiryDate = new Date(updatedDate);
-          expiryDate.setDate(updatedDate.getDate() + validity);
-    
-          const now = new Date();
-          const timeDiff = expiryDate - now; // Difference in milliseconds
-    
-          if (timeDiff > 0) {
-            const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-    
-            setRemainingTime(`${days} days, ${hours} hours, ${minutes} minutes left`);
-          } else {
-            setRemainingTime("Expired");
-          }
+            const updatedDate = new Date(updatedAt);
+            const expiryDate = new Date(updatedDate);
+            expiryDate.setDate(updatedDate.getDate() + validity);
+
+            const now = new Date();
+            const timeDiff = expiryDate - now; // Difference in milliseconds
+
+            if (timeDiff > 0) {
+                const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+
+                setRemainingTime(`${days} days, ${hours} hours, ${minutes} minutes left`);
+            } else {
+                setRemainingTime("Expired");
+            }
         };
-    
+
         fetchPlans();
-      }, [shopDetails]);
+    }, [shopDetails]);
 
     const {
         addressData,
@@ -129,6 +131,20 @@ const ShopProfile = ({ shopDetails, onUpgradePackage, onLogout, onProfileUpload,
             })
         }
     }, [shopDetails?.BussinessHours])
+
+    const handleShareProfile = async (username) => {
+        if (!username) return alert("Username is required!");
+    
+        const profileUrl = `https://naideal.com/${username}`;
+        const message = `Check out my profile on NaiDeal: ${profileUrl}`;
+        
+        // Encode the message for WhatsApp URL
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    
+        // Open WhatsApp share link
+        window.open(whatsappUrl, "_blank");
+    };
+    
 
     const OnClose = () => {
         setEdit(false);
@@ -229,6 +245,7 @@ const ShopProfile = ({ shopDetails, onUpgradePackage, onLogout, onProfileUpload,
                             </button>
                         </div>
                     )}
+
                 </div>
                 <div className="flex flex-col items-center">
                     <div className="relative">
@@ -260,7 +277,10 @@ const ShopProfile = ({ shopDetails, onUpgradePackage, onLogout, onProfileUpload,
                         </div>
                         <div className="flex items-center text-gray-700">
                             <Phone className="w-5 h-5 mr-2" />
-                            <span>{shopDetails?.ContactNumber || "N/A"}</span>
+                            <span>{shopDetails?.ContactNumber
+                                                ? `${shopDetails.ContactNumber.slice(0, 2)}******${shopDetails.ContactNumber.slice(-2)}`
+                                                : ""}</span>
+                            
                         </div>
                         <div className="flex items-center text-gray-700">
                             <MapPin className="w-5 h-5 mr-2" />
@@ -296,6 +316,14 @@ const ShopProfile = ({ shopDetails, onUpgradePackage, onLogout, onProfileUpload,
                             <Crown className="w-6 h-6" />
                             <span className="text-lg font-semibold">Upgrade Your Package</span>
                         </button>
+                        
+                    <button
+                        onClick={() => {handleShareProfile(shopDetails?.UserName)}}
+                        className="flex items-center w-full justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition-all duration-300"
+                    >
+                        <i className="fa-solid fa-share w-5 h-5"></i>
+                        <span>Share Profile</span>
+                    </button>
                     </div>
                 </div>
             </div>

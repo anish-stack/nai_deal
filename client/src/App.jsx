@@ -42,6 +42,7 @@ import Pfaq from './components/PFaq/PFaq';
 import Copywrite from './pages/ReturnAndRefundPolicy/Copywrite';
 import Festival_Pop from './components/Festival_Pop/Festival_Pop';
 import ImageShare from './Shop/Share';
+import UserPropfile from './pages/ShopProfiles/UserPropfile';
 
 const ScrollToTop = () => {
   const location = useLocation();
@@ -157,6 +158,7 @@ function App() {
         <Route path="/Search" element={<SearchProduct />} />
         <Route path="/Partner-Dashboard" element={<PartnerDashboard />} />
         <Route path="/View-More-Offers/Shop-profile/:id/:ShopName" element={<ShopProfile />} />
+        <Route path="/:userName" element={<UserPropfile />} />
         <Route path="/*" element={<ErrorPage />} />
 
         <Route path="/upgrade-package/:id" element={<ParentComponent />} />

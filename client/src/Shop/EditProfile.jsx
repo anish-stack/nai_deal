@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'
+import toast from 'react-hot-toast';
 const EditProfile = ({ profile, isOpen, OnClose }) => {
     const [updateData, setUpdateData] = useState({
         UserName: '',
@@ -81,6 +82,7 @@ const EditProfile = ({ profile, isOpen, OnClose }) => {
 
         } catch (error) {
             console.error('Error updating profile:', error);
+            toast.error(error?.response?.data?.message || 'Error updating profile');
         } finally {
             setIsLoading(false);  // Stop loading
         }

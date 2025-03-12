@@ -122,40 +122,42 @@ exports.UpdateListing = async (req, res) => {
         const ListingId = req.params.id;
 
         if (!ShopId) {
-            return res.status(401).json({
-                success: false,
-                msg: "Please Login"
-            });
+            return res.status(401).json({ success: false, msg: "Please Login" });
         }
 
         console.log(req.body);
 
         const CheckMyShop = await ListingUser.findById(ShopId).select('-Password');
         if (!CheckMyShop) {
-            return res.status(404).json({
-                success: false,
-                msg: "Shop not found"
-            });
+            return res.status(404).json({ success: false, msg: "Shop not found" });
         }
 
         const { Title, Details, HtmlContent, tags } = req.body;
 
-        const listing = await Listing.findById(ListingId);
+        let listing = await Listing.findById(ListingId);
         if (!listing) {
-            return res.status(404).json({
-                success: false,
-                msg: "Listing not found"
-            });
+            return res.status(404).json({ success: false, msg: "Listing not found" });
         }
 
         if (listing.ShopId.toString() !== ShopId) {
-            return res.status(403).json({
-                success: false,
-                msg: "Unauthorized"
-            });
+            return res.status(403).json({ success: false, msg: "Unauthorized" });
         }
 
-        // Initialize the Items array
+        // **🔹 Delete Existing Images from Cloudinary**
+        if (listing.Items.length > 0) {
+            for (let item of listing.Items) {
+                if (item.dishImages && item.dishImages.length > 0) {
+                    for (let image of item.dishImages) {
+                        if (image.public_id) {
+                            console.log(`Deleting image: ${image.public_id}`);
+                            await Cloudinary.uploader.destroy(image.public_id);
+                        }
+                    }
+                }
+            }
+        }
+
+        // **🔹 Initialize the Items array**
         const Items = [];
         for (let i = 0; req.body[`Items[${i}].itemName`] !== undefined; i++) {
             Items.push({
@@ -168,43 +170,45 @@ exports.UpdateListing = async (req, res) => {
 
         console.log('Items before adding images:', req.files);
 
-        // Validate the request body
+        // Validate request body
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ success: false, errors: errors.array() });
         }
 
-        // Handle image upload (for multiple files)
+        // **🔹 Handle Image Upload**
         if (req.files && req.files.length > 0) {
-            // Assuming `req.files` is an array of uploaded images
-            let imageIndex = 0; // Track the image index for matching images to items
+            let imageIndex = 0;
             const uploadedDishImages = await Promise.all(req.files.map(upload => uploadImage(upload)));
 
-            uploadedDishImages.forEach((upload, index) => {
-                // Ensure that image is added to the corresponding item
+            uploadedDishImages.forEach((upload) => {
                 if (Items[imageIndex]) {
                     Items[imageIndex].dishImages.push({
                         public_id: upload.public_id,
                         ImageUrl: upload.ImageUrl
                     });
                 }
-                imageIndex++; // Increment to the next item
+                imageIndex++;
             });
         }
-        const splitTags = tags.split(',').map(tag => tag.trim());
-        console.log(splitTags);
-        // Update the listing with new data
+
+        // **🔹 Process Tags Properly**
+        const splitTags = tags ? tags.split(',').map(tag => tag.trim()) : [];
+
+        console.log("Updated Tags:", splitTags);
+
+        // **🔹 Update Listing**
         if (Title) listing.Title = Title;
         if (Details) listing.Details = Details;
-        if (HtmlContent) listing.HtmlContent = HtmlContent; // Update HtmlContent if it exists
-        if (splitTags) listing.tags = splitTags; // Update tags if it exists
+        if (HtmlContent) listing.HtmlContent = HtmlContent;
+        if (splitTags.length > 0) listing.tags = splitTags;
         if (Items.length) listing.Items = Items;
 
-        listing.isApprovedByAdmin = false
+        listing.isApprovedByAdmin = false;
 
         await listing.save();
 
-        // Send success response
+        // **🔹 Send Success Response**
         res.status(200).json({
             success: true,
             msg: "Listing updated successfully",
@@ -212,14 +216,11 @@ exports.UpdateListing = async (req, res) => {
         });
 
     } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            success: false,
-            msg: "Error updating listing",
-            error: error.message
-        });
+        console.error("Error updating listing:", error);
+        res.status(500).json({ success: false, msg: "Error updating listing", error: error.message });
     }
 };
+
 
 exports.UpdateListingByBolt = async (req, res) => {
     try {

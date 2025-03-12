@@ -166,6 +166,27 @@ NaiDeal.com Team`;
     }
 };
 
+exports.getListingByUserName = async (req, res) => {
+    try {
+        const { UserName } = req.params;
+        const user = await ListingUser.findOne({ UserName });
+        if (!user) {
+            return res.status(400).json({ success: false, message: 'User not found' });
+        }
+        return res.status(200).json({
+            success: true,
+            message: "User found successfully",
+            data: user
+        })
+    } catch (error) {
+        console.log("Internal server error", error)
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        })
+    }
+}
+
 exports.getSingleListingUser = async (req, res) => {
     try {
         const { id } = req.params;
@@ -410,6 +431,29 @@ exports.UpdateProfileDetails = async (req, res) => {
         // Prepare an object for the updated fields
         const updatedFields = {};
 
+        // **Check for duplicate contact number, email, and username (excluding current user)**
+        const existingNumber = await ListingUser.findOne({ ContactNumber, _id: { $ne: userId } });
+        const existingEmail = await ListingUser.findOne({ Email, _id: { $ne: userId } });
+        const existingUserName = await ListingUser.findOne({ UserName, _id: { $ne: userId } });
+        if (existingNumber) {
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                success: false,
+                message: 'Contact number already exists'
+            });
+        }
+        if (existingEmail) {
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                success: false,
+                message: 'Email already exists'
+            });
+        }
+        if (existingUserName) {
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                success: false,
+                message: 'User Name already exists'
+            });
+        }
+
         // Check and add fields to be updated
         if (ShopName && ShopName !== checkShop.ShopName) {
             updatedFields.ShopName = ShopName;
@@ -615,97 +659,6 @@ exports.CreateForgetPasswordRequest = async (req, res) => {
         user.newPassword = newPassword
         user.OtpExipredTme = otpExpiryTime;
         await user.save();
-
-
-        // const transporter = nodemailer.createTransport({
-        //     host: "smtp.hostinger.com",
-        //     port: 465,
-        //     secure: true,
-        //     auth: {
-        //         user: "noreply@naideal.com",
-        //         pass: "Naideal@2024"
-        //     },
-        //     tls: {
-        //         rejectUnauthorized: false
-        //     }
-        // });
-
-        //         const mailOptions = {
-        //             from: '"Naideal Support" <noreply@naideal.com>',
-        //             to: Email,
-        //             subject: 'Password Change Request',
-        //             html: `<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f5f5f5;">
-        //     <table cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-
-        //         <tr>
-        //             <td style="text-align: center;">
-        //                 <svg viewBox="0 0 600 40" style="width: 100%; height: 40px;">
-        //                     <path d="M0,0 C150,40 450,40 600,0" fill="#3B82F6" opacity="0.1"></path>
-        //                 </svg>
-        //             </td>
-        //         </tr>
-        //         <tr>
-        //             <td style="padding: 30px 20px; text-align: center; background-color: #ffffff;">
-        //                 <div style="box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); padding: 15px; border-radius: 10px; display: inline-block;">
-        //                     <img src="https://res.cloudinary.com/dglihfwse/image/upload/c_thumb,w_200,g_face/v1733212496/naideal-logo_fajvxe.png" alt="Naideal Logo" style="max-width: 200px; height: auto;">
-        //                 </div>
-        //             </td>
-        //         </tr>
-        //         <tr>
-        //             <td style="padding: 20px 30px;">
-        //                 <div style="position: relative;">
-        //                     <!-- Decorative Corner SVG -->
-        //                     <svg width="40" height="40" style="position: absolute; top: -10px; left: -20px; opacity: 0.1;">
-        //                         <circle cx="20" cy="20" r="20" fill="#22C55E"/>
-        //                     </svg>
-        //                     <h2 style="color: #3B82F6; margin-bottom: 20px; position: relative;">Password Change Request</h2>
-        //                 </div>
-        //                 <p style="color: #333333; font-size: 16px; line-height: 1.5; margin-bottom: 15px;">Hello ${user.ShopName},</p>
-        //                 <p style="color: #333333; font-size: 16px; line-height: 1.5; margin-bottom: 15px;">You have requested a password change. Please use the following OTP to proceed:</p>
-
-        //                 <div style="background: linear-gradient(145deg, #f8f9fa, #ffffff); border-radius: 12px; padding: 25px; margin: 25px 0; text-align: center; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.1);">
-        //                     <h3 style="color: #3B82F6; font-size: 32px; margin: 0; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);">${otp}</h3>
-        //                 </div>
-
-        //                 <p style="color: #333333; font-size: 16px; line-height: 1.5; margin-bottom: 20px;">This OTP is valid for 10 minutes. Please use it within this time frame.</p>
-        //                 <p style="color: #666666; font-size: 14px; line-height: 1.5; margin-bottom: 25px;">If you did not request this change, please ignore this email.</p>
-
-        //                 <div style="text-align: center; margin: 30px 0;">
-        //                     <a href="https://naideal.com/VerifyOtp?Email=${Email}" style="background: #000; color: #ffffff; padding: 14px 35px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; box-shadow: 0 4px 6px rgba(34, 197, 94, 0.2); transition: transform 0.2s ease;">Click Here to Reset Password</a>
-        //                 </div>
-
-        //                 <div style="margin-top: 30px; border-top: 1px solid #e5e7eb; padding-top: 20px; position: relative;">
-
-        //                     <svg width="30" height="100" style="position: absolute; right: -15px; top: 50%; transform: translateY(-50%); opacity: 0.1;">
-        //                         <path d="M0,0 C30,25 30,75 0,100" stroke="#3B82F6" fill="none" stroke-width="2"/>
-        //                     </svg>
-        //                     <p style="color: #333333; font-size: 16px; margin: 0;">Thank you,</p>
-        //                     <p style="color: #3B82F6; font-size: 18px; font-weight: bold; margin: 5px 0;">Nai Deal</p>
-        //                 </div>
-        //             </td>
-        //         </tr>
-
-        //     </table>
-        // </body>
-        // `
-
-        //         };
-
-        // Send email
-        // transporter.sendMail(mailOptions, (error, info) => {
-        //     if (error) {
-        //         console.error('Error sending email:', error);
-        //         return res.status(500).json({
-        //             success: false,
-        //             msg: 'Error sending OTP email'
-        //         });
-        //     }
-        //     console.log('Email sent:', info.response);
-        //     res.status(200).json({
-        //         success: true,
-        //         msg: 'OTP sent successfully'
-        //     });
-        // });
 
         const message = `Hello ${user.ShopName},
         You have requested a password change. Please use the following OTP to proceed:

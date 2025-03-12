@@ -74,7 +74,7 @@ exports.createCategory = async (req, res) => {
     // Save category to database
     const savedCategory = await newCategory.save();
 
-    console.log("savedCategory",savedCategory)
+    console.log("savedCategory", savedCategory)
 
     // Respond with success message and saved category data
     res.status(201).json({
@@ -102,56 +102,69 @@ const uploadImages = (fileBuffer) => {
 
 exports.updateCategory = async (req, res) => {
   try {
-    const categoryId = req.params.id
-    const { CategoriesName } = req.body
-    const file = req.files[0]
+    const categoryId = req.params.id;
+    const { CategoriesName } = req.body;
+    const file = req.files?.[0]; // Ensure req.files exists
 
-    // Check if CategoriesName is provided
+    // Validate required fields
     if (!CategoriesName) {
       return res.status(400).json({
         success: false,
         msg: "Please provide a category name"
-      })
-    }
-
-    // Check if file is uploaded
-    let uploadedImage = {}
-    if (file) {
-      uploadedImage = await uploadImages(file.buffer)
+      });
     }
 
     // Find category by ID
-    let category = await Categories.findById(categoryId)
+    let category = await Categories.findById(categoryId);
 
     if (!category) {
       return res.status(404).json({
         success: false,
         msg: "Category not found"
-      })
+      });
+    }
+
+    // Upload new image if file is provided
+    let uploadedImage = {};
+    if (file) {
+      uploadedImage = await uploadImages(file.buffer);
+    }
+
+    // Delete existing image from Cloudinary if it exists
+    if (category.CategoriesImage?.public_id) {
+      console.log("Deleting existing image...");
+      const result = await Cloudinary.uploader.destroy(category.CategoriesImage.public_id);
+
+      if (result.result !== "ok") {
+        console.warn("Failed to delete previous image from Cloudinary.");
+      }
     }
 
     // Update category fields
-    category.CategoriesName = CategoriesName
+    category.CategoriesName = CategoriesName;
+
     if (file) {
       category.CategoriesImage = {
         imageUrl: uploadedImage.imageUrl,
         public_id: uploadedImage.public_id
-      }
+      };
     }
 
     // Save updated category
-    const updatedCategory = await category.save()
+    const updatedCategory = await category.save();
 
     // Respond with success message and updated category data
     res.status(200).json({
       success: true,
+      msg: "Category updated successfully",
       data: updatedCategory
-    })
+    });
   } catch (error) {
-    console.error('Error updating category:', error)
-    res.status(500).json({ error: 'Failed to update category' })
+    console.error("Error updating category:", error);
+    res.status(500).json({ success: false, msg: "Failed to update category" });
   }
-}
+};
+
 
 // Delete a category by ID
 exports.deleteCategory = async (req, res) => {
@@ -211,7 +224,7 @@ exports.getAllCategories = async (req, res) => {
       success: true,
       data: categoriesWithPosts
     });
-    
+
   } catch (error) {
     console.error('Error fetching categories:', error);
     res.status(500).json({ error: 'Failed to fetch categories' });
@@ -221,7 +234,7 @@ exports.getAllCategories = async (req, res) => {
 exports.getAllCategoryAdmin = async (req, res) => {
   try {
     const allCategory = await Categories.find()
-    if(!allCategory){
+    if (!allCategory) {
       return res.status(404).json({
         success: false,
         message: "No categories found"
@@ -233,7 +246,7 @@ exports.getAllCategoryAdmin = async (req, res) => {
       data: allCategory
     })
   } catch (error) {
-    console.log("Internal server error",error)
+    console.log("Internal server error", error)
     res.status(500).json({ success: false, message: "Internal Server Error", error: error.message });
   }
 }

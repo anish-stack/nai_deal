@@ -18,13 +18,13 @@ const ListingsHeader = () => {
     }
   }, [])
   return (
-    <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
+    <div className=" w-100 flex flex-col sm:flex-row justify-center items-center mb-8 gap-4">
       <div>
         <h2 className="text-3xl font-bold text-center text-gray-900 ">
           {cityData?.found ? `Popular Offer  in ${cityData.city}` : `Popular Offer `}
         
         </h2>
-        <p className="text-gray-600 mt-1">Discover  amazing businesses</p>
+        <p className="text-gray-600 mt-1 text-center">Discover  amazing businesses</p>
       </div>
 
     </div>
