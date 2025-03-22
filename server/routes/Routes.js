@@ -10,7 +10,7 @@ const { createCity, updateCity, deleteCity, getAllCities } = require('../control
 const { createCategory, updateCategory, getAllCategories, deleteCategory, getAllCategoryAdmin } = require('../controllers/CategoriesController');
 const { CreateBanner, GetAllBanner, UpdateBanner, DeleteBanner, GetAllBannerActive, MakeSetting, GetSetting, UpdateSetting, createMarquee, updateMarquee, deleteMarquee, getAllMarquee, createBanner, getAllBanner, deleteBanner, updateBanner, createOfferBanner, getOfferAllBanner, deleteOfferBanner, updateOfferBanner } = require('../controllers/Webpage.controller');
 const { createFBanner, getFAllBanner, getBanneronWhicPage, deleteFBanner, updateFBanner } = require('../controllers/Festival_controller');
-const { createFormData, getAllFormData, deleteFormData } = require('../controllers/FormData.controller');
+const { verifyOtpAndSubmitForm, getAllFormData, deleteFormData, sendOtpForm } = require('../controllers/FormData.controller');
 const { createCoupon, getAllCoupons, updateCoupon, deleteCoupon, getCouponById, checkCouponIsAvailable } = require('../controllers/coupon.controller');
 const router = express.Router();
 
@@ -140,7 +140,8 @@ router.get('/get-all-marquees', getAllMarquee);
 
 
 // form detail enquiry form routes here 
-router.post('/send_enquiry_form', createFormData);
+router.post('/send_otp_form', sendOtpForm);
+router.post('/verify_otp_and_send_enquiry_form', verifyOtpAndSubmitForm);
 router.get('/get_enquiry_form', getAllFormData);
 router.delete('/delete_enquiry_form/:id', deleteFormData);
 

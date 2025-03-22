@@ -33,7 +33,7 @@ const PostCard = ({ post, onDelete, onEdit }) => {
                 <div className="p-4">
                     <h2 className="text-xl font-semibold text-gray-800 mb-2 line-clamp-1">{post.Title}</h2>
 
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">{post.Details}</p>
+                    {/* <p className="text-gray-600 text-sm mb-4 line-clamp-2">{post.Details}</p> */}
                     <p className="text-sm font-semibold text-gray-800 mb-2 line-clamp-1">
                         {post.tags.length > 0 ? (
                             post.tags.map((item, index) => (

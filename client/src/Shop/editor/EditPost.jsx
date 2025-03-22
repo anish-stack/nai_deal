@@ -2,9 +2,10 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Save, Trash2, ImageIcon, Upload, X } from 'lucide-react';
 import { fetchPost, updatePost } from './api';
-import imagesEdit from './edit.png'
+import imagesEdit from './edit.png';
 import { validateForm } from './validateForm';
 import JoditEditor from 'jodit-react';
+import CreatableSelect from "react-select/creatable";
 
 const EditPost = () => {
   const query = new URLSearchParams(window.location.search);
@@ -22,37 +23,38 @@ const EditPost = () => {
   const [submitting, setSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   const [imagePreviewUrls, setImagePreviewUrls] = useState({});
+  const [originalData, setOriginalData] = useState(null); // Store original data
 
   const editor = useRef(null);
   const config = useMemo(() => ({
     readonly: false,
   }), []);
 
-  // Mock validateForm function for demo
-  const validateForm = (data) => {
-    const errors = {};
-    if (!data.Title) errors.Title = 'Title is required';
-    return errors;
-  };
-
+  // Load Post Data if ID Exists
   useEffect(() => {
     const loadPost = async () => {
       try {
         const post = await fetchPost(id);
         if (post) {
+          // Store the original data
+          setOriginalData(post);
+          
           setFormData({
             Title: post.Title,
             Details: post.Details,
             HtmlContent: post.HtmlContent,
             tags: post.tags || [],
-            Items: post.Items || []
+            Items: post.Items.map(item => ({
+              ...item,
+              dishImages: item.dishImages || [] // Ensure dishImages exists
+            })) || [],
           });
         } else {
-          setError('Post not found');
+          setError("Post not found");
         }
       } catch (err) {
         console.error(err);
-        setError(err?.message || 'Failed to load post');
+        setError(err?.message || "Failed to load post");
       } finally {
         setLoading(false);
       }
@@ -64,13 +66,13 @@ const EditPost = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    if (name === 'tags') {
-      const tags = value.split(',').map(tag => tag.trim());
-      setFormData({ ...formData, tags });
-    } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
-      setFormErrors(prev => ({ ...prev, [name]: '' }));
-    }
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormErrors((prev) => ({ ...prev, [name]: "" }));
+  };
+
+  const handleTagsChange = (selectedOptions) => {
+    const tagsArray = selectedOptions.map((option) => option.value);
+    setFormData((prev) => ({ ...prev, tags: tagsArray }));
   };
 
   const handleItemChange = (index, e) => {
@@ -95,7 +97,6 @@ const EditPost = () => {
       Items: prev.Items.filter((_, i) => i !== index)
     }));
 
-    // Also remove any image previews for this item
     setImagePreviewUrls(prev => {
       const newPreviews = { ...prev };
       delete newPreviews[`item-${index}`];
@@ -107,19 +108,18 @@ const EditPost = () => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Create a preview URL for the selected image
     const previewUrl = URL.createObjectURL(file);
     setImagePreviewUrls(prev => ({
       ...prev,
       [`item-${index}`]: previewUrl
     }));
 
-    // Update the formData with the new image file
     const updatedItems = [...formData.Items];
     if (!updatedItems[index].dishImages) {
       updatedItems[index].dishImages = [];
     }
 
+    // Add new image while preserving existing ones
     updatedItems[index].dishImages.push({
       file,
       ImageUrl: previewUrl,
@@ -131,13 +131,10 @@ const EditPost = () => {
 
   const handleRemoveImage = (itemIndex, imageIndex) => {
     const updatedItems = [...formData.Items];
-
-    // Remove the image from the item's dishImages array
     updatedItems[itemIndex].dishImages = updatedItems[itemIndex].dishImages.filter((_, i) => i !== imageIndex);
 
     setFormData(prev => ({ ...prev, Items: updatedItems }));
 
-    // If this was a preview image, remove it from previews
     if (imagePreviewUrls[`item-${itemIndex}`]) {
       setImagePreviewUrls(prev => {
         const newPreviews = { ...prev };
@@ -160,47 +157,55 @@ const EditPost = () => {
     const formDataToSubmit = new FormData();
 
     // Append basic fields
-    formDataToSubmit.append('Title', formData.Title);
-    formDataToSubmit.append('Details', formData.Details);
+    formDataToSubmit.append('Title', formData.Title || originalData.Title);
+    formDataToSubmit.append('Details', formData.Details || originalData.Details);
 
     // Append items and their images
     formData.Items.forEach((item, index) => {
-      formDataToSubmit.append(`Items[${index}].itemName`, item.itemName);
-      formDataToSubmit.append(`Items[${index}].Discount`, item.Discount);
-      formDataToSubmit.append(`Items[${index}].MrpPrice`, item.MrpPrice);
+      const originalItem = originalData?.Items[index] || {};
+      
+      // Use new values or fall back to original values
+      formDataToSubmit.append(`Items[${index}].itemName`, item.itemName || originalItem.itemName || '');
+      formDataToSubmit.append(`Items[${index}].Discount`, item.Discount || originalItem.Discount || '');
+      formDataToSubmit.append(`Items[${index}].MrpPrice`, item.MrpPrice || originalItem.MrpPrice || '');
 
-      if (item.public_id) {
-        formDataToSubmit.append(`Items[${index}].public_id`, item.public_id);
+      // Handle images
+      if (item.dishImages && item.dishImages.length > 0) {
+        item.dishImages.forEach((dishImage) => {
+          // If it's an existing image, preserve its data
+          if (dishImage.public_id) {
+            formDataToSubmit.append(`Items[${index}].existingImages`, JSON.stringify({
+              public_id: dishImage.public_id,
+              ImageUrl: dishImage.ImageUrl
+            }));
+          }
+          // If it's a new image, append the file
+          if (dishImage.file) {
+            formDataToSubmit.append('dishImage', dishImage.file);
+            formDataToSubmit.append(`Items[${index}].newImageIndices`, dishImage.isNew ? 'true' : 'false');
+          }
+        });
+      } else if (originalItem.dishImages) {
+        // If no new images, preserve original images
+        originalItem.dishImages.forEach((originalImage) => {
+          formDataToSubmit.append(`Items[${index}].existingImages`, JSON.stringify({
+            public_id: originalImage.public_id,
+            ImageUrl: originalImage.ImageUrl
+          }));
+        });
       }
-
-      // Append existing images that have public_id
-      item.dishImages.forEach((dishImage) => {
-        if (dishImage.public_id) {
-          formDataToSubmit.append(`Items[${index}].public_id`, dishImage.public_id);
-        }
-
-        // Append new image files
-        if (dishImage.file) {
-          formDataToSubmit.append('dishImage', dishImage.file);
-        }
-      });
     });
 
-    // Check if tags exist and append them
-    if (formData.tags && formData.tags.length > 0) {
-      formDataToSubmit.append('tags', formData.tags.join(','));
-    }
+    // Preserve tags
+    const tagsToSubmit = formData.tags.length > 0 ? formData.tags : originalData.tags || [];
+    formDataToSubmit.append('tags', tagsToSubmit.join(','));
 
-    // Check if HtmlContent exists and append it
-    if (formData.HtmlContent) {
-      formDataToSubmit.append('HtmlContent', formData.HtmlContent);
-    }
+    // Preserve HTML content
+    formDataToSubmit.append('HtmlContent', formData.HtmlContent || originalData.HtmlContent || '');
 
     try {
       const data = await updatePost(id, formDataToSubmit);
       console.log('Post updated successfully:', data);
-      // Navigate to dashboard (commented out for demo)
-      // navigate('/Shop-Dashboard');
       alert('Post updated successfully!');
     } catch (err) {
       console.error('Error updating post:', err.message);
@@ -257,14 +262,15 @@ const EditPost = () => {
                 <div className="space-y-2">
                   <label className="block">
                     <span className="text-lg font-semibold text-gray-800">Tags</span>
-                    <div className="text-xs text-gray-500 mb-1">Write tags separated by commas (e.g., #first,#second)</div>
-                    <input
-                      type="text"
-                      name="tags"
-                      value={formData.tags.join(',')}
-                      onChange={handleInputChange}
-                      placeholder="Enter tags separated by commas"
-                      className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    <div className="text-xs text-gray-500 mb-1">
+                      Write tags or create new ones (e.g., #first, #second)
+                    </div>
+                    <CreatableSelect
+                      isMulti
+                      value={formData.tags.map((tag) => ({ value: tag, label: tag }))}
+                      onChange={handleTagsChange}
+                      placeholder="Enter or select tags"
+                      className="mt-1 block w-full"
                     />
                   </label>
                 </div>
@@ -314,7 +320,6 @@ const EditPost = () => {
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        {/* Item Name */}
                         <div>
                           <label className="block">
                             <span className="text-sm font-semibold text-gray-800">Item Name</span>
@@ -329,7 +334,6 @@ const EditPost = () => {
                           </label>
                         </div>
 
-                        {/* Item Price */}
                         <div>
                           <label className="block">
                             <span className="text-sm font-semibold text-gray-800">Item Price</span>
@@ -345,7 +349,6 @@ const EditPost = () => {
                         </div>
                       </div>
 
-                      {/* Discount Section */}
                       <div className="mb-4">
                         <label className="block">
                           <span className="text-sm font-semibold text-gray-800">Discount (%)</span>
@@ -360,7 +363,6 @@ const EditPost = () => {
                         </label>
                       </div>
 
-                      {/* Image Section */}
                       <div className="mt-4">
                         <div className="flex items-center justify-between mb-2">
                           <span className="text-sm font-semibold text-gray-800">Item Images</span>
@@ -377,7 +379,6 @@ const EditPost = () => {
                         </div>
 
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-3">
-                          {/* Existing Images */}
                           {item.dishImages && item.dishImages.map((image, imgIndex) => (
                             <div key={`${index}-${imgIndex}`} className="relative group">
                               <img
@@ -401,7 +402,6 @@ const EditPost = () => {
                             </div>
                           ))}
 
-                          {/* Image Preview for newly added images */}
                           {imagePreviewUrls[`item-${index}`] && !item.dishImages.some(img => img.ImageUrl === imagePreviewUrls[`item-${index}`]) && (
                             <div className="relative group">
                               <img
@@ -429,7 +429,6 @@ const EditPost = () => {
                             </div>
                           )}
 
-                          {/* Empty state when no images */}
                           {(!item.dishImages || item.dishImages.length === 0) && !imagePreviewUrls[`item-${index}`] && (
                             <div className="flex items-center justify-center w-full h-24 bg-gray-50 border border-dashed border-gray-300 rounded-lg">
                               <div className="text-center text-gray-400">

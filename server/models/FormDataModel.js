@@ -17,6 +17,13 @@ const FormDataSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    otp: {
+        type: String
+    },
+    otpExpiry: {
+        type: Date
+    },
+    
     shopId:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'ShopUser',
