@@ -4,17 +4,19 @@ import { toast, Toaster } from 'react-hot-toast';
 import { X, Plus, Loader } from 'lucide-react';
 import ImageUpload from './forms/ImageUpload';
 import ItemForm from './forms/ItemForm';
+import CreatableSelect from "react-select/creatable";
 
 import JoditEditor from 'jodit-react';
 const CreateListing = ({ isOpen, onClose }) => {
   const [btnLoading, setBtnLoading] = useState(false);
   const [formData, setFormData] = useState({
-    Title: '',
-    // Details: '',
-    tags: "",
-    Items: [{ itemName: '', Discount: '', dishImages: [], MrpPrice: '', AfterDiscountPrice:'' }],
+    Title: "",
+    tags: [], // Change from string to array
+    Items: [
+      { itemName: "", Discount: "", dishImages: [], MrpPrice: "", AfterDiscountPrice: "" },
+    ],
     Pictures: [],
-    HtmlContent: ''
+    HtmlContent: "",
   });
   const [imagePreviews, setImagePreviews] = useState([]);
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
@@ -42,19 +44,36 @@ const CreateListing = ({ isOpen, onClose }) => {
   //   }
   // };
 
+  const handleTagsChange = (selectedOptions) => {
+    const tagsArray = selectedOptions.map(option => option.value).slice(0, 5);
+
+    if (tagsArray.length > 5) {
+      toast.error("You can only add up to 5 tags.");
+      return;
+    }
+
+    setFormData({ ...formData, tags: tagsArray });
+  };
+
+  // Handle Other Inputs
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    if (name === 'tags') {
-      const tags = value.split(',').map(tag => tag.trim()).slice(0, 5);
-      if (tags.length > 5) {
-        toast.error('You can only add up to 5 tags.');
-        return;
-      }
-      setFormData({ ...formData, tags });
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
+    setFormData({ ...formData, [name]: value });
   };
+
+  // const handleInputChange = (e) => {
+  //   const { name, value } = e.target;
+  //   if (name === 'tags') {
+  //     const tags = value.split(',').map(tag => tag.trim()).slice(0, 5);
+  //     if (tags.length > 5) {
+  //       toast.error('You can only add up to 5 tags.');
+  //       return;
+  //     }
+  //     setFormData({ ...formData, tags });
+  //   } else {
+  //     setFormData({ ...formData, [name]: value });
+  //   }
+  // };
   
 
   const handleItemChange = (index, e) => {
@@ -274,19 +293,19 @@ const CreateListing = ({ isOpen, onClose }) => {
                 required
               />
             </div> */}
-            <div>
-              <label htmlFor="tags" className="block text-sm font-medium text-gray-700">Tags</label>
-              <input
-                type="text"
-                id="tags"
-                name="tags"
-                value={formData.tags}
-                onChange={handleInputChange}
-
-                placeholder="Enter tags separated by commas"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-            </div>
+            <div className="mt-4">
+        <label htmlFor="tags" className="block text-sm font-medium text-gray-700">
+          Tags
+        </label>
+        <CreatableSelect
+          id="tags"
+          isMulti
+          value={formData.tags.map(tag => ({ value: tag, label: tag }))}
+          onChange={handleTagsChange}
+          placeholder="Enter or select tags"
+          className="mt-1 block w-full"
+        />
+      </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Rich Content
