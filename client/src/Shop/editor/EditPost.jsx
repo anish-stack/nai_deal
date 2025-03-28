@@ -486,4 +486,4 @@ const EditPost = () => {
   );
 }
 
-export default EditPost;
+export default EditPost;   
