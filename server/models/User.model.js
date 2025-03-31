@@ -138,7 +138,7 @@ const ListingUserSchema = new mongoose.Schema({
     },
     showNumber : {
         type: Boolean,
-        default: false
+        default: true
     }
 }, { timestamps: true });
 

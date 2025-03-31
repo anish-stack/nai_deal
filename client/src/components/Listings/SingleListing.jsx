@@ -30,13 +30,13 @@ const SingleListing = () => {
     const [otpLoading, setOtpLoading] = useState(false);
     const [isOtpVisible, setIsOtpVisible] = useState(true);
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setShowForm(true);
-        }, 2000);
+    // useEffect(() => {
+    //     const timer = setTimeout(() => {
+    //         setShowForm(true);
+    //     }, 2000);
 
-        return () => clearTimeout(timer);
-    }, []);
+    //     return () => clearTimeout(timer);
+    // }, []);
 
     useEffect(() => {
         setFormData((prevData) => ({
