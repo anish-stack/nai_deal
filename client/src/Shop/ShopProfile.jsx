@@ -362,7 +362,7 @@ const ShopProfile = ({ shopDetails, onUpgradePackage, onLogout, onProfileUpload,
                             className={`w-full flex items-center justify-center gap-2 ${shopDetails?.showEmail ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'
                                 } text-white py-2 px-4 rounded-lg transition-all duration-300`}
                         >
-                            {shopDetails?.showEmail ? 'Hide Number' : 'Show Number'}
+                            {shopDetails?.showEmail ? 'Hide Email' : 'Show Email'}
                         </button>
 
                     </div>
