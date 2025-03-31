@@ -25,6 +25,7 @@ const AllShop = () => {
     const shopsPerPage = 7;
     const [allMembershipPlans, setAllMembershipPlans] = useState([]);
     const [selectedPackages, setSelectedPackages] = useState({});
+    const [paymentDetail, setPaymentDetail] = useState([])
 
     // Fetch Membership Plans
     const handleFetchMembershipPlans = async () => {
@@ -36,14 +37,25 @@ const AllShop = () => {
         }
     };
 
+    const fetchPaymentDetail = async () => {
+        try {
+            const response = await axios.get("https://api.naideal.com/api/v1/get-payment-detail");
+            setPaymentDetail(response.data);
+        } catch (error) {
+            console.error("Error fetching payment details:", error);
+        }
+    };
+
     useEffect(() => {
         handleFetchMembershipPlans();
+        fetchPaymentDetail();
     }, []);
 
     const fetchShops = async () => {
         try {
             setLoading(true);
             const res = await axios.get(`https://api.naideal.com/api/v1/all-shops`);
+            console.log("res.data", res.data)
             setShops(res.data.reverse());
             setError(null);
         } catch (error) {
@@ -108,6 +120,36 @@ const AllShop = () => {
     const currentShops = filteredShops.slice(indexOfFirstShop, indexOfLastShop);
     const totalPages = Math.ceil(filteredShops.length / shopsPerPage);
 
+    const getPaymentTime = (id) => {
+        const foundCategory = paymentDetail.find(cat => cat.razorpay_order_id === id);
+        if (foundCategory && foundCategory.createdAt) {
+            // Create a new Date object from the ISO string
+            const date = new Date(foundCategory.createdAt);
+    
+            // Format the date to a readable string (e.g., 'December 25, 2024 10:05 AM')
+            const formattedDate = date.toLocaleString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true // Use 12-hour format with AM/PM
+            });
+    
+            return formattedDate;
+        } else {
+            return "No Available";
+        }
+    };
+    
+
+    const getMembershipDetail = (name) => {
+        const foundCategory = allMembershipPlans.find(cat => cat.packageName === name);
+        return foundCategory ? foundCategory.packagePrice : "No Available";
+    };
+
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
@@ -165,6 +207,9 @@ const AllShop = () => {
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Shop</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gst No.</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paid Amount</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paid Date</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Package</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Posts</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Update Package</th>
@@ -183,13 +228,23 @@ const AllShop = () => {
                                     </div>
                                 </td>
                                 <td className="px-6 py-4">
-                                    <div className="text-sm text-gray-900 max-w-xs truncate">
+                                    <div className="text-sm text-gray-900 max-w-xs">
                                         {shop.ShopAddress.ShopAddressStreet}
                                     </div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="text-sm text-gray-900">{shop.ContactNumber}</div>
                                 </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {shop.gstNo || 0}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                   Rs. {getMembershipDetail(shop.ListingPlan) || 0}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {getPaymentTime(shop.OrderId) || 0}
+                                </td>
+
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full
                     ${shop.ListingPlan === 'Gold' ? 'bg-yellow-100 text-yellow-800' :

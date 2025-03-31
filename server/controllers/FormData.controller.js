@@ -15,31 +15,57 @@ exports.sendOtpForm = async (req, res) => {
             });
         }
 
-        const otp = Math.floor(100000 + Math.random() * 900000); // Generate 6-digit OTP
-        OTPStore.set(phone, { otp, expiresAt: Date.now() + otpExpiryTime });
-
         // Check inquiry limit (10 per day)
         const startOfDay = moment().startOf("day").toDate();
         const endOfDay = moment().endOf("day").toDate();
+
+        const formDataToday = await FormData.findOne({
+            phone,
+            createdAt: { $gte: startOfDay, $lte: endOfDay }
+        }).sort({ createdAt: -1 });
+
+        if (!formDataToday) {
+            const otp = Math.floor(100000 + Math.random() * 900000); // Generate 6-digit OTP
+            OTPStore.set(phone, { otp, expiresAt: Date.now() + otpExpiryTime });
+
+            // Send OTP via WhatsApp or SMS (Replace with actual function)
+            await SendWhatsapp(phone, `Your OTP for verification is: ${otp}`);
+
+            return res.status(200).json({
+                success: true,
+                message: "OTP sent successfully!",
+            });
+        }
+
+        // If the OTP is already sent today, do not send another one
+        // if (formDataToday && formDataToday.otp) {
+        //     return res.status(400).json({
+        //         success: false,
+        //         message: "OTP already sent today. You can only request it once per day."
+        //     });
+        // }
 
         const inquiryCount = await FormData.countDocuments({
             phone,
             createdAt: { $gte: startOfDay, $lte: endOfDay },
         });
 
-        if (inquiryCount >= 10) {
+        if (inquiryCount >= 11) {
             return res.status(429).json({
                 success: false,
                 message: "Inquiry limit exceeded. You can submit only 10 inquiries per day.",
             });
         }
 
+        // const otp = Math.floor(100000 + Math.random() * 900000); // Generate 6-digit OTP
+        // OTPStore.set(phone, { otp, expiresAt: Date.now() + otpExpiryTime });
+
         // Send OTP via WhatsApp or SMS (Replace with actual function)
-        await SendWhatsapp(phone, `Your OTP for verification is: ${otp}`);
+        // await SendWhatsapp(phone, `Your OTP for verification is: ${otp}`);
 
         return res.status(200).json({
             success: true,
-            message: "OTP sent successfully",
+            message: "OTP already verified",
         });
     } catch (error) {
         console.error("Error sending OTP:", error);
@@ -60,7 +86,7 @@ exports.verifyOtpAndSubmitForm = async (req, res) => {
         if (!email) emptyField.push("email");
         if (!phone) emptyField.push("phone");
         if (!message) emptyField.push("message");
-        if (!otp) emptyField.push("otp");
+        // if (!otp) emptyField.push("otp");
 
         if (emptyField.length > 0) {
             return res.status(400).json({
@@ -68,6 +94,64 @@ exports.verifyOtpAndSubmitForm = async (req, res) => {
                 message: "Please fill all the required fields",
                 emptyField,
             });
+        }
+
+        // Check inquiry limit (10 per day)
+        const startOfDay = moment().startOf("day").toDate();
+        const endOfDay = moment().endOf("day").toDate();
+
+        const inquiryCountForChecking = await FormData.countDocuments({
+            phone,
+            createdAt: { $gte: startOfDay, $lte: endOfDay },
+        });
+
+        console.log("inquiryCountForChecking",inquiryCountForChecking)
+
+        if (inquiryCountForChecking >= 1) {
+            console.log("i am in")
+            if (inquiryCountForChecking >= 11) {
+                return res.status(429).json({
+                    success: false,
+                    message: "Inquiry limit exceeded. You can submit only 10 inquiries per day.",
+                });
+            }
+
+            const showUser = await ShopUser.findById(shopId);
+            if (!showUser) {
+                return res.status(404).json({
+                    success: false,
+                    message: "User not found",
+                });
+            }
+
+            const userNumber = showUser?.ContactNumber;
+
+            const formData = new FormData({
+                name,
+                email,
+                phone,
+                message,
+                shopId,
+                otp: otp || '000000'
+            });
+
+            // Construct WhatsApp message
+            const whatsappMessage = `New Inquiry Received:\n\n
+        🔹 Name: ${name}\n
+        📧 Email: ${email}\n
+        📞 Phone: ${phone}\n
+        📝 Message: ${message}\n\n
+        Please follow up with the user as soon as possible.`;
+
+            await SendWhatsapp(userNumber, whatsappMessage); // Send message via WhatsApp
+            await formData.save(); // Save form data
+
+            return res.status(200).json({
+                success: true,
+                message: "Form submitted successfully",
+                data: formData,
+            });
+
         }
 
         // Verify OTP
@@ -90,16 +174,12 @@ exports.verifyOtpAndSubmitForm = async (req, res) => {
             });
         }
 
-        // Check inquiry limit (10 per day)
-        const startOfDay = moment().startOf("day").toDate();
-        const endOfDay = moment().endOf("day").toDate();
-
         const inquiryCount = await FormData.countDocuments({
             phone,
             createdAt: { $gte: startOfDay, $lte: endOfDay },
         });
 
-        if (inquiryCount >= 10) {
+        if (inquiryCount >= 11) {
             return res.status(429).json({
                 success: false,
                 message: "Inquiry limit exceeded. You can submit only 10 inquiries per day.",
@@ -114,6 +194,7 @@ exports.verifyOtpAndSubmitForm = async (req, res) => {
             phone,
             message,
             shopId,
+            otp
         });
 
         // Construct WhatsApp message

@@ -1654,7 +1654,7 @@ exports.updateStatusOfShowingNumber = async (req, res) => {
         }
         listingUser.showNumber = showNumber;
         const updatedListingUser = await listingUser.save();
-        console.log("listingUser",updatedListingUser)
+        console.log("listingUser", updatedListingUser)
         return res.status(200).json({ success: true, message: 'Status updated successfully' });
     } catch (error) {
         console.log("Internal server error", error)

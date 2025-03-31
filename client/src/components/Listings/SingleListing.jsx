@@ -28,6 +28,7 @@ const SingleListing = () => {
 
     const [otpSent, setOtpSent] = useState(false);
     const [otpLoading, setOtpLoading] = useState(false);
+    const [isOtpVisible, setIsOtpVisible] = useState(true);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -60,11 +61,19 @@ const SingleListing = () => {
 
         setOtpLoading(true);
         try {
-            await axios.post("https://api.naideal.com/api/v1/send_otp_form", {
+            const res = await axios.post("https://api.naideal.com/api/v1/send_otp_form", {
                 phone: formData.phone
             });
-            toast.success("OTP sent successfully!");
-            setOtpSent(true);
+            const resMessage = res?.data?.message
+            if (resMessage == 'OTP already verified') {
+                setIsOtpVisible(false)
+                setOtpSent(true)
+                toast.success(res?.data?.message || "OTP sent successfully!");
+            } else {
+                setOtpSent(true);
+                setIsOtpVisible(true)
+                toast.success(res?.data?.message || "OTP sent successfully!");
+            }
         } catch (error) {
             console.log("Error sending OTP:", error?.response?.data?.message);
             toast.error(error?.response?.data?.message || "Failed to send OTP.");
@@ -80,10 +89,10 @@ const SingleListing = () => {
             return;
         }
 
-        if (!formData.otp) {
-            toast.error("Please enter the OTP.");
-            return;
-        }
+        // if (!formData.otp) {
+        //     toast.error("Please enter the OTP.");
+        //     return;
+        // }
 
         setFormLoading(true);
         try {
@@ -169,117 +178,126 @@ const SingleListing = () => {
         >
             {/* Popup Form */}
             <AnimatePresence>
-            {showForm && (
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-                    onClick={(e) => e.target === e.currentTarget && setShowForm(false)}
-                >
+                {showForm && (
                     <motion.div
-                        initial={{ scale: 0.9, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0.9, opacity: 0 }}
-                        className="bg-white rounded-2xl p-6 w-full max-w-md relative"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+                        onClick={(e) => e.target === e.currentTarget && setShowForm(false)}
                     >
-                        <button
-                            onClick={() => setShowForm(false)}
-                            className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            className="bg-white rounded-2xl p-6 w-full max-w-md relative"
                         >
-                            <X className="w-5 h-5" />
-                        </button>
+                            <button
+                                onClick={() => setShowForm(false)}
+                                className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
 
-                        <h2 className="text-2xl font-bold text-gray-900 mb-4">Contact Us</h2>
-                        <p className="text-gray-600 mb-6">Fill out this form and we'll get back to you soon!</p>
+                            <h2 className="text-2xl font-bold text-gray-900 mb-4">Contact Us</h2>
+                            <p className="text-gray-600 mb-6">Fill out this form and we'll get back to you soon!</p>
 
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                                <input
-                                    type="text"
-                                    name="name"
-                                    value={formData.name}
-                                    onChange={handleChange}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    required
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    required
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                                <input
-                                    type="tel"
-                                    name="phone"
-                                    value={formData.phone}
-                                    onChange={handleChange}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    required
-                                />
-                                {!otpSent ? (
-                                    <button
-                                        type="button"
-                                        onClick={sendOtp}
-                                        className="mt-2 w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
-                                        disabled={otpLoading}
-                                    >
-                                        {otpLoading ? "Sending OTP..." : "Send OTP"}
-                                    </button>
-                                ) : (
-                                    <p className="text-green-600 text-sm mt-1">OTP sent! Enter it below.</p>
-                                )}
-                            </div>
-
-                            {otpSent && (
+                            <form onSubmit={handleSubmit} className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Enter OTP</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
                                     <input
                                         type="text"
-                                        name="otp"
-                                        value={formData.otp}
+                                        name="name"
+                                        value={formData.name}
                                         onChange={handleChange}
                                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                         required
                                     />
                                 </div>
-                            )}
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
-                                <textarea
-                                    name="message"
-                                    value={formData.message}
-                                    onChange={handleChange}
-                                    rows="4"
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    required
-                                ></textarea>
-                            </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        required
+                                    />
+                                </div>
 
-                            <button
-                                type="submit"
-                                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors"
-                                disabled={formLoading}
-                            >
-                                {formLoading ? "Submitting..." : "Submit"}
-                            </button>
-                        </form>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                                    <input
+                                        type="tel"
+                                        name="phone"
+                                        value={formData.phone}
+                                        onChange={handleChange}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        required
+                                    />
+                                    {!otpSent ? (
+                                        <button
+                                            type="button"
+                                            onClick={sendOtp}
+                                            className="mt-2 w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                                            disabled={otpLoading}
+                                        >
+                                            {otpLoading ? "Sending OTP..." : "Send OTP"}
+                                        </button>
+                                    ) : (
+                                        isOtpVisible ? (
+                                            <p className="text-green-600 text-sm mt-1">OTP sent! Enter it below.</p>
+
+                                        ) : (
+                                            ''
+                                        )
+                                    )}
+                                </div>
+
+                                {!isOtpVisible ? (
+                                    ''
+                                ) : (
+                                    otpSent && (
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Enter OTP</label>
+                                            <input
+                                                type="text"
+                                                name="otp"
+                                                value={formData.otp}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                required
+                                            />
+                                        </div>
+                                    )
+                                )}
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                                    <textarea
+                                        name="message"
+                                        value={formData.message}
+                                        onChange={handleChange}
+                                        rows="4"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        required
+                                    ></textarea>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors"
+                                    disabled={formLoading}
+                                >
+                                    {formLoading ? "Submitting..." : "Submit"}
+                                </button>
+                            </form>
+                        </motion.div>
                     </motion.div>
-                </motion.div>
-            )}
-        </AnimatePresence>
+                )}
+            </AnimatePresence>
             {/* Breadcrumbs */}
             <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-8">
                 <Link to="/" className="hover:text-blue-600 transition-colors">Home</Link>
