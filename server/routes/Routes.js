@@ -12,6 +12,7 @@ const { CreateBanner, GetAllBanner, UpdateBanner, DeleteBanner, GetAllBannerActi
 const { createFBanner, getFAllBanner, getBanneronWhicPage, deleteFBanner, updateFBanner } = require('../controllers/Festival_controller');
 const { verifyOtpAndSubmitForm, getAllFormData, deleteFormData, sendOtpForm } = require('../controllers/FormData.controller');
 const { createCoupon, getAllCoupons, updateCoupon, deleteCoupon, getCouponById, checkCouponIsAvailable } = require('../controllers/coupon.controller');
+const { getPaymentDetails } = require('../controllers/payment.controller');
 const router = express.Router();
 
 const storage = multer.memoryStorage();
@@ -159,6 +160,8 @@ router.put('/update_show_detail/:id',updateStatusOfShowingNumber)
 
 router.get('/get_user_by_username/:username', getListingByUserName);
 
+
+router.get('/get-payment-detail',getPaymentDetails)
 
 
 module.exports = router;
