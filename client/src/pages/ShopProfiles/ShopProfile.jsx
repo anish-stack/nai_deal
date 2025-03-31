@@ -154,7 +154,7 @@ const ShopProfile = () => {
                             </div>
                             <div>
                                 <h3 className="font-medium text-gray-900">Email</h3>
-                                {ShopId?.showNumber
+                                {ShopId?.showEmail
                                         ? <a href={`mailto:${ShopId?.Email}`} className="text-gray-600">{ShopId?.Email}</a>
                                         :<a className="text-gray-600">${ShopId?.Email.slice(0, 2)}******{ShopId?.Email.slice(-2)}</a>}
                                 {/* <a href={`mailto:${ShopId?.Email}`} className="text-gray-600">{ShopId?.Email}</a> */}

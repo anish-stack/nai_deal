@@ -1665,3 +1665,25 @@ exports.updateStatusOfShowingNumber = async (req, res) => {
         })
     }
 }
+
+exports.updateStatusOfShowingEmail = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { showEmail } = req.body;
+        const listingUser = await ListingUser.findById(id);
+        if (!listingUser) {
+            return res.status(404).json({ success: false, message: 'Listing user not found' });
+        }
+        listingUser.showEmail = showEmail;
+        const updatedListingUser = await listingUser.save();
+        console.log("listingUser", updatedListingUser)
+        return res.status(200).json({ success: true, message: 'Status updated successfully' });
+    } catch (error) {
+        console.log("Internal server error", error)
+        res.status(500).json({
+            success: false,
+            message: "Internal server error",
+            error: error.message
+        })
+    }
+}

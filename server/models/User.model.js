@@ -139,7 +139,11 @@ const ListingUserSchema = new mongoose.Schema({
     showNumber : {
         type: Boolean,
         default: true
-    }
+    },
+    showEmail : {
+        type: Boolean,
+        default: true
+    },
 }, { timestamps: true });
 
 // Add 2dsphere index to the Location field
