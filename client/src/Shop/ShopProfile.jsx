@@ -85,6 +85,19 @@ const ShopProfile = ({ shopDetails, onUpgradePackage, onLogout, onProfileUpload,
         }
     }
 
+    const handleUpdateShowEmail = async (id, showEmail) => {
+        const updatedStatus = !showEmail
+        try {
+            const res = await axios.put(`https://api.naideal.com/api/v1/update_show_Email/${id}`, {
+                showEmail: updatedStatus
+            })
+            toast.success('Status Updated')
+            window.location.reload();
+        } catch (error) {
+            console.log("Internal server error", error)
+        }
+    }
+
     const {
         addressData,
         handleAddressChange,
@@ -343,6 +356,13 @@ const ShopProfile = ({ shopDetails, onUpgradePackage, onLogout, onProfileUpload,
                                 } text-white py-2 px-4 rounded-lg transition-all duration-300`}
                         >
                             {shopDetails?.showNumber ? 'Hide Number' : 'Show Number'}
+                        </button>
+                        <button
+                            onClick={() => handleUpdateShowEmail(shopDetails?._id, shopDetails?.showEmail)}
+                            className={`w-full flex items-center justify-center gap-2 ${shopDetails?.showEmail ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'
+                                } text-white py-2 px-4 rounded-lg transition-all duration-300`}
+                        >
+                            {shopDetails?.showEmail ? 'Hide Number' : 'Show Number'}
                         </button>
 
                     </div>

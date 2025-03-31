@@ -420,7 +420,7 @@ const SingleListing = () => {
                                         <p className="font-medium text-gray-900">Email</p>
                                         {/* <p className="text-gray-600">{listing.shopDetails?.Email}</p> */}
                                         <p className="text-gray-600">
-                                            {listing.shopDetails?.showNumber
+                                            {listing.shopDetails?.showEmail
                                                 ? `${listing.shopDetails?.Email}`
                                                 : `${listing.shopDetails?.Email.slice(0, 2)}******${listing.shopDetails?.Email.slice(-2)}`}
                                         </p>
