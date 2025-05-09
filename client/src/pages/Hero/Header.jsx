@@ -15,7 +15,7 @@ export function Header() {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const response = await axios.get('https://api.naideal.com/api/v1/get-setting');
+        const response = await axios.get('https://www.api.naideal.com/api/v1/get-setting');
         if (response.data.success) {
           setSettings(response.data.data);
           console.log(response.data.data)
@@ -32,7 +32,7 @@ export function Header() {
   useEffect(() => {
     const handleFetchMarquee = async () => {
       try {
-        const { data } = await axios.get(`https://api.naideal.com/api/v1/get-all-marquees`)
+        const { data } = await axios.get(`https://www.api.naideal.com/api/v1/get-all-marquees`)
         const all = data.data
         const active = all.filter((item) => item.active === true)
         const reverse = active.reverse()

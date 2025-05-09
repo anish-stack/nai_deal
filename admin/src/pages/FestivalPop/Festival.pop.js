@@ -64,7 +64,7 @@ const FestivalPop = () => {
 
     const ITEMS_PER_PAGE = 8;
     const token = localStorage.getItem('Sr-token');
-    const API_BASE_URL = 'https://api.naideal.com/api/v1';
+    const API_BASE_URL = 'https://www.api.naideal.com/api/v1';
 
     const fetchBanners = async () => {
         setIsLoading(true);

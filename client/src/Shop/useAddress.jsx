@@ -50,7 +50,7 @@ const useAddress = (shopDetails, coords) => {
       return;
     }
     try {
-      const response = await axios.get(`https://api.naideal.com/geocode?address=${landmark}`);
+      const response = await axios.get(`https://www.api.naideal.com/geocode?address=${landmark}`);
       const locationData = response.data;
       setAddressData(prev => ({
         ...prev,
@@ -72,7 +72,7 @@ const useAddress = (shopDetails, coords) => {
     }
 
     try {
-      const response = await axios.post(`https://api.naideal.com/Fetch-Current-Location`, {
+      const response = await axios.post(`https://www.api.naideal.com/Fetch-Current-Location`, {
         lat: coords.latitude,
         lng: coords.longitude
       });

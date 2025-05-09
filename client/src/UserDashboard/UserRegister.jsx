@@ -54,7 +54,7 @@ const UserRegister = () => {
 
     const handleFetchCoupon = async () => {
         try {
-            const { data } = await axios.get('https://api.naideal.com/api/v1/get-all-coupon-code')
+            const { data } = await axios.get('https://www.api.naideal.com/api/v1/get-all-coupon-code')
             const allData = data.data
             setAllCoupon(allData)
         } catch (error) {
@@ -123,7 +123,7 @@ const UserRegister = () => {
         if (!coords) return;
 
         try {
-            const response = await axios.post(`https://api.naideal.com/Fetch-Current-Location`, {
+            const response = await axios.post(`https://www.api.naideal.com/Fetch-Current-Location`, {
                 lat: coords.latitude,
                 lng: coords.longitude
             });
@@ -151,7 +151,7 @@ const UserRegister = () => {
             return
         }
         try {
-            const response = await axios.get(`https://api.naideal.com/geocode?address=${landmark}`)
+            const response = await axios.get(`https://www.api.naideal.com/geocode?address=${landmark}`)
             const locationData = response.data;
             console.log(locationData)
             setFormData((prev) => ({

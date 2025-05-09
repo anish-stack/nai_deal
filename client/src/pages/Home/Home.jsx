@@ -59,7 +59,7 @@ const Home = () => {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const response = await axios.get('https://api.naideal.com/api/v1/get-setting');
+        const response = await axios.get('https://www.api.naideal.com/api/v1/get-setting');
         if (response.data.success) {
           setSettings(response.data.data);
           console.log(response.data.data)
