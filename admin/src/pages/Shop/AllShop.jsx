@@ -30,7 +30,7 @@ const AllShop = () => {
     // Fetch Membership Plans
     const handleFetchMembershipPlans = async () => {
         try {
-            const response = await axios.get("https://api.naideal.com/api/v1/admin-packages");
+            const response = await axios.get("https://www.api.naideal.com/api/v1/admin-packages");
             setAllMembershipPlans(response.data.packages);
         } catch (error) {
             console.error("Error fetching membership plans:", error);
@@ -39,7 +39,7 @@ const AllShop = () => {
 
     const fetchPaymentDetail = async () => {
         try {
-            const response = await axios.get("https://api.naideal.com/api/v1/get-payment-detail");
+            const response = await axios.get("https://www.api.naideal.com/api/v1/get-payment-detail");
             setPaymentDetail(response.data);
         } catch (error) {
             console.error("Error fetching payment details:", error);
@@ -54,7 +54,7 @@ const AllShop = () => {
     const fetchShops = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(`https://api.naideal.com/api/v1/all-shops`);
+            const res = await axios.get(`https://www.api.naideal.com/api/v1/all-shops`);
             console.log("res.data", res.data)
             setShops(res.data.reverse());
             setError(null);
@@ -77,7 +77,7 @@ const AllShop = () => {
                 alert("Please select a valid package.");
                 return;
             }
-            await axios.put(`https://api.naideal.com/api/v1/admin-update-package/${shopId}`, { packageId });
+            await axios.put(`https://www.api.naideal.com/api/v1/admin-update-package/${shopId}`, { packageId });
             alert("Package updated successfully!");
 
             // Update local state to reflect change
@@ -100,7 +100,7 @@ const AllShop = () => {
 
     const handleDelete = async (id) => {
         try {
-            await axios.delete(`https://api.naideal.com/api/v1/delete-shop/${id}`);
+            await axios.delete(`https://www.api.naideal.com/api/v1/delete-shop/${id}`);
             setShops(shops.filter(shop => shop._id !== id));
             setDeleteModalOpen(false);
         } catch (error) {

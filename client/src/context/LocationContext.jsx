@@ -61,7 +61,7 @@ export const LocationProvider = ({ children }) => {
         if (!location) return; // Prevent API call if location is not available
 
         try {
-            const { data } = await axios.post('https://api.naideal.com/Fetch-Current-Location', {
+            const { data } = await axios.post('https://www.api.naideal.com/Fetch-Current-Location', {
                 lat: location.latitude,
                 lng: location.longitude,
             });

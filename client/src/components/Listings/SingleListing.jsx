@@ -61,7 +61,7 @@ const SingleListing = () => {
 
         setOtpLoading(true);
         try {
-            const res = await axios.post("https://api.naideal.com/api/v1/send_otp_form", {
+            const res = await axios.post("https://www.api.naideal.com/api/v1/send_otp_form", {
                 phone: formData.phone
             });
             const resMessage = res?.data?.message
@@ -96,7 +96,7 @@ const SingleListing = () => {
 
         setFormLoading(true);
         try {
-            const response = await axios.post("https://api.naideal.com/api/v1/verify_otp_and_send_enquiry_form", formData);
+            const response = await axios.post("https://www.api.naideal.com/api/v1/verify_otp_and_send_enquiry_form", formData);
             toast.success("Form submitted successfully");
             setShowForm(false);
             setOtpSent(false);

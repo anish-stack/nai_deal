@@ -12,7 +12,7 @@ const ShopProfile = () => {
     const [error, setError] = useState(null);
     const [allData, setAllData] = useState([])
     // const BackendUrl = import.meta.env.VITE_REACT_APP_BACKEND_URL;
-    const BackendUrl = 'https://api.naideal.com/api/v1';
+    const BackendUrl = 'https://www.api.naideal.com/api/v1';
 
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });

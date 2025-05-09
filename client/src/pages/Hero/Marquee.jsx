@@ -4,7 +4,7 @@ import axios from 'axios';
 const Marquee = () => {
   const [announcements, setAnnouncements] = useState([]);
 
-  const API_URL = 'https://api.naideal.com/api/v1/get-all-marquees';
+  const API_URL = 'https://www.api.naideal.com/api/v1/get-all-marquees';
 
   // Fetch all marquees when the component mounts
   useEffect(() => {

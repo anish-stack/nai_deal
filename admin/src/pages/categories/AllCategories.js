@@ -20,7 +20,7 @@ const AllCategories = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(`https://api.naideal.com/api/v1/get-all-categories`)
+            const response = await axios.get(`https://www.api.naideal.com/api/v1/get-all-categories`)
             const data = response.data.data
             setData(data)
         } catch (error) {
@@ -58,7 +58,7 @@ const AllCategories = () => {
         }
 
         try {
-            await axios.post(`https://api.naideal.com/api/v1/admin-create-categories`, formData)
+            await axios.post(`https://www.api.naideal.com/api/v1/admin-create-categories`, formData)
             fetchData()
             setOpenCreateModal(false)
             toast.success('Category Created Successful')
@@ -77,7 +77,7 @@ const AllCategories = () => {
         }
 
         try {
-            await axios.post(`https://api.naideal.com/api/v1/admin-update-categories/${updateData.id}`, formData)
+            await axios.post(`https://www.api.naideal.com/api/v1/admin-update-categories/${updateData.id}`, formData)
             fetchData()
             setOpenEditModal(false)
             toast.success('Category Updated Successful')
@@ -89,7 +89,7 @@ const AllCategories = () => {
     // Handle delete
     const handleDelete = async (id) => {
         try {
-            await axios.delete(`https://api.naideal.com/api/v1/admin-delete-categories/${id}`)
+            await axios.delete(`https://www.api.naideal.com/api/v1/admin-delete-categories/${id}`)
             toast.success('Category Deleted Successful')
             fetchData() // Refresh data after delete
         } catch (error) {

@@ -15,7 +15,7 @@ export function ContactForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const data = await axios.post('https://api.naideal.com/api/v1/Other/Contact', formData)
+      const data = await axios.post('https://www.api.naideal.com/api/v1/Other/Contact', formData)
       console.log(data.data)
       setStatus('success');
       toast.success(`We'll get back to you as soon as possible.`)
