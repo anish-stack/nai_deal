@@ -30,7 +30,7 @@ const CouponSelector = ({ coupons, onCouponSelect }) => {
 
     setIsVerifying(true);
     try {
-      const response = await axios.post('https://www.api.naideal.com/api/v1/verify-coupon-code', {
+      const response = await axios.post('https://api.naideal.com/api/v1/verify-coupon-code', {
         code: manualCoupon
       });
 

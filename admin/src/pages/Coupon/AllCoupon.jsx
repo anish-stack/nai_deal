@@ -21,7 +21,7 @@ const AllCoupon = () => {
 
     const fetchCoupons = async () => {
         try {
-            const { data } = await axios.get('https://www.api.naideal.com/api/v1/get-all-coupon-code');
+            const { data } = await axios.get('https://api.naideal.com/api/v1/get-all-coupon-code');
             setCoupons(data.data.reverse());
         } catch (error) {
             console.error("Error fetching coupons:", error);
@@ -38,7 +38,7 @@ const AllCoupon = () => {
     const handleCreateCoupon = async (e) => {
         e.preventDefault();
         try {
-            const { data } = await axios.post('https://www.api.naideal.com/api/v1/create-coupon-code', newCoupon);
+            const { data } = await axios.post('https://api.naideal.com/api/v1/create-coupon-code', newCoupon);
             setCoupons([data, ...coupons]);
             fetchCoupons();
             closeModal();
@@ -49,7 +49,7 @@ const AllCoupon = () => {
 
     const handleEditClick = async (id) => {
         try {
-            const { data } = await axios.get(`https://www.api.naideal.com/api/v1/get-single-coupon-code/${id}`);
+            const { data } = await axios.get(`https://api.naideal.com/api/v1/get-single-coupon-code/${id}`);
             setNewCoupon({
                 ...data.data,
                 expiryDate: data.data.expiryDate.split('T')[0] // Extracting only YYYY-MM-DD
@@ -66,7 +66,7 @@ const AllCoupon = () => {
     const handleUpdateCoupon = async (e) => {
         e.preventDefault();
         try {
-            const { data } = await axios.put(`https://www.api.naideal.com/api/v1/update-coupon-code/${selectedCoupon}`, newCoupon);
+            const { data } = await axios.put(`https://api.naideal.com/api/v1/update-coupon-code/${selectedCoupon}`, newCoupon);
             setCoupons(coupons.map(coupon => coupon._id === selectedCoupon ? data.data : coupon));
             closeModal();
         } catch (error) {
@@ -83,7 +83,7 @@ const AllCoupon = () => {
 
     const handleDeleteCoupon = async (id) => {
         try {
-            await axios.delete(`https://www.api.naideal.com/api/v1/delete-coupon-code/${id}`);
+            await axios.delete(`https://api.naideal.com/api/v1/delete-coupon-code/${id}`);
             setCoupons(coupons.filter(coupon => coupon._id !== id));
         } catch (error) {
             console.error("Error deleting coupon:", error);
