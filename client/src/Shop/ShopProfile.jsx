@@ -36,7 +36,7 @@ const ShopProfile = ({ shopDetails, onUpgradePackage, onLogout, onProfileUpload,
     useEffect(() => {
         const fetchPlans = async () => {
             try {
-                const { data } = await axios.get(`https://www.api.naideal.com/api/v1/admin-packages`);
+                const { data } = await axios.get(`https://api.naideal.com/api/v1/admin-packages`);
                 // console.log("data", data.packages);
                 const allPlans = data.packages;
                 const planInfo = allPlans.find(plan => plan.packageName === shopDetails?.ListingPlan);
@@ -75,7 +75,7 @@ const ShopProfile = ({ shopDetails, onUpgradePackage, onLogout, onProfileUpload,
     const handleUpdateShowNumber = async (id, showNumber) => {
         const updatedStatus = !showNumber
         try {
-            const res = await axios.put(`https://www.api.naideal.com/api/v1/update_show_detail/${id}`, {
+            const res = await axios.put(`https://api.naideal.com/api/v1/update_show_detail/${id}`, {
                 showNumber: updatedStatus
             })
             toast.success('Status Updated')
@@ -88,7 +88,7 @@ const ShopProfile = ({ shopDetails, onUpgradePackage, onLogout, onProfileUpload,
     const handleUpdateShowEmail = async (id, showEmail) => {
         const updatedStatus = !showEmail
         try {
-            const res = await axios.put(`https://www.api.naideal.com/api/v1/update_show_Email/${id}`, {
+            const res = await axios.put(`https://api.naideal.com/api/v1/update_show_Email/${id}`, {
                 showEmail: updatedStatus
             })
             toast.success('Status Updated')
@@ -181,7 +181,7 @@ const ShopProfile = ({ shopDetails, onUpgradePackage, onLogout, onProfileUpload,
         e.preventDefault();
 
         try {
-            const { data } = await axios.post('https://www.api.naideal.com/api/v1/Other/add-bussiness-hours', formData, {
+            const { data } = await axios.post('https://api.naideal.com/api/v1/Other/add-bussiness-hours', formData, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('ShopToken')}`,

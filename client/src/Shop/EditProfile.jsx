@@ -29,7 +29,7 @@ const EditProfile = ({ profile, isOpen, OnClose }) => {
 
     const fetchCategories = async () => {
         try {
-            const response = await axios.get(`https://www.api.naideal.com/api/v1/admin-get-categories`);
+            const response = await axios.get(`https://api.naideal.com/api/v1/admin-get-categories`);
             const sortedCategories = response.data.data.sort((a, b) =>
                 a.CategoriesName.localeCompare(b.CategoriesName)
             );
@@ -68,7 +68,7 @@ const EditProfile = ({ profile, isOpen, OnClose }) => {
         setIsLoading(true);  // Start loading
 
         try {
-            const res = await axios.post('https://www.api.naideal.com/api/v1/Upload-Profile-Details', updateData, {
+            const res = await axios.post('https://api.naideal.com/api/v1/Upload-Profile-Details', updateData, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,

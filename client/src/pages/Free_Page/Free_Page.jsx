@@ -44,7 +44,7 @@ const Free_Page = () => {
     useEffect(() => {
         const fetchPages = async () => {
             try {
-                const response = await axios.get('https://www.api.naideal.com/api/v1/Other/get-free-page');
+                const response = await axios.get('https://api.naideal.com/api/v1/Other/get-free-page');
                 setPages(response.data);
                 setLoading(false);
             } catch (error) {
