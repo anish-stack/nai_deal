@@ -1,0 +1,39 @@
+import React, { useState, useEffect } from 'react';
+import api from '../../api/axiosInstance';
+const Marquee2 = () => {
+  const [announcements, setAnnouncements] = useState([]);
+  const [settings, setSettings] = useState({})
+
+
+  // Fetch all marquees when the component mounts
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await api.get('/get-setting');
+        if (response.data.success) {
+          setSettings(response.data.data);
+          console.log(response.data.data)
+        } else {
+          console.error(response.data.message);
+        }
+      } catch (error) {
+        console.error('Error fetching settings:', error.message);
+      }
+    };
+    fetchSettings();
+  }, []); // Empty dependency array means this effect runs only once when the component mounts
+
+  return (
+    <div>
+      {settings?.marquee && settings.marquee.length > 0 && (
+        <div className="bg-gradient-to-r from-[#48c777] to-[#08a742] overflow-hidden py-2">
+          <div className="flex items-center justify-center">
+            <span className=' text-white'>{settings?.marquee}</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Marquee2;
