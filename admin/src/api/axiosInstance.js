@@ -10,7 +10,7 @@ import axios from 'axios';
  */
 
 const BASE_URL =
-    process.env.REACT_APP_BACKEND_URL || 'http://localhost:7485/api/v1';
+    process.env.REACT_APP_BACKEND_URL || 'https://api.naideal.com/api/v1';
 
 // Origin without the /api/v1 suffix - `/admin-login` lives there.
 export const API_ORIGIN =

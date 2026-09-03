@@ -157,3 +157,27 @@ payment redirects land there.
 6. **Rotate every credential in the old `.env`** — it was committed to the repo,
    so the Mongo URI, SMTP password, Cloudinary secret and Razorpay keys should
    all be considered compromised.
+
+
+
+MONGO_URL=mongodb+srv://rajeevdhingra:BWbHfXW7IW0FXllK@cluster0.dwume.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+PORT=7485
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_EMAIL=happycoding41@gmail.com
+SMTP_PASSWORD=xcwi jsnw faiu sqtb
+JWT_SECRET=qwsdcvbnmjioplkiuytrewazxcvbjkoiuytrdsxcvbhjk
+JWT_EXPIRES_TIME=2d
+RAZORPAY_APT_SECRET=n5qG5D3NwCspamdBVLe2mZh6
+RAZORPAY_KEY_ID=rzp_live_VM1rZfiucpi71n
+CLOUDINARY_API_KEY=939345957566958
+PARTNER_ID=6698adeb76077a48d454e5eb
+CLOUDINARY_SECRET_KEY=q-Pg0dyWquxjatuRb62-PtFzkM0
+CLOUD_NAME=dglihfwse
+RAZORPAY_APT_KEY=rzp_test_gwvXwuaK4gKsY3
+BACKEND_URL=https://api.naideal.com
+FRONTEND_URL=https://www.naideal.com
+ADMIN_EMAIL=admin@gmail.com
+ADMIN_PASSWORD=naideal@admin
+#GOOGLE_MAP_KEY=AIzaSyCuSV_62nxNHBjLQ_Fp-rSTgRUw9m2vzhM
+GOOGLE_MAP_KEY=AIzaSyBxLeYjg5q_hvc-usMEcAes2dij01h-6sc
