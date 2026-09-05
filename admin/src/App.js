@@ -32,12 +32,13 @@ import AllCoupon from './pages/Coupon/AllCoupon';
 const App = () => {
   // Retrieve and decrypt the session data
   const encryptedData = sessionStorage.getItem('loginData');
-  
+  const SESSION_SECRET = process.env.REACT_APP_SESSION_SECRET || 'naideal-admin-session';
+
   let isLoggedIn = false;
 
   if (encryptedData) {
     try {
-      const decryptedData = CryptoJS.AES.decrypt(encryptedData, 'secret-key').toString(CryptoJS.enc.Utf8);
+      const decryptedData = CryptoJS.AES.decrypt(encryptedData, SESSION_SECRET).toString(CryptoJS.enc.Utf8);
       const loginData = JSON.parse(decryptedData);
       isLoggedIn = loginData.login || false; // If login is true, set isLoggedIn to true
     } catch (error) {

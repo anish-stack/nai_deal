@@ -58,6 +58,7 @@ const Login = () => {
         return;
       }
 
+      console.log('Login successful:', data);
       const encrypted = CryptoJS.AES.encrypt(
         JSON.stringify({ login: true, token: data.token, at: Date.now() }),
         SESSION_SECRET
